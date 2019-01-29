@@ -1,0 +1,16 @@
+Package: dettl
+Title: Data extract, transform, test and load
+Version: 0.0.1
+Authors@R: 
+    person(given = "Robert",
+           family = "Ashton",
+           role = c("aut", "cre"),
+           email = "r.ashton@imperial.ac.uk")
+Description: Data extract, transform, test and load tool for sanitising your workflow.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat
