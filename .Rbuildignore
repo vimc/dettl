@@ -1,3 +1,7 @@
 ^\.travis\.yml$
 ^dettl\.Rproj$
 ^\.Rproj\.user$
+^scripts$
+^Makefile$
+^images$
+^docs$
