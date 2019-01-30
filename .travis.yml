@@ -5,7 +5,5 @@ sudo: false
 cache: packages
 r_packages:
   - covr
-  - R6
-  - DBI
 after_success:
   - Rscript -e 'covr::codecov(quiet = FALSE)'
