@@ -2,6 +2,11 @@ context("test-dettl")
 
 test_that("dettl works as expected", {
 
+  ## Setup test db
+  db_name <- "test.sqlite"
+  create_test_db(db_name)
+  on.exit(unlink(db_name))
+
   ## when creating import object
   import <- dettl::new_import("example/")
 
@@ -61,6 +66,12 @@ test_that("dettl works as expected", {
 })
 
 test_that("run import runs a full import process", {
+
+  ## Setup test db
+  db_name <- "test.sqlite"
+  create_test_db(db_name)
+  on.exit(unlink(db_name))
+
   import <- dettl::run_import("example/")
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),

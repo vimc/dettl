@@ -1,8 +1,8 @@
 context("dettl-config")
 
 test_that("dettl config can be read and database connection info extracted", {
-  cfg <- dettl_config(".")
-  expect_is(cfg, "dettl_config")
+  cfg <- dettl_config("default_config")
+  expect_s3_class(cfg, "dettl_config")
 
   ## default destination database:
   expect_equal(cfg$destination$driver, c("RSQLite", "SQLite"))

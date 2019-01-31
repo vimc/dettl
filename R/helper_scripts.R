@@ -12,8 +12,7 @@ new_import <- function(path) {
                            extract = globalenv()$extract,
                            transform = globalenv()$transform,
                            test = globalenv()$test,
-                           load = globalenv()$load,
-                           connection = globalenv()$start_connection)
+                           load = globalenv()$load)
 }
 
 #' Run the import process for a directory.

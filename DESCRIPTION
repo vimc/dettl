@@ -14,7 +14,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Imports:
     R6,
-    DBI
+    DBI,
+    yaml
 Suggests: 
     testthat,
     RSQLite

@@ -7,15 +7,33 @@
 #' @keywords internal
 #'
 dettl_config <- function(path) {
+  path <- dettl_locate_config_dir(path)
   filename <- path_dettl_config_yml(path)
   if (!file.exists(filename)) {
-    stop("Did not find file 'dettl_config.yml' at path ", path)
+      stop("Did not find file 'dettl_config.yml' at path ", path)
   }
   dettl_config_read_yaml(filename, path)
 }
 
 path_dettl_config_yml <- function(root) {
-  file.path(root, "dettl_config.yml")
+    file.path(root, "dettl_config.yml")
+}
+
+#' Locate the directory containing the config file.
+#'
+#' @param path Path to directory to start looking in.
+#'
+#' @return The directory containing the dettl_config yaml file.
+#'
+#' @keywords internal
+#'
+dettl_locate_config_dir <- function(path) {
+  path <- find_file_descend("dettl_config.yml", path)
+  if (is.null(path)) {
+    stop(sprintf("Reached root from %s without finding 'dettl_config.yml'",
+                 path))
+  }
+  path
 }
 
 #' Read yaml file representing a dettl config.

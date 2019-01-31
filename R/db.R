@@ -1,3 +1,18 @@
+#' Connect to the database configured via yaml.
+#'
+#' @param type The type of connection to make (\code{source},
+#'   \code{destination}).
+#' @param path Path to directory contianing yaml config.
+#'
+#' @keywords internal
+#'
+db_connect <- function(type, path) {
+  config <- dettl_config(path)
+  x <- dettl_db_args(type, config)
+  con <- do.call(DBI::dbConnect, c(list(x$driver()), x$args))
+  con
+}
+
 #' Get the DB args from config.
 #'
 #' Converts the configured DB driver to appropriate driver function and
@@ -6,7 +21,7 @@
 #' @param type The db type to get the args for, source or destination.
 #' @param config dettl_config object.
 #'
-#' @export
+#' @keywords internal
 #'
 dettl_db_args <- function(type, config) {
   x <- config[[type]]

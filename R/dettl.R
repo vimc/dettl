@@ -17,9 +17,10 @@ dataImport <- R6::R6Class(
 
   public = list(
     initialize = function(path, extract, transform, test, load,
-                          connection, rollback = NULL) {
+                          rollback = NULL) {
       private$path <- path
-      private$con <- connection()
+      ## TODO: Only set up connection when it is actually needed
+      private$con <- db_connect("destination", path)
       private$extract_ <- extract
       private$transform_ <- transform
       private$test_ <- test
@@ -55,8 +56,10 @@ dataImport <- R6::R6Class(
       if (is.null(private$transformed_data)) {
         self$transform()
       }
+      ## testthat::test_dir(private$test_dir)
       private$test_(private$transformed_data, private$con)
       message("All tests passed successfuly, can safely run load.")
+      invisible(TRUE)
     },
 
     load = function() {

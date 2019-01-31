@@ -36,3 +36,28 @@ is_absolute_path <- function(path) {
 is_relative_path <- function(path) {
   !is_absolute_path(path)
 }
+
+## Originally in cyphr:
+find_file_descend <- function(target, start = ".", limit = "/") {
+  root <- normalizePath(limit, mustWork = TRUE)
+  start <- normalizePath(start, mustWork = TRUE)
+
+  f <- function(path) {
+    if (file.exists(file.path(path, target))) {
+      return(path)
+    }
+    if (normalizePath(path, mustWork = TRUE) == root) {
+      return(NULL)
+    }
+    parent <- normalizePath(file.path(path, ".."))
+    if (parent == path) {
+      return(NULL)
+    }
+    Recall(parent)
+  }
+  ret <- f(start)
+  if (!(is.null(ret))) {
+    ret <- normalizePath(ret, mustWork = TRUE)
+  }
+  ret
+}
