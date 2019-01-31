@@ -16,4 +16,5 @@ Imports:
     R6,
     DBI
 Suggests: 
-    testthat
+    testthat,
+    RSQLite
