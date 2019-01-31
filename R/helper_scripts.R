@@ -6,7 +6,7 @@
 #' @export
 #'
 new_import <- function(path) {
-  sources <- dir(paste0(path, "/R"), "\\w+\\.r$", full.names = TRUE)
+  sources <- dir(paste0(path, "/R"), "\\w+\\.R$", full.names = TRUE)
   lapply(sources, source)
   import <- dataImport$new(path,
                            extract = globalenv()$extract,
