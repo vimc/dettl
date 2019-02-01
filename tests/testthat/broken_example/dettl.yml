@@ -1,0 +1,6 @@
+test:
+  file: script.R
+  func: test_load
+
+load:
+  file: script.R

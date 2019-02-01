@@ -69,3 +69,72 @@ dettl_config_read_yaml <- function(filename, path) {
   class(info) <- "dettl_config"
   info
 }
+
+read_config <- function(path) {
+  filename <- file.path(path, "dettl.yml")
+  assert_file_exists(path, name = "Report working directory")
+  assert_file_exists(filename, name = "Orderly configuration")
+  info <- yaml_read(filename)
+
+  ## If certain fields don't exist in the config then add defaults
+  required <- c("extract",
+                "transform",
+                "test",
+                "load")
+  info <- add_missing_required_fields(info, required, path)
+  optional <- c()
+  check_fields(info, filename, required, optional)
+
+  info <- read_fields(info, path)
+  info$name <- basename(normalizePath(path))
+  info$path <- path
+  class(info) <- "dettl_config"
+  info
+}
+
+add_missing_required_fields <- function(info, required, path) {
+  ## Tidy incomplete fields
+  for (field_name in names(info)) {
+    if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
+      info[[field_name]]$func <- field_name
+    }
+    if (is.null(info[[field_name]]$file) || is.na(info[[field_name]]$file)) {
+      info[[field_name]]$file <- get_default_file(field_name)
+    }
+  }
+  ## Handle missing fields
+  missing <- setdiff(required, names(info))
+  for (missing_field in missing) {
+    info[[missing_field]] <- get_default_config(missing_field)
+  }
+  info
+}
+
+get_default_config <- function(name) {
+  cfg <- list()
+  cfg$func <- name
+  cfg$file <- get_default_file(name)
+  cfg
+}
+
+get_default_file <- function(field) {
+  file.path("R", paste0(field, ".R"))
+}
+
+read_fields <- function(fields, path) {
+  for (field in names(fields)) {
+    tryCatch({assert_file_exists(fields[[field]]$file, workdir = path)},
+             error = function(e) {
+               e$message <- paste0(e$message, " at path ", path)
+               stop(e)
+             })
+    env <- new.env(parent = .GlobalEnv)
+    sys.source(file.path(path, fields[[field]]$file), envir = env)
+    assert_func_exists(fields[[field]]$func, env)
+    fields[[field]]$func <- get0(fields[[field]]$func, envir = env,
+                                 mode = "function", inherits = FALSE)
+  }
+  fields
+}
+
+

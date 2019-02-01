@@ -61,3 +61,119 @@ find_file_descend <- function(target, start = ".", limit = "/") {
   }
   ret
 }
+
+
+is_windows <- function() {
+  Sys.info()[["sysname"]] == "Windows"
+}
+
+is_linux <- function() {
+  Sys.info()[["sysname"]] == "Linux"
+}
+
+set_names <- function(x, nms) {
+  names(x) <- nms
+  x
+}
+
+file_exists <- function(..., check_case = FALSE, workdir = NULL,
+                        force_case_check = FALSE) {
+  files <- c(...)
+  if (!is.null(workdir)) {
+    assert_scalar_character(workdir)
+    owd <- setwd(workdir)
+    on.exit(setwd(owd))
+  }
+  exists <- file.exists(files)
+
+  if (check_case) {
+    incorrect_case <- logical(length(files))
+    if (!is_linux() || force_case_check) {
+      incorrect_case[exists] <-
+        !vlapply(files[exists], file_has_canonical_case)
+      if (any(incorrect_case)) {
+        correct <- vcapply(files[incorrect_case], file_canonical_case)
+        names(correct) <- files[incorrect_case]
+        attr(exists, "incorrect_case") <- incorrect_case
+        attr(exists, "correct_case") <- correct
+        exists[incorrect_case] <- FALSE
+      }
+    }
+  }
+
+  exists
+}
+
+squote <- function(x) {
+  sprintf("'%s'", x)
+}
+
+vlapply <- function(X, FUN, ...) {
+  vapply(X, FUN, logical(1), ...)
+}
+
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}
+
+file_split_base <- function(filename, lowercase = FALSE) {
+  path <- strsplit(filename, "[/\\\\]")[[1L]]
+  if (!nzchar(path[[1]])) {
+    base <- "/"
+    path <- path[-1L]
+    absolute <- TRUE
+  } else if (grepl("^[A-Za-z]:", path[[1]])) {
+    base <- paste0(path[[1L]], "/")
+    path <- path[-1L]
+    absolute <- TRUE
+  } else {
+    base <- "."
+    absolute <- FALSE
+  }
+  if (lowercase) {
+    path <- tolower(path)
+  }
+  list(path = path[nzchar(path)], base = base, absolute = absolute)
+}
+
+file_has_canonical_case <- function(filename) {
+  dat <- file_split_base(filename)
+  base <- dat$base
+  absolute <- dat$absolute
+
+  for (p in dat$path) {
+    if (p %in% dir(base, all.files = TRUE)) {
+      base <- paste(base, p, sep = if (absolute) "" else "/")
+      absolute <- FALSE
+    } else {
+      return(FALSE)
+    }
+  }
+  TRUE
+}
+
+## This one here behaves differently on unix because we could have
+## files called Foo and foo next to each other (but not on
+## windows/mac)
+file_canonical_case <- function(filename) {
+  dat <- file_split_base(filename, TRUE)
+  base <- dat$base
+  path <- dat$path
+  absolute <- dat$absolute
+
+  for (p in dat$path) {
+    pos <- dir(base, all.files = TRUE)
+    i <- match(p, tolower(pos))
+    if (is.na(i)) {
+      return(NA_character_)
+    } else {
+      base <- paste(base, pos[[i]], sep = if (absolute) "" else "/")
+      absolute <- FALSE
+    }
+  }
+
+  if (grepl("^\\./", base) && !grepl("^\\./", filename)) {
+    base <- sub("^\\./", "", base)
+  }
+  base
+}

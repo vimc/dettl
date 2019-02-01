@@ -19,3 +19,94 @@ test_that("dettl config can be read and database connection info extracted", {
   expect_identical(source_dat$driver, RSQLite::SQLite)
   expect_identical(source_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
 })
+
+test_that("read config loads config from directory", {
+  cfg <- read_config("example")
+  expect_s3_class(cfg, "dettl_config")
+
+  expect_length(cfg, 6)
+
+  expect_true("extract" %in% names(cfg))
+  expect_length(cfg$extract, 2)
+  expect_true("func" %in% names(cfg$extract))
+  expect_true("file" %in% names(cfg$extract))
+  expect_is(cfg$extract$func, "function")
+  expect_equal(cfg$extract$file, "R/extract.R")
+
+  expect_true("transform" %in% names(cfg))
+  expect_length(cfg$transform, 2)
+  expect_true("func" %in% names(cfg$transform))
+  expect_true("file" %in% names(cfg$transform))
+  expect_is(cfg$transform$func, "function")
+  expect_equal(cfg$transform$file, "R/transform.R")
+
+  expect_true("test" %in% names(cfg))
+  expect_length(cfg$test, 2)
+  expect_true("func" %in% names(cfg$test))
+  expect_true("file" %in% names(cfg$test))
+  expect_is(cfg$test$func, "function")
+  expect_equal(cfg$test$file, "R/test.R")
+
+  expect_true("load" %in% names(cfg))
+  expect_length(cfg$load, 2)
+  expect_true("func" %in% names(cfg$load))
+  expect_true("file" %in% names(cfg$load))
+  expect_is(cfg$load$func, "function")
+  expect_equal(cfg$load$file, "R/load.R")
+
+  expect_true("name" %in% names(cfg))
+  expect_equal(cfg$name, "example")
+
+  expect_true("path" %in% names(cfg))
+  expect_equal(cfg$path, "example")
+})
+
+test_that("read config adds missing fields from defaults", {
+  cfg <- read_config("simple_example")
+  expect_s3_class(cfg, "dettl_config")
+
+  expect_length(cfg, 6)
+
+  expect_true("extract" %in% names(cfg))
+  expect_length(cfg$extract, 2)
+  expect_true("func" %in% names(cfg$extract))
+  expect_true("file" %in% names(cfg$extract))
+  expect_is(cfg$extract$func, "function")
+  expect_equal(cfg$extract$func(), "Executed extract function")
+  expect_equal(cfg$extract$file, "R/extract.R")
+
+  expect_true("transform" %in% names(cfg))
+  expect_length(cfg$transform, 2)
+  expect_true("func" %in% names(cfg$transform))
+  expect_true("file" %in% names(cfg$transform))
+  expect_is(cfg$transform$func, "function")
+  expect_equal(cfg$transform$func(), "Executed transform function")
+  expect_equal(cfg$transform$file, "R/transform.R")
+
+  expect_true("test" %in% names(cfg))
+  expect_length(cfg$test, 2)
+  expect_true("func" %in% names(cfg$test))
+  expect_true("file" %in% names(cfg$test))
+  expect_is(cfg$test$func, "function")
+  expect_equal(cfg$test$func(), "Executed test_load function")
+  expect_equal(cfg$test$file, "R/script.R")
+
+  expect_true("load" %in% names(cfg))
+  expect_length(cfg$load, 2)
+  expect_true("func" %in% names(cfg$load))
+  expect_true("file" %in% names(cfg$load))
+  expect_is(cfg$load$func, "function")
+  expect_equal(cfg$load$func(), "Executed load function")
+  expect_equal(cfg$load$file, "R/script.R")
+
+  expect_true("name" %in% names(cfg))
+  expect_equal(cfg$name, "simple_example")
+
+  expect_true("path" %in% names(cfg))
+  expect_equal(cfg$path, "simple_example")
+})
+
+test_that("read config fails if required configuration is not available", {
+  expect_error(read_config("broken_example"),
+               "File does not exist: 'script.R' at path broken_example")
+})

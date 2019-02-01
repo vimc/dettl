@@ -6,13 +6,13 @@
 #' @export
 #'
 new_import <- function(path) {
-  sources <- dir(paste0(path, "/R"), "\\w+\\.R$", full.names = TRUE)
-  lapply(sources, source)
+
+  dettl_config <- read_config(path)
   import <- dataImport$new(path,
-                           extract = globalenv()$extract,
-                           transform = globalenv()$transform,
-                           test = globalenv()$test,
-                           load = globalenv()$load)
+                           extract = dettl_config$extract$func,
+                           transform = dettl_config$transform$func,
+                           test = dettl_config$test$func,
+                           load = dettl_config$load$func)
 }
 
 #' Run the import process for a directory.
