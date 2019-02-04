@@ -1,6 +1,6 @@
-test:
+test_queries:
   file: R/script.R
-  func: test_load
+  func: test_query
 
 load:
   file: R/script.R

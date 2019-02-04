@@ -11,7 +11,8 @@ new_import <- function(path) {
   import <- dataImport$new(path,
                            extract = dettl_config$extract$func,
                            transform = dettl_config$transform$func,
-                           test = dettl_config$test$func,
+                           test_queries = dettl_config$test_queries$func,
+                           test_file = dettl_config$test$file,
                            load = dettl_config$load$func)
 }
 
@@ -26,7 +27,8 @@ new_import <- function(path) {
 #'
 run_import <- function(path) {
   import <- new_import(path)
-  import$test()
+  import$extract()
+  import$transform()
   import$load()
   import
 }

@@ -8,7 +8,8 @@ dataImport <- R6::R6Class(
     con = NULL,
     extract_ = NULL,
     transform_ = NULL,
-    test_ = NULL,
+    test_queries = NULL,
+    test_file_ = NULL,
     load_ = NULL,
     extracted_data = NULL,
     transformed_data = NULL
@@ -16,14 +17,15 @@ dataImport <- R6::R6Class(
   ),
 
   public = list(
-    initialize = function(path, extract, transform, test, load,
-                          rollback = NULL) {
+    initialize = function(path, extract, transform, test_queries, test_file,
+                          load, rollback = NULL) {
       private$path <- path
       ## TODO: Only set up connection when it is actually needed
       private$con <- db_connect("destination", path)
       private$extract_ <- extract
       private$transform_ <- transform
-      private$test_ <- test
+      private$test_queries <- test_queries
+      private$test_file_ <- test_file
       private$load_ <- load
     },
 
@@ -41,7 +43,7 @@ dataImport <- R6::R6Class(
 
     transform = function() {
       if (is.null(private$extracted_data)) {
-        self$extract()
+        stop("Cannot run transform as no data has been extracted.")
       }
       private$transformed_data <- private$transform_(private$extracted_data)
       ## ...check that data looks sensible...
@@ -54,7 +56,7 @@ dataImport <- R6::R6Class(
 
     test = function() {
       if (is.null(private$transformed_data)) {
-        self$transform()
+        stop("Cannot run tests as no data has been transformed.")
       }
       ## testthat::test_dir(private$test_dir)
       private$test_(private$transformed_data, private$con)
@@ -63,7 +65,11 @@ dataImport <- R6::R6Class(
     },
 
     load = function() {
-      private$load_(private$transformed_data, private$con)
+      if (is.null(private$transformed_data)) {
+        stop("Cannot run tests as no data has been transformed.")
+      }
+      run_load(private$load_, private$con, private$transformed_data,
+               private$test_queries, private$path, private$test_file_)
     },
 
     get_connection = function() {

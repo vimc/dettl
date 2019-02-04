@@ -8,7 +8,7 @@ test_that("dettl works as expected", {
   on.exit(unlink(db_name))
 
   ## when creating import object
-  import <- dettl::new_import("example/")
+  import <- new_import("example/")
 
   ## object has been created
   expect_false(is.null(import))
@@ -52,12 +52,6 @@ test_that("dettl works as expected", {
   ## and DB is still empty
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
-  ## when testing data message is printed
-  expect_message(import$test(), "All tests passed successfuly, can safely run load.")
-
-  ## and DB is still empty
-  expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
-
   ## when load is run
   import$load()
 
@@ -72,7 +66,7 @@ test_that("run import runs a full import process", {
   create_test_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- dettl::run_import("example/")
+  import <- run_import("example/")
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),
                               c(25, 43),
@@ -80,4 +74,16 @@ test_that("run import runs a full import process", {
                               stringsAsFactors = FALSE)
   colnames(expected_data) <- c("name", "age", "height")
   expect_equal(DBI::dbGetQuery(con, "SELECT * from people"), expected_data)
+})
+
+test_that("run step rolls back when tests fail", {
+
+  ## Setup test db
+  db_name <- "test.sqlite"
+  create_test_db(db_name)
+  on.exit(unlink(db_name))
+
+  expect_error(run_import("example_failing_test/"),
+               "Failed to load data - not all tests passed.")
+
 })

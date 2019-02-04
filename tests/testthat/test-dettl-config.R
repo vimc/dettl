@@ -1,8 +1,8 @@
 context("dettl-config")
 
 test_that("dettl config can be read and database connection info extracted", {
-  cfg <- dettl_config("default_config")
-  expect_s3_class(cfg, "dettl_config")
+  cfg <- db_config("default_config")
+  expect_s3_class(cfg, "db_config")
 
   ## default destination database:
   expect_equal(cfg$destination$driver, c("RSQLite", "SQLite"))
@@ -24,7 +24,7 @@ test_that("read config loads config from directory", {
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 2)
@@ -40,11 +40,16 @@ test_that("read config loads config from directory", {
   expect_is(cfg$transform$func, "function")
   expect_equal(cfg$transform$file, "R/transform.R")
 
+  expect_true("test_queries" %in% names(cfg))
+  expect_length(cfg$test_queries, 2)
+  expect_true("func" %in% names(cfg$test_queries))
+  expect_true("file" %in% names(cfg$test_queries))
+  expect_is(cfg$test_queries$func, "function")
+  expect_equal(cfg$test_queries$file, "R/test_queries.R")
+
   expect_true("test" %in% names(cfg))
-  expect_length(cfg$test, 2)
-  expect_true("func" %in% names(cfg$test))
+  expect_length(cfg$test, 1)
   expect_true("file" %in% names(cfg$test))
-  expect_is(cfg$test$func, "function")
   expect_equal(cfg$test$file, "R/test.R")
 
   expect_true("load" %in% names(cfg))
@@ -65,7 +70,7 @@ test_that("read config adds missing fields from defaults", {
   cfg <- read_config("simple_example")
   expect_s3_class(cfg, "dettl_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 2)
@@ -84,12 +89,16 @@ test_that("read config adds missing fields from defaults", {
   expect_equal(cfg$transform$file, "R/transform.R")
 
   expect_true("test" %in% names(cfg))
-  expect_length(cfg$test, 2)
-  expect_true("func" %in% names(cfg$test))
+  expect_length(cfg$test, 1)
   expect_true("file" %in% names(cfg$test))
-  expect_is(cfg$test$func, "function")
-  expect_equal(cfg$test$func(), "Executed test_load function")
-  expect_equal(cfg$test$file, "R/script.R")
+  expect_equal(cfg$test$file, "R/test.R")
+
+  expect_true("test_queries" %in% names(cfg))
+  expect_length(cfg$test_queries, 2)
+  expect_true("func" %in% names(cfg$test_queries))
+  expect_true("file" %in% names(cfg$test_queries))
+  expect_is(cfg$test_queries$func, "function")
+  expect_equal(cfg$test_queries$file, "R/script.R")
 
   expect_true("load" %in% names(cfg))
   expect_length(cfg$load, 2)
@@ -108,5 +117,5 @@ test_that("read config adds missing fields from defaults", {
 
 test_that("read config fails if required configuration is not available", {
   expect_error(read_config("broken_example"),
-               "File does not exist: 'script.R' at path broken_example")
+               "File does not exist: 'script.R' in directory broken_example")
 })

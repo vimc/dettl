@@ -7,7 +7,7 @@
 #' @keywords internal
 #'
 db_connect <- function(type, path) {
-  config <- dettl_config(path)
+  config <- db_config(path)
   x <- dettl_db_args(type, config)
   con <- do.call(DBI::dbConnect, c(list(x$driver()), x$args))
   con
