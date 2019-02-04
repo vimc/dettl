@@ -8,25 +8,30 @@ dataImport <- R6::R6Class(
     con = NULL,
     extract_ = NULL,
     transform_ = NULL,
-    test_queries = NULL,
-    test_file_ = NULL,
     load_ = NULL,
+    extract_test_ = NULL,
+    transform_test_ = NULL,
+    load_test_ = NULL,
+    test_queries = NULL,
     extracted_data = NULL,
     transformed_data = NULL
 
   ),
 
   public = list(
-    initialize = function(path, extract, transform, test_queries, test_file,
-                          load, rollback = NULL) {
+    initialize = function(path, extract, extract_test, transform,
+                          transform_test, load, load_test, test_queries,
+                          rollback = NULL) {
       private$path <- path
       ## TODO: Only set up connection when it is actually needed
       private$con <- db_connect("destination", path)
       private$extract_ <- extract
+      private$extract_test_ <- extract_test
       private$transform_ <- transform
-      private$test_queries <- test_queries
-      private$test_file_ <- test_file
+      private$transform_test_ <- transform_test
       private$load_ <- load
+      private$load_test_ <- load_test
+      private$test_queries <- test_queries
     },
 
     rollback = function() {
@@ -69,7 +74,7 @@ dataImport <- R6::R6Class(
         stop("Cannot run tests as no data has been transformed.")
       }
       run_load(private$load_, private$con, private$transformed_data,
-               private$test_queries, private$path, private$test_file_)
+               private$test_queries, private$path, private$load_test_)
     },
 
     get_connection = function() {

@@ -1,6 +1,5 @@
-test:
-  file: script.R
-  func: test_load
+sources:
+ - script.R
 
 load:
-  file: script.R
+  func: test_load

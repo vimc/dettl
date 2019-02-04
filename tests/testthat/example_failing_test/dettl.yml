@@ -1,18 +1,14 @@
+sources:
+  - R/extract.R
+  - R/load.R
+  - R/transform.R
+  - R/test_queries.R
+
 extract:
-  file:
   func:
 
 load:
-  file:
   func:
-
-test_queries:
-  file:
-  func:
-
-test:
-  file:
 
 transform:
-  file:
   func:

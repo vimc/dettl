@@ -97,16 +97,16 @@ read_config <- function(path) {
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
-  required <- c("extract",
-                "transform",
-                "test_queries",
-                "test",
-                "load")
-  info <- add_missing_required_fields(info, required)
+  function_fields <- c("extract",
+                       "transform",
+                       "load")
+  info <- add_missing_function_fields(info, function_fields)
+  required <- c(function_fields, "sources")
   optional <- c()
   check_fields(info, filename, required, optional)
 
-  info <- read_fields(info, path)
+  env <- load_sources(info$sources, path)
+  info <- read_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path))
   info$path <- path
   class(info) <- "dettl_config"
@@ -114,30 +114,44 @@ read_config <- function(path) {
 }
 
 
-#' Add any missing required fields to the config.
+#' Add any missing required fields to the config using defaults where available.
 #'
-#' This defaults to using the field name for the function and file name equal
-#' to the field, and function name. For the 'test' field only need the file.
+#' This defaults to using the field name for the function name.
+#' For the 'test' field also sets the verification queries function default and
+#' the test file default.
 #'
 #' @param info The config loaded from file.
-#' @param required Collection of required fields.
+#' @param fields Collection of fields to set defaults for.
 #'
 #' @keywords internal
 #'
-add_missing_required_fields <- function(info, required) {
+add_missing_function_fields <- function(info, fields) {
   ## Tidy incomplete fields
-  for (field_name in names(info)) {
-    if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
-      info[[field_name]]$func <- field_name
-    }
-    if (is.null(info[[field_name]]$file) || is.na(info[[field_name]]$file)) {
-      info[[field_name]]$file <- get_default_file(field_name)
-    }
+  for (field_name in fields) {
+    info <- set_missing_values(info, field_name)
   }
   ## Handle missing fields
-  missing <- setdiff(required, names(info))
+  missing <- setdiff(fields, names(info))
   for (missing_field in missing) {
     info[[missing_field]] <- get_default_config(missing_field)
+  }
+  info
+}
+
+set_missing_values <- function(info, field_name) {
+  if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
+    info[[field_name]]$func <- field_name
+  }
+  missing_verification_queries <- field_name == "load" &&
+    (is.null(info[[field_name]]$verification_queries) ||
+       is.na(info[[field_name]]$verification_queries))
+  if (missing_verification_queries) {
+    info[[field_name]]$verification_queries <- "verification_queries"
+  }
+  missing_postload_test <- field_name == "load" &&
+    (is.null(info[[field_name]]$test) || is.na(info[[field_name]]$test))
+  if (missing_postload_test) {
+    info[[field_name]]$test <- "R/test_load.R"
   }
   info
 }
@@ -152,12 +166,11 @@ add_missing_required_fields <- function(info, required) {
 get_default_config <- function(name) {
   cfg <- list()
   cfg$func <- name
-  cfg$file <- get_default_file(name)
+  if (name == "test") {
+    cfg$verification_queries <- "verification_queries"
+    cfg$test <- "R/test_load.R"
+  }
   cfg
-}
-
-get_default_file <- function(field) {
-  file.path("R", paste0(field, ".R"))
 }
 
 #' Read file fields of the dettl config yaml file.
@@ -165,22 +178,43 @@ get_default_file <- function(field) {
 #' Reads the config file, and sources any file references.
 #'
 #' @param fields The name of the field
+#' @param env Environment containing functions loaded from sources.
 #' @keywords internal
 #'
-read_fields <- function(fields, path) {
-  for (field in names(fields)) {
-    assert_file_exists(fields[[field]]$file, workdir = path)
-    if (field != "test") {
-      env <- new.env(parent = .GlobalEnv)
-      sys.source(file.path(path, fields[[field]]$file), envir = env)
-      assert_func_exists(fields[[field]]$func, env)
-      fields[[field]]$func <- get0(fields[[field]]$func, envir = env,
+read_fields <- function(fields, config, env) {
+  for (field in fields) {
+    assert_func_exists(config[[field]]$func, env)
+    config[[field]]$func <- get0(config[[field]]$func, envir = env,
                                  mode = "function", inherits = FALSE)
-    } else {
-      fields[[field]]$func <- NULL
+    if (field == "load") {
+      assert_func_exists(config[[field]]$verification_queries, env)
+      config[[field]]$verification_queries <-
+        get0(config[[field]]$verification_queries, envir = env,
+             mode = "function", inherits = FALSE)
     }
   }
-  fields
+  config
+}
+
+#' Read file fields of the dettl config yaml file.
+#'
+#' Reads the config file, and sources any file references.
+#'
+#' @param sources The sources to be loaded
+#' @param path Path to locate the sources at.
+#'
+#' @return Environment child of global environment which sources have been
+#' loaded into.
+#'
+#' @keywords internal
+#'
+load_sources <- function(sources, path) {
+  env <- new.env(parent = .GlobalEnv)
+  for (source in sources) {
+    assert_file_exists(source, workdir = path)
+    sys.source(file.path(path, source), envir = env)
+  }
+  env
 }
 
 

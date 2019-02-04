@@ -1,6 +1,5 @@
-test_queries:
-  file: R/script.R
-  func: test_query
+sources:
+  - R/extract.R
+  - R/transform.R
+  - R/script.R
 
-load:
-  file: R/script.R
