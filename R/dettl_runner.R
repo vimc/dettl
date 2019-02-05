@@ -19,19 +19,31 @@ new_import <- function(path) {
                            )
 }
 
-#' Run the import process for a directory.
+#' Run the import process for a data_import object.
 #'
-#' This runs the full extract, transform, test and load steps.
+#' This runs the full extract, transform, test and load steps or runs specific
+#' stages specified by 'run_stages'.
 #'
-#' @param path Path to the directory.
+#' @param import The dataImport object.
+#' @param run_stages Which stages should be run in the import process. Runs all
+#' if NULL.
 #'
-#' @return The dataImport object.
+#' @return The processed dataImport object.
 #' @export
 #'
-run_import <- function(path) {
-  import <- new_import(path)
-  import$extract()
-  import$transform()
-  import$load()
+run_import <- function(import, run_stages = NULL) {
+  if (is.null(import) || class(import) != "dataImport") {
+    stop(
+      "Can only run import for non null data import with class 'dataImport'.")
+  }
+  if (is.null(run_stages) || "extract" %in% run_stages) {
+    import$extract()
+  }
+  if (is.null(run_stages) || "transform" %in% run_stages) {
+    import$transform()
+  }
+  if (is.null(run_stages) || "load" %in% run_stages) {
+    import$load()
+  }
   import
 }
