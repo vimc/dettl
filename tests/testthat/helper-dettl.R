@@ -42,7 +42,7 @@ failing_test_import <- testDataImport$new(
   load = function(transformed_data, con) {
     DBI::dbWriteTable(con, "people", transformed_data$people, append = TRUE)
   },
-  test = "failing_test.R"
+  test = "failing_load_test.R"
 )
 
 failing_test_import$set_path("exmaple_tests")

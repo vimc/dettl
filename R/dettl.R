@@ -38,30 +38,17 @@ dataImport <- R6::R6Class(
     },
 
     extract = function() {
-      if (!is.null(private$con) && DBI::dbIsValid(private$con)) {
-        private$extracted_data <- private$extract_(private$path, private$con)
-      } else {
-        stop("DB connection is not valid cannot extract data")
-      }
-      private$extracted_data
+      private$extracted_data <- run_extract(private$con, private$extract_,
+                                           private$path, private$extract_test_)
     },
 
     transform = function() {
-      if (is.null(private$extracted_data)) {
-        stop("Cannot run transform as no data has been extracted.")
-      }
-      private$transformed_data <- private$transform_(private$extracted_data)
-      ## ...check that data looks sensible...
-      if (length(private$transformed_data) == 0) {
-        stop("Data transform failed, returned empty list.")
-      }
-      private$transformed_data
+      private$transformed_data <- run_transform(private$con, private$transform_,
+                                           private$path, private$extracted_data,
+                                           private$transform_test_)
     },
 
     load = function() {
-      if (is.null(private$transformed_data)) {
-        stop("Cannot run tests as no data has been transformed.")
-      }
       run_load(private$load_, private$con, private$transformed_data,
                private$test_queries, private$path, private$load_test_)
       invisible(TRUE)
