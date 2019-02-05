@@ -20,6 +20,11 @@ test_that("dettl config can be read and database connection info extracted", {
   expect_identical(source_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
 })
 
+test_that("error is thrown when db config is missing", {
+  expect_error(dettl_locate_config(".."),
+               "Reached root from .. without finding 'db_config.yml'")
+})
+
 test_that("read config loads config from directory", {
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_config")

@@ -58,23 +58,13 @@ dataImport <- R6::R6Class(
       private$transformed_data
     },
 
-
-    test = function() {
-      if (is.null(private$transformed_data)) {
-        stop("Cannot run tests as no data has been transformed.")
-      }
-      ## testthat::test_dir(private$test_dir)
-      private$test_(private$transformed_data, private$con)
-      message("All tests passed successfuly, can safely run load.")
-      invisible(TRUE)
-    },
-
     load = function() {
       if (is.null(private$transformed_data)) {
         stop("Cannot run tests as no data has been transformed.")
       }
       run_load(private$load_, private$con, private$transformed_data,
                private$test_queries, private$path, private$load_test_)
+      invisible(TRUE)
     },
 
     get_connection = function() {

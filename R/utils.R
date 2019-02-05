@@ -1,3 +1,7 @@
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}
+
 yaml_read <- function(filename) {
   catch_yaml <- function(e) {
     stop(sprintf("while reading '%s'\n%s", filename, e$message),

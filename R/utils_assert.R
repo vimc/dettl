@@ -40,7 +40,7 @@ assert_file_exists <- function(x, check_case = TRUE, workdir = NULL,
       msg <- squote(x[err])
     }
     stop(sprintf("%s does not exist: %s in directory %s", name,
-                 paste(msg, collapse = ", "), workdir), call. = FALSE)
+                 paste(msg, collapse = ", "), workdir %||% "."), call. = FALSE)
   }
 }
 

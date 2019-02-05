@@ -10,16 +10,8 @@
 #' @keywords internal
 #'
 db_config <- function(path) {
-  path <- dettl_locate_config_dir(path)
-  filename <- path_dettl_config_yml(path)
-  if (!file.exists(filename)) {
-      stop("Did not find file 'db_config.yml' at path ", path)
-  }
-  db_config_read_yaml(filename, path)
-}
-
-path_dettl_config_yml <- function(root) {
-    file.path(root, "db_config.yml")
+  config <- dettl_locate_config(path)
+  db_config_read_yaml(config$filename, config$path)
 }
 
 #' Locate the directory containing the config file.
@@ -30,13 +22,15 @@ path_dettl_config_yml <- function(root) {
 #'
 #' @keywords internal
 #'
-dettl_locate_config_dir <- function(path) {
-  path <- find_file_descend("db_config.yml", path)
-  if (is.null(path)) {
-    stop(sprintf("Reached root from %s without finding 'dettl_config.yml'",
+dettl_locate_config <- function(path) {
+  config <- list()
+  config$path <- find_file_descend("db_config.yml", path)
+  if (is.null(config$path)) {
+    stop(sprintf("Reached root from %s without finding 'db_config.yml'",
                  path))
   }
-  path
+  config$filename <- file.path(config$path, "db_config.yml")
+  config
 }
 
 #' Read yaml file representing a db config.
@@ -126,14 +120,8 @@ read_config <- function(path) {
 #' @keywords internal
 #'
 add_missing_function_fields <- function(info, fields) {
-  ## Tidy incomplete fields
   for (field_name in fields) {
     info <- set_missing_values(info, field_name)
-  }
-  ## Handle missing fields
-  missing <- setdiff(fields, names(info))
-  for (missing_field in missing) {
-    info[[missing_field]] <- get_default_config(missing_field)
   }
   info
 }
@@ -154,23 +142,6 @@ set_missing_values <- function(info, field_name) {
     info[[field_name]]$test <- "R/test_load.R"
   }
   info
-}
-
-#' Create default config for a field
-#'
-#' Default config is func: field_name, file: R/field_name.R
-#'
-#' @param name The name of the field
-#' @keywords internal
-#'
-get_default_config <- function(name) {
-  cfg <- list()
-  cfg$func <- name
-  if (name == "test") {
-    cfg$verification_queries <- "verification_queries"
-    cfg$test <- "R/test_load.R"
-  }
-  cfg
 }
 
 #' Read file fields of the dettl config yaml file.

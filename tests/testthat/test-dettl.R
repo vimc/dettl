@@ -2,7 +2,6 @@ context("test-dettl")
 
 test_that("dettl works as expected", {
 
-  ## Setup test db
   db_name <- "test.sqlite"
   create_test_db(db_name)
   on.exit(unlink(db_name))
@@ -61,7 +60,6 @@ test_that("dettl works as expected", {
 
 test_that("run import runs a full import process", {
 
-  ## Setup test db
   db_name <- "test.sqlite"
   create_test_db(db_name)
   on.exit(unlink(db_name))
@@ -78,7 +76,6 @@ test_that("run import runs a full import process", {
 
 test_that("run step rolls back when tests fail", {
 
-  ## Setup test db
   db_name <- "test.sqlite"
   create_test_db(db_name)
   on.exit(unlink(db_name))
@@ -86,4 +83,28 @@ test_that("run step rolls back when tests fail", {
   expect_error(run_import("example_failing_test/"),
                "Failed to load data - not all tests passed.")
 
+})
+
+test_that("transform cannot be run until extract stage has been run", {
+
+  db_name <- "test.sqlite"
+  create_test_db(db_name)
+  on.exit(unlink(db_name))
+
+  import <- new_import("example/")
+
+  expect_error(import$transform(),
+               "Cannot run transform as no data has been extracted.")
+})
+
+test_that("load cannot be run until transform stage has been run", {
+
+  db_name <- "test.sqlite"
+  create_test_db(db_name)
+  on.exit(unlink(db_name))
+
+  import <- new_import("example/")
+
+  expect_error(import$load(),
+               "Cannot run tests as no data has been transformed.")
 })
