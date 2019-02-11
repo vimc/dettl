@@ -21,6 +21,17 @@ test_that("Descend failure", {
   expect_null(find_file_descend(".dettl_foobar", "/", "/"))
 })
 
+test_that("copy failure", {
+  path1 <- tempfile()
+  path2 <- tempfile()
+  writeLines("a", path1)
+  writeLines("b", path2)
+  on.exit(file.remove(path1, path2))
+  expect_error(file_copy(path1, path2, overwrite = FALSE),
+               "Error copying files")
+  expect_equal(readLines(path2), "b")
+})
+
 test_that("platform detection", {
   expect_equal(is_windows(), Sys.info()[["sysname"]] == "Windows")
   expect_equal(is_linux(), Sys.info()[["sysname"]] == "Linux")
@@ -150,7 +161,7 @@ test_that("canonical case: path splitting", {
 
 
 test_that("canonical case: on missing file", {
-  expect_equal(file_canonical_case("test-util.R"), "test-util.R")
+  expect_equal(file_canonical_case("test-utils.R"), "test-utils.R")
   expect_identical(file_canonical_case("another file"), NA_character_)
 })
 

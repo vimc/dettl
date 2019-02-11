@@ -1,3 +1,5 @@
 load <- function(transformed_data, con) {
-  DBI::dbWriteTable(con, "people", transformed_data$people, append = TRUE)
+  for (name in names(transformed_data)) {
+    DBI::dbWriteTable(con, name, transformed_data[[name]], append = TRUE)
+  }
 }
