@@ -1,0 +1,242 @@
+---
+title: "Using dettl for importing data"
+author: "Robert Ashton"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{detll}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Dettl provides a way to make data tidying and ingestion into a database easier, more testable anmd more robust. Do that by employing an ETL (extract, transform, load) like workflow to separate out different concerns of your data import process and allow testing after each stage of the process.
+
+## ETL
+
+ETL is a pattern for general copying of data from one or more sources to another destination which expects the data in a different form from the sources. It consists of three basic steps
+
+**Extract** - Step is responsible for selecting and accessing any required data from relevant sources (local files or DB). The data is read into memory and can be verified by running a set of tests after step has completed.
+
+**Transform** - Step is responsible for transforming the extracted data into a form ready for loading into the destination database. Expect this is where the bulk of the work will be done. The transformed data can be verifed by running a set of tests after the step has completed.
+
+**Load** - Step is responsible for loading the transformed data into the destination database. A set of post-load tests can be defined which will be run after the data is loaded into the database. If any of the tests fail the DB update will roll back, otherwise changes are committed.
+
+## File structure
+
+To define an ETL process a directory structure as follows is required
+
+```
+project_directory
+|── etl_process_1
+|   |── dettl.yml
+|── etl_process_2
+|   |── dettl.yml
+|── other import processes ...
+|── db_config.yml
+```
+
+Configuration files are required at 2 levels
+
+* `db_config.yml` - Configuration at the project level used to describe the source and destination databases for each ETL process subdirectory. e.g.
+
+```
+source:
+  driver: RSQLite::SQLite
+  args:
+    dbname: test.sqlite
+
+destination:
+  driver: RSQLite::SQLite
+  args:
+    dbname: test.sqlite
+
+```
+* `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
+
+Taking a closer look at the structure of an individual process directory we expect something like.
+```
+etl_process_directory
+|── dettl.yml
+|   R
+|   |── extract.R
+|   |── transform.R
+|   |── load.R
+|── data
+|   |── source_file_1.csv
+|   |── source_file_2.csv
+|   |── ...
+```
+Which will then be tied together to form the process using the `dettl.yml` config file e.g.
+
+```
+sources:
+  - R/extract.R
+  - R/transform.R
+  - R/load.R
+
+extract:
+  func: extract
+  test: R/test_extract.R
+
+transform:
+  func: transform
+  test: R/test_transform.R
+
+load:
+  func: load
+  test: R/test_load.R
+```
+
+The process at a minimum needs code to define 3 functions one for each stage of the extract, transform and load process.
+
+## Creating a new ETL process
+
+If creating a new process within an existing project it can be created by opening the project as an RStudio project and using `new_dettl()` for example to create a new process to load new person data.
+
+```
+dettl::new_dettl("person_information")
+```
+
+This will create a new directory called `person_information` prepended with the current date containing the default `dettl.yml` config and 3 `R` files for you to fill in to the the extract, transform and load and 3 files for testing after each stage of the process.
+
+If you want to create a new process within a new project then you will need to manually create a new RStudio project and create a `db_config.yml` file. You can then proceed as above.
+
+## Developing the process
+
+To develop a complete import process you need to implement the extract, transform and load stages.
+
+Open the created `R/extract.R` file and implement the templated `extract` function. This can delegate to other R functions written elsewhere. If you add any other R files they will need to be added to the list of `sources` in the `dettl.yml`. The extract code should just read data the required data into memory and do no more. For our simple example we want to read from a csv.
+
+```
+extract <- function(path, con) {
+  raw_data <- list()
+  raw_data$people <- read.csv(file.path(path, "data/people.csv"), stringsAsFactors = FALSE)
+  raw_data
+}
+```
+
+You should also define some tests for this stage in the `R/test_extract.R` file. These are written using the [testthat package](http://r-pkgs.had.co.nz/tests.html). The extracted data is made available via the variable `extracted_data` which can be used from within the configured test file. An example test to check that our extract function has extracted 3 rows of data would be.
+
+```
+context("test-extract")
+
+testthat::test_that("extracted data contains 3 rows", {
+  expect_equal(nrow(extracted_data$people), 3)
+})
+```
+
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this.
+
+```
+import <- dettl::new_import("person_information")
+import <- dettl::run_import(import, "extract")
+extracted_data <- import$get_extracted_data()
+```
+
+Secondly open the created `R/transform.R` file. Again you need to implement the templated `transform` function. Similarly to the extract stage this can delegate to other R functions if any files used are added to the `sources` block in the config. Similarly you should write some tests for the transformed data. Important to note is the form of the returned data should be as a named list of data frames. Where each list item represents a table from the database with name matching the name in the DB schema. And each column in the data frame should match an existing column in the database. After the transform step is run the user specified tests will be run automatically, in addition to these we test that the returned data conforms to the DB schema and fail if it does not do so. For example for our simple people example our transform code could be something like
+
+```
+transform <- function(raw_data) {
+  transformed_data <- list()
+  transformed_data$people <- raw_data$people[which(raw_data$people$age < 50), ]
+  transformed_data
+}
+```
+
+and our user defined test
+
+```
+context("test-transform")
+
+testthat::test_that("transformed data contains 2 rows", {
+  expect_equal(nrow(transformed_data$people), 2)
+})
+```
+
+Like with developing the extract stage you can now run the process up the transform step to check it is working though you should try to add any checks required for accepting the transform stage to the test file.
+
+```
+import <- dettl::new_import("person_information")
+import <- dettl::run_import(import, c("extract", "transform"))
+transformed_data <- import$get_transformed_data()
+```
+
+The final stage to implement is the load stage. To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
+
+The important implementation for this stage is the testing. The load process will be run in a transaction then the tests will be run. If any of the tests fail the transaction will be rolled back, otherwise it will be committed. You can write two types of test here, the first simplest is using the active connection to the database to query the loaded data and test the output. For example
+
+```
+context("test-load")
+
+testthat::test_that("people has 2 rows 2", {
+  expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1,1], 2)
+})
+```
+
+These type of tests can only be used to look at the DB after the load has been done. You can also define tests which can test for changes in the DB between before and after the load has run. These require 2 steps.
+
+First you need to define a function to get query the database to get data you're interested in. e.g.
+
+```
+test_queries <- function(con) {
+  values <- list()
+  values$count <-  DBI::dbGetQuery(con, "SELECT count(*) from people")[1,1]
+  values
+}
+```
+
+These should write the data into a list with meaningful names as these names will be used in the test. You need to then define the function used in the `dettl.yml` config in the `load` block using the following,
+
+```
+load:
+  func: load
+  verification_queries: test_queries
+  test: R/test_load.R
+```
+Making sure any additional R files have been added to the `sources` block. The `verification_queries` will be then run before and after the DB update has been run and the output made available to the tests as lists `before` and `after` so differences can be tested e.g.
+
+```
+context("test-load")
+
+testthat::test_that("No of rows in people increases by 2", {
+  expect_equal(after$count, before$count + 2)
+})
+```
+
+After this stage has been implemeneted the import process can be run end-to-end. See below for details.
+
+## Running the process {#run}
+
+The process can be run by first creating a new import object using the name of the directory containing the process you want to run
+
+```
+import <- dettl::new_import("person_information")
+```
+
+You can then run the import process by running
+
+```
+dettl::run_import(import)
+```
+
+This will fail if any of the stages fail. 
+
+Alternatively you can run the process up to just a specific point to view the output if desired - which should be useful for debugging any process problems e.g.
+
+```
+dettl::run_import(import, c("extract", "transform"))
+```
+
+Will run just the `extract` and `transform` stages of the import process. Note that when any stage is run we automatically run any of the tests associated with that stage which have been configured. You can use the import object to view the extracted or transformed data.
+
+```
+extracted_data <- import$get_extracted_data()
+transformed_data <- import$get_transformed_data()
+```
