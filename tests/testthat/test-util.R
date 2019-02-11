@@ -16,9 +16,9 @@ test_that("Descend failure", {
   path <- tempfile()
   dir.create(path)
   on.exit(unlink(path, recursive = TRUE))
-  expect_null(find_file_descend(".orderly_foobar", tempdir(), path))
-  expect_null(find_file_descend(".orderly_foobar", "/", path))
-  expect_null(find_file_descend(".orderly_foobar", "/", "/"))
+  expect_null(find_file_descend(".dettl_foobar", tempdir(), path))
+  expect_null(find_file_descend(".dettl_foobar", "/", path))
+  expect_null(find_file_descend(".dettl_foobar", "/", "/"))
 })
 
 test_that("platform detection", {

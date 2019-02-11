@@ -1,10 +1,16 @@
-context("test-dettl")
+context("test-dettl-runner")
 
 test_that("dettl works as expected", {
 
   db_name <- "test.sqlite"
   create_test_db(db_name)
-  on.exit(unlink(db_name))
+  on.exit(unlink(db_name), add = TRUE)
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   ## when creating import object
   import <- new_import("example/")
@@ -66,6 +72,12 @@ test_that("run import runs a full import process", {
   create_test_db(db_name)
   on.exit(unlink(db_name))
 
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
   import <- new_import("example/")
   import <- run_import(import)
   con <- import$get_connection()
@@ -82,6 +94,12 @@ test_that("run step rolls back when tests fail", {
   db_name <- "test.sqlite"
   create_test_db(db_name)
   on.exit(unlink(db_name))
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- new_import("example_failing_test/")
   expect_error(run_import(import),
