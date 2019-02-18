@@ -2,7 +2,7 @@ context("transform-runner")
 
 testthat::test_that("empty verification data fails", {
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
   con <- DBI::dbConnect(RSQLite::SQLite(), db_name)
 
@@ -15,7 +15,7 @@ testthat::test_that("empty verification data fails", {
 
 testthat::test_that("verification fails if any tables are missing from db", {
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
   con <- DBI::dbConnect(RSQLite::SQLite(), db_name)
 
@@ -28,7 +28,7 @@ testthat::test_that("verification fails if any tables are missing from db", {
 
 testthat::test_that("verification fails if any rows are missing from db", {
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
   con <- DBI::dbConnect(RSQLite::SQLite(), db_name)
 
@@ -48,7 +48,7 @@ testthat::test_that("verification fails if any rows are missing from db", {
 
 testthat::test_that("verification passes if data adheres to schema", {
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
   con <- DBI::dbConnect(RSQLite::SQLite(), db_name)
 

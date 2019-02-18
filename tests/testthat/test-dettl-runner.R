@@ -3,7 +3,7 @@ context("test-dettl-runner")
 test_that("dettl works as expected", {
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name), add = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -69,7 +69,7 @@ test_that("dettl works as expected", {
 test_that("run import runs a full import process", {
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -92,7 +92,7 @@ test_that("run import runs a full import process", {
 test_that("run step rolls back when tests fail", {
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -110,7 +110,7 @@ test_that("run step rolls back when tests fail", {
 test_that("transform cannot be run until extract stage has been run", {
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
   import <- new_import("example/")
@@ -122,7 +122,7 @@ test_that("transform cannot be run until extract stage has been run", {
 test_that("load cannot be run until transform stage has been run", {
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
   import <- new_import("example/")
@@ -139,7 +139,7 @@ test_that("import cannot be run on object of wrong type", {
   )
 
   db_name <- "test.sqlite"
-  create_test_db(db_name)
+  prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
   import <- new_import("example/")

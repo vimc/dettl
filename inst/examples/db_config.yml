@@ -1,0 +1,9 @@
+source:
+  driver: RSQLite::SQLite
+  args:
+    dbname: test.sqlite
+
+destination:
+  driver: RSQLite::SQLite
+  args:
+    dbname: test.sqlite
