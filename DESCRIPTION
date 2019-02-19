@@ -22,5 +22,6 @@ Suggests:
     rmarkdown,
     RPostgres,
     RSQLite,
-    testthat
+    testthat,
+    withr
 VignetteBuilder: knitr
