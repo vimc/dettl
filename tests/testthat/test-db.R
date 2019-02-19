@@ -10,9 +10,22 @@ test_that("db can connect to database using yaml config", {
   expect_true(DBI::dbIsValid(con))
 })
 
-test_that("dettl can connect to remote DB using yaml config", {
-  con <- db_connect("source", "uat_config")
-  on.exit(DBI::dbDisconnect(con))
-  expect_true(DBI::dbIsValid(con))
-  expect_true(length(DBI::dbListTables(con)) > 0)
+test_that("dettl can connect to remote DB using yaml config and the vault", {
+  srv <- vaultr::vault_test_server()
+  cl <- srv$client()
+  cl$write("/secret/users/readonly", list(password = "readonly"))
+
+  ## Ensure addr to vault is correct for cfg
+  cfg <- readLines("uat_config/db_config.yml")
+  cfg_server <- gsub(pattern = "<vault_server>", replace = srv$addr, x = cfg)
+  writeLines(cfg_server, con = "uat_config/db_config.yml")
+  on.exit(writeLines(cfg, con = "uat_config/db_config.yml"))
+
+  withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
+    con <- db_connect("source", "uat_config")
+    on.exit(DBI::dbDisconnect(con))
+    expect_true(DBI::dbIsValid(con))
+    expect_true(length(DBI::dbListTables(con)) > 0)
+  })
 })
+

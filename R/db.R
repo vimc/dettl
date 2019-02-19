@@ -9,7 +9,8 @@
 db_connect <- function(type, path) {
   config <- db_config(path)
   x <- dettl_db_args(type, config)
-  con <- do.call(DBI::dbConnect, c(list(x$driver()), x$args))
+  con <- do.call(DBI::dbConnect,
+                 c(list(x$driver()), resolve_secrets(x$args, config)))
   con
 }
 

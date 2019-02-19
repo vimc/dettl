@@ -46,7 +46,7 @@ dettl_locate_config <- function(path) {
 #'
 db_config_read_yaml <- function(filename, path) {
   info <- yaml_read(filename)
-  check_fields(info, filename, "source", "destination")
+  check_fields(info, filename, "source", c("destination", "vault_server"))
 
   driver_config <- function(name) {
     if (name == "destination" && is.null(info[[name]])) {

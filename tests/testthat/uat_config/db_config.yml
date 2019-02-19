@@ -5,7 +5,7 @@ source:
     host: support.montagu.dide.ic.ac.uk
     port: 15432
     user: readonly
-    password: readonly
+    password: VAULT:/secret/users/readonly:password
 
 destination:
   driver: RPostgres::Postgres
@@ -14,4 +14,6 @@ destination:
     host: support.montagu.dide.ic.ac.uk
     port: 15432
     user: readonly
-    password: readonly
+    password: VAULT:/secret/users/readonly:password
+
+vault_server: http://127.0.0.1:18200
