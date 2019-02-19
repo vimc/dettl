@@ -21,7 +21,9 @@ resolve_secrets <- function(x, config) {
     i <- grepl(re, x)
     if (any(i)) {
       loadNamespace("vaultr")
-      vault <- vaultr::vault_client(login = TRUE, addr = config$vault_server)
+      vault <- withr::with_envvar(
+        envir_read(config$path),
+        vaultr::vault_client(login = TRUE, addr = config$vault_server))
       key <- unname(sub(re, "\\1", x[i]))
       field <- unname(sub(re, "\\2", x[i]))
       x[i] <- unname(Map(vault$read, key, field))
