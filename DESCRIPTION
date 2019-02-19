@@ -19,8 +19,8 @@ Imports:
 Suggests: 
     knitr,
     mockery,
-    Postgres,
     rmarkdown,
+    RPostgres,
     RSQLite,
     testthat
 VignetteBuilder: knitr
