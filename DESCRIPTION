@@ -19,6 +19,7 @@ Imports:
 Suggests: 
     knitr,
     mockery,
+    Postgres,
     rmarkdown,
     RSQLite,
     testthat
