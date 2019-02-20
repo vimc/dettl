@@ -10,6 +10,8 @@ before_script:
   - R CMD INSTALL .
 after_success:
   - Rscript -e 'covr::codecov(quiet = FALSE)'
+r_github_packages:
+  - vimc/vaultr
 env:
   global:
     - VAULTR_TEST_SERVER_INSTALL=true
