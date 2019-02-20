@@ -23,8 +23,8 @@ will fail. Add 'vault_server: <vault_server> to cfg to be overriden by server
 URL for individual test. ", test_cfg
   ))
   cfg_server <- gsub(pattern = "<vault_server>", replace = srv$addr, x = cfg)
-  writeLines(cfg_server, con = "uat_config/db_config.yml")
   on.exit(writeLines(cfg, con = "uat_config/db_config.yml"), add = TRUE)
+  writeLines(cfg_server, con = "uat_config/db_config.yml")
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
     con <- db_connect("source", "uat_config")
