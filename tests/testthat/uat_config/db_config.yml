@@ -16,4 +16,4 @@ destination:
     user: readonly
     password: VAULT:/secret/users/readonly:password
 
-vault_server: http://127.0.0.1:18200
+vault_server: <vault_server>
