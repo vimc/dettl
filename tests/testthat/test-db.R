@@ -3,9 +3,10 @@ context("test-db")
 test_that("db can connect to database using yaml config", {
   db_name <- "test.sqlite"
   prepare_example_db(db_name)
-  on.exit(unlink(db_name))
+  on.exit(unlink(db_name), add = TRUE)
 
   con <- db_connect("destination", ".")
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
   expect_true(DBI::dbIsValid(con))
 })
 
