@@ -74,6 +74,7 @@ test_that("canonical case: single file", {
 
 
 test_that("canonical case: relative path", {
+  expect_false(TRUE)
   root <- tempfile()
   dir.create(root)
   path <- file.path("a", "b", "c")

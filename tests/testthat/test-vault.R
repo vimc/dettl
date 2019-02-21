@@ -1,7 +1,7 @@
 context("vault")
 
 test_that("secrets can be retrieved from vault", {
-  srv <- vaultr::vault_test_server()
+  srv <- vaultr::vault_test_server(if_disabled = stop)
   cl <- srv$client()
   cl$write("/secret/users/alice", list(password = "ALICE"))
   cl$write("/secret/users/bob", list(password = "BOB"))
