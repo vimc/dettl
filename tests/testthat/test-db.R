@@ -10,7 +10,7 @@ test_that("db can connect to database using yaml config", {
 })
 
 test_that("dettl can connect to remote DB using yaml config and the vault", {
-  srv <- vaultr::vault_test_server()
+  srv <- vaultr::vault_test_server(if_disabled = stop)
   cl <- srv$client()
   cl$write("/secret/users/readonly", list(password = "readonly"))
 

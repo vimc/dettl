@@ -22,5 +22,4 @@ testthat::test_that("create new creates directory and code template", {
   expect_error(new_dettl("temp-test"), sprintf(
     "Can't create new dettl process, failed to create directory with name %s from name temp-test. One may already exist.",
     project_dir))
-  expect_true(FALSE)
 })
