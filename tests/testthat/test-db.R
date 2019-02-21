@@ -18,10 +18,7 @@ test_that("dettl can connect to remote DB using yaml config and the vault", {
   dir.create(path)
   filename <- file.path(path, "db_config.yml")
   cfg <- readLines("uat_config/db_config.yml")
-  cfg_server <- gsub(pattern = "<vault_server>",
-                     replace = srv$addr,
-                     x = cfg,
-                     fixed = TRUE)
+  cfg_server <- gsub("<vault_server>", srv$addr, cfg, fixed = TRUE)
   writeLines(cfg_server, filename)
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
