@@ -2,8 +2,8 @@ source:
   driver: RPostgres::Postgres
   args:
     dbname: montagu
-    host: support.montagu.dide.ic.ac.uk
-    port: 15432
+    host: example.com
+    port: 12345
     user: readonly
     password: VAULT:/secret/users/readonly:password
 
@@ -11,8 +11,8 @@ destination:
   driver: RPostgres::Postgres
   args:
     dbname: montagu
-    host: support.montagu.dide.ic.ac.uk
-    port: 15432
+    host: example.com
+    port: 12345
     user: readonly
     password: VAULT:/secret/users/readonly:password
 

@@ -10,14 +10,6 @@ test_that("dettl config can be read and database connection info extracted", {
 
   expect_equal(cfg$source$driver, c("RSQLite", "SQLite"))
   expect_equal(cfg$source$args, list(dbname = "test.sqlite"))
-
-  dest_dat <- dettl_db_args("destination", cfg)
-  expect_identical(dest_dat$driver, RSQLite::SQLite)
-  expect_identical(dest_dat$args$dbname, file.path(cfg$path, "dettl.sqlite"))
-
-  source_dat <- dettl_db_args("source", cfg)
-  expect_identical(source_dat$driver, RSQLite::SQLite)
-  expect_identical(source_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
 })
 
 test_that("error is thrown when db config is missing", {

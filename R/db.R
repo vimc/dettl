@@ -7,10 +7,9 @@
 #' @keywords internal
 #'
 db_connect <- function(type, path) {
-  config <- db_config(path)
-  x <- dettl_db_args(type, config)
+  x <- dettl_db_args(type, path)
   con <- do.call(DBI::dbConnect,
-                 c(list(x$driver()), resolve_secrets(x$args, config)))
+                 c(list(x$driver()), x$args))
   con
 }
 
@@ -20,11 +19,12 @@ db_connect <- function(type, path) {
 #' map the args.
 #'
 #' @param type The db type to get the args for, source or destination.
-#' @param config dettl_config object.
+#' @param path Path to db config.
 #'
 #' @keywords internal
 #'
-dettl_db_args <- function(type, config) {
+dettl_db_args <- function(type, path) {
+  config <- db_config(path)
   x <- config[[type]]
   driver <- getExportedValue(x$driver[[1L]], x$driver[[2L]])
 
@@ -38,5 +38,5 @@ dettl_db_args <- function(type, config) {
     }
   }
 
-  list(driver = driver, args = x$args)
+  list(driver = driver, args = resolve_secrets(x$args, config))
 }

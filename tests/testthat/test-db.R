@@ -9,16 +9,32 @@ test_that("db can connect to database using yaml config", {
   expect_true(DBI::dbIsValid(con))
 })
 
-test_that("dettl can connect to remote DB using yaml config and the vault", {
+test_that("dettl DB args can be read from yaml config", {
+  dest_dat <- dettl_db_args("destination", "default_config")
+  expect_identical(dest_dat$driver, RSQLite::SQLite)
+  expect_match(dest_dat$args$dbname, ".+/default_config/dettl.sqlite")
+
+  source_dat <- dettl_db_args("source", "default_config")
+  expect_identical(source_dat$driver, RSQLite::SQLite)
+  expect_match(source_dat$args$dbname, ".+/default_config/test.sqlite")
+})
+
+test_that("dettl DB args can be read from yaml config and the vault", {
   srv <- vaultr::vault_test_server()
   cl <- srv$client()
-  cl$write("/secret/users/readonly", list(password = "readonly"))
+  cl$write("/secret/users/readonly", list(password = "test"))
   path <- setup_config(srv$addr)
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
-    con <- db_connect("source", path)
-    on.exit(DBI::dbDisconnect(con))
-    expect_true(DBI::dbIsValid(con))
-    expect_true(length(DBI::dbListTables(con)) > 0)
+    cfg <- dettl_db_args("source", path)
+    expect_length(cfg, 2)
+    expect_type(cfg$driver, "closure")
+    expect_equal(cfg$driver, RPostgres::Postgres)
+    expect_length(cfg$args, 5)
+    expect_equal(cfg$args$dbname, "montagu")
+    expect_equal(cfg$args$host, "example.com")
+    expect_equal(cfg$args$port, 12345)
+    expect_equal(cfg$args$user, "readonly")
+    expect_equal(cfg$args$password, "test")
   })
 })
