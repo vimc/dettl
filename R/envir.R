@@ -18,5 +18,5 @@ envir_read <- function(path) {
 }
 
 path_envir_yml <- function(path) {
-  file.path(path, "orderly_envir.yml")
+  file.path(path, "dettl_envir.yml")
 }
