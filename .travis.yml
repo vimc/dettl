@@ -9,6 +9,7 @@ before_script:
   - Rscript -e 'vaultr::vault_test_server_install()'
   - R CMD INSTALL .
 after_success:
+  - Rscript -e 'devtools::test()'
   - Rscript -e 'covr::codecov(quiet = FALSE)'
 r_github_packages:
   - vimc/vaultr
