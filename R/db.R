@@ -35,7 +35,7 @@ dettl_db_args <- function(type, config) {
   if (x$driver[[2]] == "SQLite") {
     dbname <- x$args$dbname
     if (is.null(dbname) || !nzchar(dbname) || tolower(dbname) == ":memory:") {
-      stop("Cannot use a transient SQLite database with orderly")
+      stop("Cannot use a transient SQLite database with dettl")
     }
     if (is_relative_path(x$args$dbname)) {
       x$args$dbname <- file.path(config$path, x$args$dbname)

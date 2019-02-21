@@ -100,3 +100,16 @@ test_that("read config fails if required configuration is not available", {
   expect_error(read_config("broken_example"),
                "File does not exist: 'script.R' in directory broken_example")
 })
+
+test_that("vault server details can be read from db config", {
+  path <- setup_config("")
+  cfg <- db_config(path)
+  expect_null(cfg$vault_server)
+
+  path <- setup_config("https://example.com")
+  cfg <- db_config(path)
+  expect_equal(cfg$vault_server, "https://example.com")
+
+  path <- setup_config(234)
+  expect_error(db_config(path), "'.+:vault_server' must be character")
+})
