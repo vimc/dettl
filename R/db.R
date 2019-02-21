@@ -28,10 +28,6 @@ dettl_db_args <- function(type, config) {
   x <- config[[type]]
   driver <- getExportedValue(x$driver[[1L]], x$driver[[2L]])
 
-  ## TODO: Ensure args using vault secrets can be located.
-  ## Add impl when needed - see orderly
-  ## args <- resolve_driver_config(x$args, config)
-
   if (x$driver[[2]] == "SQLite") {
     dbname <- x$args$dbname
     if (is.null(dbname) || !nzchar(dbname) || tolower(dbname) == ":memory:") {
