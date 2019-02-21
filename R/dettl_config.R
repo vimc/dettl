@@ -59,6 +59,11 @@ db_config_read_yaml <- function(filename, path) {
     list(driver = driver, args = info[[name]]$args)
   }
 
+  if (!is.null(info$vault_server)) {
+    assert_scalar_character(info$vault_server,
+                             sprintf("%s:vault_server", filename))
+  }
+
   info$source <- driver_config("source")
   info$destination <- driver_config("destination")
   info$path <- normalizePath(path, mustWork = TRUE)
