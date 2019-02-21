@@ -38,5 +38,7 @@ dettl_db_args <- function(type, path) {
     }
   }
 
-  list(driver = driver, args = resolve_secrets(x$args, config))
+  resolved_args <- vaultr::vault_resolve_secrets(x$args,
+                                                 addr = config$vault_server)
+  list(driver = driver, args = resolved_args)
 }
