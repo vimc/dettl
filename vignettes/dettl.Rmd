@@ -241,9 +241,10 @@ The process can be run by first creating a new import object using the name of t
 ## Get a new DB for the second import run.
 ## We want to keep the DB around until the vignette has been built.
 ## TODO: Manage this up using tmp files instead.
-unlink(db_path)
-db_path <- dettl:::prepare_example_db(db_name, 
+db_name2 <- "test2.sqlite"
+db_path2 <- dettl:::prepare_example_db(db_name2, 
   system.file("examples", package = "dettl"))
+on.exit(unlink(db_path2), add = TRUE)
 ```
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
@@ -275,5 +276,5 @@ transformed_data <- import$get_transformed_data()
 ## Ensure DB removed.
 ## We want to keep the DB around until the vignette has completed.
 ## TODO: Manage this up using tmp files instead.
-unlink(db_path)
+#unlink(db_path2)
 ```
