@@ -21,10 +21,10 @@ dataImport <- R6::R6Class(
   public = list(
     initialize = function(path, extract, extract_test, transform,
                           transform_test, load, load_test, test_queries,
-                          rollback = NULL) {
+                          db_name, rollback = NULL) {
       private$path <- path
       ## TODO: Only set up connection when it is actually needed
-      private$con <- db_connect("destination", path)
+      private$con <- db_connect(db_name, path)
       private$extract_ <- extract
       private$extract_test_ <- extract_test
       private$transform_ <- transform

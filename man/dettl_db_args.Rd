@@ -4,12 +4,13 @@
 \alias{dettl_db_args}
 \title{Get the DB args from config.}
 \usage{
-dettl_db_args(type, path)
+dettl_db_args(path, type = NULL)
 }
 \arguments{
-\item{type}{The db type to get the args for, source or destination.}
-
 \item{path}{Path to db config.}
+
+\item{type}{The db type to get the args for, if null defaults to the first
+configured database.}
 }
 \description{
 Converts the configured DB driver to appropriate driver function and

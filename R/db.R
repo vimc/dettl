@@ -1,13 +1,12 @@
 #' Connect to the database configured via yaml.
 #'
-#' @param type The type of connection to make (\code{source},
-#'   \code{destination}).
+#' @param type The db to connect to, must match a db configured in db config.
 #' @param path Path to directory contianing yaml config.
 #'
 #' @keywords internal
 #'
 db_connect <- function(type, path) {
-  x <- dettl_db_args(type, path)
+  x <- dettl_db_args(path, type)
   con <- do.call(DBI::dbConnect,
                  c(list(x$driver()), x$args))
   con
@@ -18,14 +17,21 @@ db_connect <- function(type, path) {
 #' Converts the configured DB driver to appropriate driver function and
 #' map the args.
 #'
-#' @param type The db type to get the args for, source or destination.
 #' @param path Path to db config.
+#' @param type The db type to get the args for, if null defaults to the first
+#' configured database.
 #'
 #' @keywords internal
 #'
-dettl_db_args <- function(type, path) {
+dettl_db_args <- function(path, type = NULL) {
   config <- db_config(path)
-  x <- config[[type]]
+  if (is.null(type)) {
+    type <- names(config$db)[[1]]
+  }
+  x <- config$db[[type]]
+  if (is.null(x)) {
+    stop(sprintf("Cannot find config for database %s.", type))
+  }
   driver <- getExportedValue(x$driver[[1L]], x$driver[[2L]])
 
   if (x$driver[[2]] == "SQLite") {

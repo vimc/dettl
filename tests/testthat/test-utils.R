@@ -179,3 +179,13 @@ test_that("check_fields returns meaningful errors", {
   expect_error(check_fields(fields, "test", required, optional),
                "Unknown fields in test: field1")
 })
+
+test_that("check_length returns meaningful errors", {
+  test_list <- list(test1 = "123", test2 = "456")
+
+  expect_error(check_length(test_list, "gt", 3),
+               "Length of test_list must be greater than 3.")
+
+  expect_error(check_length(test_list, "lt", 1),
+               "Length of test_list must be less than 1.")
+})

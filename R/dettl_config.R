@@ -26,8 +26,10 @@ dettl_locate_config <- function(path) {
   config <- list()
   config$path <- find_file_descend("db_config.yml", path)
   if (is.null(config$path)) {
-    stop(sprintf("Reached root from %s without finding 'db_config.yml'",
-                 path))
+    stop(sprintf(
+      "Reached root from %s without finding 'db_config.yml'",
+      path
+    ))
   }
   config$filename <- file.path(config$path, "db_config.yml")
   config
@@ -46,17 +48,16 @@ dettl_locate_config <- function(path) {
 #'
 db_config_read_yaml <- function(filename, path) {
   info <- yaml_read(filename)
-  check_fields(info, filename, "source", c("destination", "vault_server"))
+  check_fields(info, filename, "db", "vault_server")
 
-  driver_config <- function(name) {
-    if (name == "destination" && is.null(info[[name]])) {
-      ## Fall back to default destination DB
-      info[[name]] <- list(driver = "RSQLite::SQLite",
-                           args = list(dbname = "dettl.sqlite"))
+  check_length(info$db, "gt", 0)
+  for (db_cfg in names(info$db)) {
+    if (is.null(info$db[[db_cfg]]$driver)) {
+      stop(sprintf("No driver specified for DB config %s.", db_cfg))
     }
-    driver <- check_symbol_from_str(info[[name]]$driver,
-                                    sprintf("%s:%s:driver", filename, name))
-    list(driver = driver, args = info[[name]]$args)
+    info$db[[db_cfg]]$driver <- check_symbol_from_str(
+      info$db[[db_cfg]]$driver, sprintf("%s:%s:driver", filename, db_cfg)
+    )
   }
 
   if (!is.null(info$vault_server)) {
@@ -64,10 +65,7 @@ db_config_read_yaml <- function(filename, path) {
                              sprintf("%s:vault_server", filename))
   }
 
-  info$source <- driver_config("source")
-  info$destination <- driver_config("destination")
   info$path <- normalizePath(path, mustWork = TRUE)
-
   class(info) <- "db_config"
   info
 }
@@ -96,9 +94,11 @@ read_config <- function(path) {
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
-  function_fields <- c("extract",
-                       "transform",
-                       "load")
+  function_fields <- c(
+    "extract",
+    "transform",
+    "load"
+  )
   info <- add_missing_function_fields(info, function_fields)
   required <- c(function_fields, "sources")
   optional <- c()
@@ -137,7 +137,7 @@ set_missing_values <- function(info, field_name) {
   }
   missing_verification_queries <- field_name == "load" &&
     (is.null(info[[field_name]]$verification_queries) ||
-       is.na(info[[field_name]]$verification_queries))
+      is.na(info[[field_name]]$verification_queries))
   if (missing_verification_queries) {
     info[[field_name]]$verification_queries <- "verification_queries"
   }
@@ -160,13 +160,17 @@ set_missing_values <- function(info, field_name) {
 read_fields <- function(fields, config, env) {
   for (field in fields) {
     assert_func_exists(config[[field]]$func, env)
-    config[[field]]$func <- get0(config[[field]]$func, envir = env,
-                                 mode = "function", inherits = FALSE)
+    config[[field]]$func <- get0(config[[field]]$func,
+      envir = env,
+      mode = "function", inherits = FALSE
+    )
     if (field == "load") {
       assert_func_exists(config[[field]]$verification_queries, env)
       config[[field]]$verification_queries <-
-        get0(config[[field]]$verification_queries, envir = env,
-             mode = "function", inherits = FALSE)
+        get0(config[[field]]$verification_queries,
+          envir = env,
+          mode = "function", inherits = FALSE
+        )
     }
   }
   config
@@ -192,5 +196,3 @@ load_sources <- function(sources, path) {
   }
   env
 }
-
-

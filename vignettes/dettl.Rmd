@@ -49,18 +49,22 @@ project_directory
 
 Configuration files are required at 2 levels
 
-* `db_config.yml` - Configuration at the project level used to describe the source and destination databases for each ETL process subdirectory. e.g.
+* `db_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each ETL process subdirectory. e.g.
 
 ```yaml
-source:
-  driver: RSQLite::SQLite
-  args:
-    dbname: test.sqlite
-
-destination:
-  driver: RSQLite::SQLite
-  args:
-    dbname: test.sqlite
+db:
+  test:
+    driver: RSQLite::SQLite
+    args:
+      dbname: test.sqlite
+  uat:
+    driver: RPostgres::Postgresql
+    args:
+      dbname: montagu
+      host: https://example.com
+      port: 12345
+      user: example
+      password: password
 
 ```
 * `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
@@ -140,11 +144,11 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. See example below for a previously configured example.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one fo the databases configured in the `db_config.yml`. See example below for a previously configured example.
 
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
-import <- dettl::new_import(import_path)
+import <- dettl::new_import(import_path, "test")
 import <- dettl::run_import(import, "extract")
 extracted_data <- import$get_extracted_data()
 ```
@@ -237,13 +241,14 @@ The process can be run by first creating a new import object using the name of t
 ## Get a new DB for the second import run.
 ## We want to keep the DB around until the vignette has been built.
 ## TODO: Manage this up using tmp files instead.
-unlink(db_path)
-db_path <- dettl:::prepare_example_db(db_name, 
+db_name2 <- "test2.sqlite"
+db_path2 <- dettl:::prepare_example_db(db_name2, 
   system.file("examples", package = "dettl"))
+on.exit(unlink(db_path2), add = TRUE)
 ```
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
-import <- dettl::new_import(import_path)
+import <- dettl::new_import(import_path, "test")
 ```
 
 You can then run the import process by running
@@ -271,5 +276,5 @@ transformed_data <- import$get_transformed_data()
 ## Ensure DB removed.
 ## We want to keep the DB around until the vignette has completed.
 ## TODO: Manage this up using tmp files instead.
-unlink(db_path)
+#unlink(db_path2)
 ```

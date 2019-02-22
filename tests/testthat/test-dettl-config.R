@@ -1,15 +1,26 @@
 context("dettl-config")
 
 test_that("dettl config can be read and database connection info extracted", {
-  cfg <- db_config("default_config")
+  path <- setup_config()
+  cfg <- db_config(path)
   expect_s3_class(cfg, "db_config")
 
-  ## default destination database:
-  expect_equal(cfg$destination$driver, c("RSQLite", "SQLite"))
-  expect_equal(cfg$destination$args, list(dbname = "dettl.sqlite"))
+  expect_equal(cfg$db$example$driver, c("RSQLite", "SQLite"))
+  expect_equal(cfg$db$example$args, list(dbname = "test.sqlite"))
 
-  expect_equal(cfg$source$driver, c("RSQLite", "SQLite"))
-  expect_equal(cfg$source$args, list(dbname = "test.sqlite"))
+  expect_equal(cfg$db$uat$driver, c("RPostgres", "Postgres"))
+  expect_equal(cfg$db$uat$args, list(
+    dbname = "montagu",
+    host = "https://example.com",
+    port = 12345,
+    user = "readonly",
+    password = "VAULT:/secret/users/readonly:password")
+  )
+})
+
+test_that("reading config throws error if driver is not configured", {
+  path <- setup_config(db_driver = "")
+  expect_error(db_config(path), "No driver specified for DB config example.")
 })
 
 test_that("error is thrown when db config is missing", {
@@ -17,7 +28,21 @@ test_that("error is thrown when db config is missing", {
                "Reached root from .. without finding 'db_config.yml'")
 })
 
+test_that("vault server details can be read from db config", {
+  path <- setup_config(vault_server = "")
+  cfg <- db_config(path)
+  expect_null(cfg$vault_server)
+
+  path <- setup_config()
+  cfg <- db_config(path)
+  expect_equal(cfg$vault_server, "https://example.com")
+
+  path <- setup_config(vault_server = 234)
+  expect_error(db_config(path), "'.+:vault_server' must be character")
+})
+
 test_that("read config loads config from directory", {
+
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_config")
 
@@ -91,17 +116,4 @@ test_that("read config adds missing fields from defaults", {
 test_that("read config fails if required configuration is not available", {
   expect_error(read_config("broken_example"),
                "File does not exist: 'script.R' in directory broken_example")
-})
-
-test_that("vault server details can be read from db config", {
-  path <- setup_config("")
-  cfg <- db_config(path)
-  expect_null(cfg$vault_server)
-
-  path <- setup_config("https://example.com")
-  cfg <- db_config(path)
-  expect_equal(cfg$vault_server, "https://example.com")
-
-  path <- setup_config(234)
-  expect_error(db_config(path), "'.+:vault_server' must be character")
 })

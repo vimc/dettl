@@ -4,10 +4,14 @@
 \alias{new_import}
 \title{Create an import object using functions defined at specified path}
 \usage{
-new_import(path)
+new_import(path, db_name = NULL)
 }
 \arguments{
 \item{path}{Path to directory containing functions for import process.}
+
+\item{db_name}{The name of the db to connect to. Connection info must be
+configured via the \code{db_config.yml}. If name is left blank this will default
+to using the first db configured.}
 }
 \value{
 A dataImport object.
