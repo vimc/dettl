@@ -7,7 +7,7 @@
 dettl_db_args(type, config)
 }
 \arguments{
-\item{type}{The db type to get the args for, source or destination.}
+\item{type}{The db type to get the args for.}
 
 \item{config}{dettl_config object.}
 }

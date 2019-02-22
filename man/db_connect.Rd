@@ -7,8 +7,7 @@
 db_connect(type, path)
 }
 \arguments{
-\item{type}{The type of connection to make (\code{source},
-\code{destination}).}
+\item{type}{The db to connect to, must match a db configured in db config.}
 
 \item{path}{Path to directory contianing yaml config.}
 }

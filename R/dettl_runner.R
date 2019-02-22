@@ -1,11 +1,13 @@
 #' Create an import object using functions defined at specified path
 #'
 #' @param path Path to directory containing functions for import process.
+#' @param db_name The name of the db to connect to. Connection info must be
+#' configured via the `db_config.yml`.
 #'
 #' @return A dataImport object.
 #' @export
 #'
-new_import <- function(path) {
+new_import <- function(path, db_name) {
 
   dettl_config <- read_config(path)
   import <- dataImport$new(path,
@@ -15,7 +17,8 @@ new_import <- function(path) {
                            transform_test = dettl_config$transform$test,
                            load = dettl_config$load$func,
                            load_test = dettl_config$load$test,
-                           test_queries = dettl_config$load$verification_queries
+                           test_queries = dettl_config$load$verification_queries,
+                           db_name = db_name
                            )
 }
 

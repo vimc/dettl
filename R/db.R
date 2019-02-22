@@ -1,7 +1,6 @@
 #' Connect to the database configured via yaml.
 #'
-#' @param type The type of connection to make (\code{source},
-#'   \code{destination}).
+#' @param type The db to connect to, must match a db configured in db config.
 #' @param path Path to directory contianing yaml config.
 #'
 #' @keywords internal
@@ -18,13 +17,16 @@ db_connect <- function(type, path) {
 #' Converts the configured DB driver to appropriate driver function and
 #' map the args.
 #'
-#' @param type The db type to get the args for, source or destination.
+#' @param type The db type to get the args for.
 #' @param config dettl_config object.
 #'
 #' @keywords internal
 #'
 dettl_db_args <- function(type, config) {
-  x <- config[[type]]
+  x <- config$db[[type]]
+  if (is.null(x)) {
+    stop(sprintf("Cannot find config for database %s.", type))
+  }
   driver <- getExportedValue(x$driver[[1L]], x$driver[[2L]])
 
   ## TODO: Ensure args using vault secrets can be located.

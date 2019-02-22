@@ -6,7 +6,7 @@ test_that("db can connect to database using yaml config", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  con <- db_connect("destination", ".")
+  con <- db_connect("test", ".")
   expect_true(DBI::dbIsValid(con))
 
 })

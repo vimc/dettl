@@ -24,6 +24,20 @@ check_fields <- function(x, name, required, optional) {
   }
 }
 
+check_length <- function(object, check, value) {
+  if (check == "gt") {
+    if (!(length(object) > value)) {
+      stop(sprintf("Length of %s must be greater than %i.",
+                   deparse(substitute(object)), value))
+    }
+  } else if (check == "lt") {
+    if (!(length(object) < value)) {
+      stop(sprintf("Length of %s must be less than %i.",
+                   deparse(substitute(object)), value))
+    }
+  }
+}
+
 check_symbol_from_str <- function(str, name) {
   assert_scalar_character(str)
   dat <- strsplit(str, "::", fixed = TRUE)[[1L]]

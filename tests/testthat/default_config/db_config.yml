@@ -1,4 +1,0 @@
-source:
-  driver: RSQLite::SQLite
-  args:
-    dbname: test.sqlite

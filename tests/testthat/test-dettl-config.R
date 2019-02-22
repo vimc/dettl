@@ -1,23 +1,31 @@
 context("dettl-config")
 
 test_that("dettl config can be read and database connection info extracted", {
-  cfg <- db_config("default_config")
+  cfg <- db_config("db_config")
   expect_s3_class(cfg, "db_config")
 
-  ## default destination database:
-  expect_equal(cfg$destination$driver, c("RSQLite", "SQLite"))
-  expect_equal(cfg$destination$args, list(dbname = "dettl.sqlite"))
+  expect_equal(cfg$db$example$driver, c("RSQLite", "SQLite"))
+  expect_equal(cfg$db$example$args, list(dbname = "test.sqlite"))
 
-  expect_equal(cfg$source$driver, c("RSQLite", "SQLite"))
-  expect_equal(cfg$source$args, list(dbname = "test.sqlite"))
+  expect_equal(cfg$db$uat$driver, c("RPostgres", "Postgres"))
+  expect_equal(cfg$db$uat$args, list(
+    dbname = "montagu",
+    host = "https://example.com",
+    port = 12345,
+    user = "test",
+    password = "test")
+  )
 
-  dest_dat <- dettl_db_args("destination", cfg)
+  dest_dat <- dettl_db_args("example", cfg)
   expect_identical(dest_dat$driver, RSQLite::SQLite)
-  expect_identical(dest_dat$args$dbname, file.path(cfg$path, "dettl.sqlite"))
+  expect_identical(dest_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
 
-  source_dat <- dettl_db_args("source", cfg)
-  expect_identical(source_dat$driver, RSQLite::SQLite)
-  expect_identical(source_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
+  dest_dat <- dettl_db_args("uat", cfg)
+  expect_identical(dest_dat$driver, RPostgres::Postgres)
+  expect_identical(dest_dat$args$dbname, "montagu")
+
+  expect_error(dettl_db_args("missing", cfg),
+               "Cannot find config for database missing.")
 })
 
 test_that("error is thrown when db config is missing", {
