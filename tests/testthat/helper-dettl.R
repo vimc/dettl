@@ -33,20 +33,6 @@ testDataImport <- R6::R6Class(
   )
 )
 
-failing_test_import <- testDataImport$new(
-  path = "example",
-  transformed_data = data.frame(c("Alice", "Bob"),
-                                c(25, 43),
-                                c(175, 187),
-                                stringsAsFactors = FALSE),
-  load = function(transformed_data, con) {
-    DBI::dbWriteTable(con, "people", transformed_data$people, append = TRUE)
-  },
-  test = "failing_load_test.R"
-)
-
-failing_test_import$set_path("exmaple_tests")
-
 trigger_dbi_warning <- function() {
   oo <- options(warn = 0)
   on.exit(options(oo))
