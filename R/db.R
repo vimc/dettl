@@ -18,7 +18,7 @@ db_connect <- function(type, path) {
 #' map the args.
 #'
 #' @param type The db type to get the args for.
-#' @param config Path to db config.
+#' @param path Path to db config.
 #'
 #' @keywords internal
 #'
