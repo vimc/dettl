@@ -15,11 +15,14 @@ RoxygenNote: 6.1.1
 Imports:
     DBI,
     R6,
-    yaml
+    yaml,
+    withr
 Suggests: 
     knitr,
     mockery,
     rmarkdown,
+    RPostgres,
     RSQLite,
-    testthat
+    testthat,
+    vaultr (>= 0.2.2)
 VignetteBuilder: knitr

@@ -46,7 +46,7 @@ dettl_locate_config <- function(path) {
 #'
 db_config_read_yaml <- function(filename, path) {
   info <- yaml_read(filename)
-  check_fields(info, filename, "source", "destination")
+  check_fields(info, filename, "source", c("destination", "vault_server"))
 
   driver_config <- function(name) {
     if (name == "destination" && is.null(info[[name]])) {
@@ -57,6 +57,11 @@ db_config_read_yaml <- function(filename, path) {
     driver <- check_symbol_from_str(info[[name]]$driver,
                                     sprintf("%s:%s:driver", filename, name))
     list(driver = driver, args = info[[name]]$args)
+  }
+
+  if (!is.null(info$vault_server)) {
+    assert_scalar_character(info$vault_server,
+                             sprintf("%s:vault_server", filename))
   }
 
   info$source <- driver_config("source")

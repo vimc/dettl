@@ -46,3 +46,13 @@ failing_test_import <- testDataImport$new(
 )
 
 failing_test_import$set_path("exmaple_tests")
+
+trigger_dbi_warning <- function() {
+  oo <- options(warn = 0)
+  on.exit(options(oo))
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  rm(con)
+  suppressWarnings(gc())
+}
+
+trigger_dbi_warning()
