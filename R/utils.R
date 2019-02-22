@@ -2,13 +2,28 @@
   if (is.null(a)) b else a
 }
 
+yaml_load <- function(string) {
+  ## More restrictive true/false handling.  Only accept if it maps to
+  ## full (true|yes) / (false|no):
+  handlers <- list(
+    "bool#yes" = function(x)
+      if (tolower(x) %in% c("true", "yes")) TRUE else x,
+    "bool#no" = function(x)
+      if (tolower(x) %in% c("false", "no")) FALSE else x)
+  yaml::yaml.load(string, handlers = handlers)
+}
+
 yaml_read <- function(filename) {
   catch_yaml <- function(e) {
     stop(sprintf("while reading '%s'\n%s", filename, e$message),
          call. = FALSE)
   }
-  tryCatch(yaml::yaml.load_file(filename),
+  tryCatch(yaml_load(read_lines(filename, warn = FALSE)),
            error = catch_yaml)
+}
+
+read_lines <- function(...) {
+  paste(readLines(...), collapse = "\n")
 }
 
 check_fields <- function(x, name, required, optional) {

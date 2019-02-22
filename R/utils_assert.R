@@ -49,3 +49,12 @@ assert_func_exists <- function(func_name, env) {
     stop(sprintf("Can't find function %s within environment.", func_name))
   }
 }
+
+assert_named <- function(x, unique = FALSE, name = deparse(substitute(x))) {
+  if (is.null(names(x))) {
+    stop(sprintf("'%s' must be named", name), call. = FALSE)
+  }
+  if (unique && any(duplicated(names(x)))) {
+    stop(sprintf("'%s' must have unique names", name), call. = FALSE)
+  }
+}
