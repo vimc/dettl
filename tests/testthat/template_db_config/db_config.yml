@@ -1,19 +1,11 @@
-source:
-  driver: RPostgres::Postgres
-  args:
-    dbname: montagu
-    host: example.com
-    port: 12345
-    user: readonly
-    password: VAULT:/secret/users/readonly:password
-
-destination:
-  driver: RPostgres::Postgres
-  args:
-    dbname: montagu
-    host: example.com
-    port: 12345
-    user: readonly
-    password: VAULT:/secret/users/readonly:password
+db:
+  uat:
+    driver: RPostgres::Postgres
+    args:
+      dbname: montagu
+      host: example.com
+      port: 12345
+      user: readonly
+      password: VAULT:/secret/users/readonly:password
 
 vault_server: <vault_server>

@@ -11,13 +11,18 @@ test_that("db can connect to database using yaml config", {
 })
 
 test_that("dettl DB args can be read from yaml config", {
-  dest_dat <- dettl_db_args("destination", "default_config")
-  expect_identical(dest_dat$driver, RSQLite::SQLite)
-  expect_match(dest_dat$args$dbname, ".+/default_config/dettl.sqlite")
+  db_cfg <- dettl_db_args("example", "db_config")
+  expect_identical(db_cfg$driver, RSQLite::SQLite)
+  expect_match(db_cfg$args$dbname, ".+/db_config/test.sqlite")
 
-  source_dat <- dettl_db_args("source", "default_config")
-  expect_identical(source_dat$driver, RSQLite::SQLite)
-  expect_match(source_dat$args$dbname, ".+/default_config/test.sqlite")
+  db_cfg <- dettl_db_args("uat", "db_config")
+  expect_identical(db_cfg$driver, RPostgres::Postgres)
+  expect_identical(db_cfg$args$dbname, "montagu")
+
+  expect_error(
+    dettl_db_args("missing", "db_config"),
+    "Cannot find config for database missing."
+  )
 })
 
 test_that("dettl DB args can be read from yaml config and the vault", {
@@ -27,7 +32,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
   path <- setup_config(srv$addr)
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
-    cfg <- dettl_db_args("source", path)
+    cfg <- dettl_db_args("uat", path)
     expect_length(cfg, 2)
     expect_type(cfg$driver, "closure")
     expect_equal(cfg$driver, RPostgres::Postgres)
@@ -44,10 +49,15 @@ test_that("no transient db", {
   path <- tempfile()
   on.exit(unlink(path, recursive = TRUE))
   dir.create(path, FALSE, TRUE)
-  config <- list(source = list(
-                   driver = "RSQLite::SQLite",
-                   args = list(dbname = ":memory:")))
+  config <- list(db = list(
+    test = list(
+      driver = "RSQLite::SQLite",
+      args = list(dbname = ":memory:")
+    )
+  ))
   writeLines(yaml::as.yaml(config), file.path(path, "db_config.yml"))
-  expect_error(dettl_db_args("source", path),
-               "Cannot use a transient SQLite database with dettl")
+  expect_error(
+    dettl_db_args("test", path),
+    "Cannot use a transient SQLite database with dettl"
+  )
 })

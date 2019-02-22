@@ -15,17 +15,6 @@ test_that("dettl config can be read and database connection info extracted", {
     user = "test",
     password = "test")
   )
-
-  dest_dat <- dettl_db_args("example", cfg)
-  expect_identical(dest_dat$driver, RSQLite::SQLite)
-  expect_identical(dest_dat$args$dbname, file.path(cfg$path, "test.sqlite"))
-
-  dest_dat <- dettl_db_args("uat", cfg)
-  expect_identical(dest_dat$driver, RPostgres::Postgres)
-  expect_identical(dest_dat$args$dbname, "montagu")
-
-  expect_error(dettl_db_args("missing", cfg),
-               "Cannot find config for database missing.")
 })
 
 test_that("error is thrown when db config is missing", {
