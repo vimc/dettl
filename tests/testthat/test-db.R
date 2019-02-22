@@ -11,31 +11,33 @@ test_that("db can connect to database using yaml config", {
 })
 
 test_that("dettl DB args can be read from yaml config", {
-  db_cfg <- dettl_db_args("db_config", "example")
+  path <- setup_config(db_pw = "password")
+  db_cfg <- dettl_db_args(path, "example")
   expect_identical(db_cfg$driver, RSQLite::SQLite)
-  expect_match(db_cfg$args$dbname, ".+/db_config/test.sqlite")
+  expect_match(db_cfg$args$dbname, ".+/test.sqlite")
 
-  db_cfg <- dettl_db_args("db_config", "uat")
+  db_cfg <- dettl_db_args(path, "uat")
   expect_identical(db_cfg$driver, RPostgres::Postgres)
   expect_identical(db_cfg$args$dbname, "montagu")
 
   expect_error(
-    dettl_db_args("db_config", "missing"),
+    dettl_db_args(path, "missing"),
     "Cannot find config for database missing."
   )
 })
 
 test_that("db type will default to first configured db if NULL", {
-  db_cfg <- dettl_db_args("db_config")
+  path <- setup_config()
+  db_cfg <- dettl_db_args(path)
   expect_identical(db_cfg$driver, RSQLite::SQLite)
-  expect_match(db_cfg$args$dbname, ".+/db_config/test.sqlite")
+  expect_match(db_cfg$args$dbname, ".+/test.sqlite")
 })
 
 test_that("dettl DB args can be read from yaml config and the vault", {
   srv <- vaultr::vault_test_server()
   cl <- srv$client()
   cl$write("/secret/users/readonly", list(password = "test"))
-  path <- setup_config(srv$addr)
+  path <- setup_config(vault_server = srv$addr)
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
     cfg <- dettl_db_args(path, "uat")
@@ -44,7 +46,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
     expect_equal(cfg$driver, RPostgres::Postgres)
     expect_length(cfg$args, 5)
     expect_equal(cfg$args$dbname, "montagu")
-    expect_equal(cfg$args$host, "example.com")
+    expect_equal(cfg$args$host, "https://example.com")
     expect_equal(cfg$args$port, 12345)
     expect_equal(cfg$args$user, "readonly")
     expect_equal(cfg$args$password, "test")
