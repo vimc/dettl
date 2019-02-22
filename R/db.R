@@ -6,7 +6,7 @@
 #' @keywords internal
 #'
 db_connect <- function(type, path) {
-  x <- dettl_db_args(type, path)
+  x <- dettl_db_args(path, type)
   con <- do.call(DBI::dbConnect,
                  c(list(x$driver()), x$args))
   con
@@ -17,13 +17,17 @@ db_connect <- function(type, path) {
 #' Converts the configured DB driver to appropriate driver function and
 #' map the args.
 #'
-#' @param type The db type to get the args for.
 #' @param path Path to db config.
+#' @param type The db type to get the args for, if null defaults to the first
+#' configured database.
 #'
 #' @keywords internal
 #'
-dettl_db_args <- function(type, path) {
+dettl_db_args <- function(path, type = NULL) {
   config <- db_config(path)
+  if (is.null(type)) {
+    type <- names(config$db)[[1]]
+  }
   x <- config$db[[type]]
   if (is.null(x)) {
     stop(sprintf("Cannot find config for database %s.", type))

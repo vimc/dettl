@@ -11,18 +11,24 @@ test_that("db can connect to database using yaml config", {
 })
 
 test_that("dettl DB args can be read from yaml config", {
-  db_cfg <- dettl_db_args("example", "db_config")
+  db_cfg <- dettl_db_args("db_config", "example")
   expect_identical(db_cfg$driver, RSQLite::SQLite)
   expect_match(db_cfg$args$dbname, ".+/db_config/test.sqlite")
 
-  db_cfg <- dettl_db_args("uat", "db_config")
+  db_cfg <- dettl_db_args("db_config", "uat")
   expect_identical(db_cfg$driver, RPostgres::Postgres)
   expect_identical(db_cfg$args$dbname, "montagu")
 
   expect_error(
-    dettl_db_args("missing", "db_config"),
+    dettl_db_args("db_config", "missing"),
     "Cannot find config for database missing."
   )
+})
+
+test_that("db type will default to first configured db if NULL", {
+  db_cfg <- dettl_db_args("db_config")
+  expect_identical(db_cfg$driver, RSQLite::SQLite)
+  expect_match(db_cfg$args$dbname, ".+/db_config/test.sqlite")
 })
 
 test_that("dettl DB args can be read from yaml config and the vault", {
@@ -32,7 +38,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
   path <- setup_config(srv$addr)
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
-    cfg <- dettl_db_args("uat", path)
+    cfg <- dettl_db_args(path, "uat")
     expect_length(cfg, 2)
     expect_type(cfg$driver, "closure")
     expect_equal(cfg$driver, RPostgres::Postgres)
@@ -57,7 +63,7 @@ test_that("no transient db", {
   ))
   writeLines(yaml::as.yaml(config), file.path(path, "db_config.yml"))
   expect_error(
-    dettl_db_args("test", path),
+    dettl_db_args(path, "test"),
     "Cannot use a transient SQLite database with dettl"
   )
 })

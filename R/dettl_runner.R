@@ -2,14 +2,16 @@
 #'
 #' @param path Path to directory containing functions for import process.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `db_config.yml`.
+#' configured via the `db_config.yml`. If name is left blank this will default
+#' to using the first db configured.
 #'
 #' @return A dataImport object.
 #' @export
 #'
-new_import <- function(path, db_name) {
+new_import <- function(path, db_name = NULL) {
 
   dettl_config <- read_config(path)
+
   import <- dataImport$new(path,
                            extract = dettl_config$extract$func,
                            extract_test = dettl_config$extract$test,

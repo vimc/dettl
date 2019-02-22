@@ -66,6 +66,17 @@ test_that("dettl works as expected", {
   expect_equal(DBI::dbGetQuery(con, "SELECT * from people"), expected_data[c(1,2), ])
 })
 
+test_that("import can be created using a default db", {
+
+  db_name <- "test.sqlite"
+  path <- prepare_example_db(db_name)
+  on.exit(unlink(db_name))
+
+  import <- new_import("example/")
+  con <- import$get_connection()
+  expect_equal(con@dbname, path)
+})
+
 test_that("run import runs a full import process", {
 
   db_name <- "test.sqlite"
