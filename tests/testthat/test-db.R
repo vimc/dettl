@@ -39,3 +39,15 @@ test_that("dettl DB args can be read from yaml config and the vault", {
     expect_equal(cfg$args$password, "test")
   })
 })
+
+test_that("no transient db", {
+  path <- tempfile()
+  on.exit(unlink(path, recursive = TRUE))
+  dir.create(path, FALSE, TRUE)
+  config <- list(source = list(
+                   driver = "RSQLite::SQLite",
+                   args = list(dbname = ":memory:")))
+  writeLines(yaml::as.yaml(config), file.path(path, "db_config.yml"))
+  expect_error(dettl_db_args("source", path),
+               "Cannot use a transient SQLite database with dettl")
+})
