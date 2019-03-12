@@ -26,7 +26,7 @@ run_load <- function(load, con, transformed_data, test_queries, path,
   on.exit(if (transaction_active) {DBI::dbRollback(con)})
   load(transformed_data, con)
   after <- test_queries(con)
-  test_results <- run_load_tests(path, test_file, before, after)
+  test_results <- run_load_tests(path, test_file, before, after, con)
   if (all_passed(test_results)) {
     DBI::dbCommit(con)
     transaction_active <- FALSE
