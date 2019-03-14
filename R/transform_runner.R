@@ -27,7 +27,7 @@ run_transform <-
     verify_data(con, transformed_data)
     if (!is.null(transform_test)) {
       test_results <-
-        run_transform_tests(path, transform_test, transformed_data)
+        run_transform_tests(path, transform_test, transformed_data, con)
       if (!all_passed(test_results)) {
         stop("Not all transform tests passed. Fix tests before proceeding.")
       }

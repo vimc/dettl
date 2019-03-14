@@ -1,24 +1,27 @@
-run_load_tests <- function(path, test_file, before, after,
+run_load_tests <- function(path, test_file, before, after, con,
                            reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$before <- before
   env$after <- after
+  env$con <- con
   test_results <- testthat::test_file(file.path(path, test_file), env = env,
                                       reporter = reporter)
 }
 
-run_extract_tests <- function(path, test_file, extracted_data,
+run_extract_tests <- function(path, test_file, extracted_data, con,
                               reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$extracted_data <- extracted_data
+  env$con <- con
   test_results <- testthat::test_file(file.path(path, test_file), env = env,
                                       reporter = reporter)
 }
 
-run_transform_tests <- function(path, test_file, transformed_data,
+run_transform_tests <- function(path, test_file, transformed_data, con,
                                 reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$transformed_data <- transformed_data
+  env$con <- con
   test_results <- testthat::test_file(file.path(path, test_file), env = env,
                                       reporter = reporter)
 }
