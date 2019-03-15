@@ -32,11 +32,14 @@ new_import <- function(path, db_name = NULL) {
 #' @param import The dataImport object.
 #' @param run_stages Which stages should be run in the import process. Runs all
 #' if NULL.
+#' @param dry_run If TRUE then any database changes are rolled back when the
+#' import completes. i.e. the load stage can be run and tests executed but the
+#' db will be rolled back.
 #'
 #' @return The processed dataImport object.
 #' @export
 #'
-run_import <- function(import, run_stages = NULL) {
+run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
   if (is.null(import) || class(import) != "dataImport") {
     stop(
       "Can only run import for non null data import with class 'dataImport'.")
@@ -48,7 +51,7 @@ run_import <- function(import, run_stages = NULL) {
     import$transform()
   }
   if (is.null(run_stages) || "load" %in% run_stages) {
-    import$load()
+    import$load(dry_run)
   }
   import
 }
