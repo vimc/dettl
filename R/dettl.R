@@ -48,9 +48,9 @@ dataImport <- R6::R6Class(
                                            private$transform_test_)
     },
 
-    load = function() {
+    load = function(dry_run) {
       run_load(private$load_, private$con, private$transformed_data,
-               private$test_queries, private$path, private$load_test_)
+               private$test_queries, private$path, private$load_test_, dry_run)
       invisible(TRUE)
     },
 

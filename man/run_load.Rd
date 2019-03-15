@@ -4,7 +4,8 @@
 \alias{run_load}
 \title{Run the load step ensuring tests pass before db changes are committed.}
 \usage{
-run_load(load, con, transformed_data, test_queries, path, test_file)
+run_load(load, con, transformed_data, test_queries, path, test_file,
+  dry_run)
 }
 \arguments{
 \item{load}{The load function for making the DB changes.}
@@ -21,6 +22,10 @@ and after the load is run. Used within the tests to check changes to the DB.}
 
 \item{test_file}{Path to file containing the testthat tests for verifying the
 DB changes.}
+
+\item{dry_run}{If TRUE then any database changes are rolled back when the
+import completes. i.e. the load stage can be run and tests executed but the
+db will be rolled back.}
 }
 \description{
 Runs the load function on the DB within a transaction. Then run a set of

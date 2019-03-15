@@ -167,3 +167,39 @@ test_that("trying to create import for db missing from config fails", {
   expect_error(new_import("example/", "missing"),
               "Cannot find config for database missing.")
 })
+
+test_that("a dry run of the import can be executed", {
+  ## Set up db for testing
+  db_name <- "test.sqlite"
+  prepare_example_db(db_name)
+  on.exit(unlink(db_name), add = TRUE)
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- new_import("example/", "test")
+  con <- import$get_connection()
+
+  ## when running extract + transform as a dry run
+  import <- run_import(import, c("extract", "transform"), dry_run = TRUE)
+  transformed_data <- import$get_transformed_data()
+
+  ## transform is unchanged
+  expected_data <- data.frame(c("Alice", "Bob"),
+                              c(25, 43),
+                              c(175, 187),
+                              stringsAsFactors = FALSE)
+  colnames(expected_data) <- c("name", "age", "height")
+  expect_equal(length(transformed_data), 1)
+  expect_equal(transformed_data$people, expected_data[c(1,2), ])
+  expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
+
+  ## when load is run as a dry run
+  import <- run_import(import, "load", dry_run = TRUE)
+
+  ## then database has not been updated
+  expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
+})

@@ -12,11 +12,14 @@
 #' @param path Path to the import project directory.
 #' @param test_file Path to file containing the testthat tests for verifying the
 #' DB changes.
+#' @param dry_run If TRUE then any database changes are rolled back when the
+#' import completes. i.e. the load stage can be run and tests executed but the
+#' db will be rolled back.
 #'
 #' @keywords internal
 #'
 run_load <- function(load, con, transformed_data, test_queries, path,
-                     test_file) {
+                     test_file, dry_run) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
@@ -28,7 +31,12 @@ run_load <- function(load, con, transformed_data, test_queries, path,
   after <- test_queries(con)
   test_results <- run_load_tests(path, test_file, before, after, con)
   if (all_passed(test_results)) {
-    DBI::dbCommit(con)
+    if (dry_run) {
+      DBI::dbRollback(con)
+      message("All tests passed, rolling back dry run import.")
+    } else {
+      DBI::dbCommit(con)
+    }
     transaction_active <- FALSE
   } else {
     DBI::dbRollback(con)
