@@ -5,14 +5,14 @@ testthat::test_that("user specified load tests can be run", {
   test_file <- "failing_load_test.R"
   before <- list(count = 0)
   after <- list(count = 2)
-  result <- run_load_tests(test_path, test_file, before, after,
+  result <- run_load_tests(test_path, test_file, before, after, NULL,
                            SilentReporter)
 
   expect_false(all_passed(result))
 
   test_path <- "example_tests/"
   test_file <- "passing_load_test.R"
-  result <- run_load_tests(test_path, test_file, before, after,
+  result <- run_load_tests(test_path, test_file, before, after, NULL,
                            SilentReporter)
 
   expect_true(all_passed(result))

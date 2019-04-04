@@ -10,6 +10,7 @@
 #'
 new_import <- function(path, db_name = NULL) {
 
+  path <- normalizePath(path, mustWork = TRUE)
   dettl_config <- read_config(path)
 
   import <- dataImport$new(path,
