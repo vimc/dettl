@@ -18,7 +18,7 @@
 #'
 #' @keywords internal
 #'
-run_load <- function(load, con, transformed_data, test_queries, path,
+run_load <- function(con, load, transformed_data, test_queries, path,
                      test_file, dry_run) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
@@ -29,12 +29,15 @@ run_load <- function(load, con, transformed_data, test_queries, path,
   on.exit(if (transaction_active) {DBI::dbRollback(con)})
   load(transformed_data, con)
   after <- test_queries(con)
-  test_results <- run_load_tests(path, test_file, before, after, con)
+  test_path <- file.path(path, test_file)
+  message(sprintf("Running load tests %s", test_path))
+  test_results <- run_load_tests(test_path, before, after, con)
   if (all_passed(test_results)) {
     if (dry_run) {
       DBI::dbRollback(con)
       message("All tests passed, rolling back dry run import.")
     } else {
+      message("All tests passed, commiting changes to database.")
       DBI::dbCommit(con)
     }
     transaction_active <- FALSE

@@ -61,3 +61,30 @@ testthat::test_that("verification passes if data adheres to schema", {
   colnames(transformed_data$people) <- c("name", "age", "height")
   expect_silent(verify_data(con, transformed_data))
 })
+
+context("load_runner")
+
+testthat::test_that("messages are printed to console when tests are run", {
+  transform_func <- function(data, con) {
+    list(people = stats::setNames(
+      c("Test", 2, 3),
+      c("name", "age", "height")
+    ))
+  }
+  db_name <- "test.sqlite"
+  prepare_example_db(db_name)
+  on.exit(unlink(db_name), add = TRUE)
+  con <- db_connect("test", ".")
+  path <- "example_tests"
+  test_file <- "connection_transform_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+  data <- list()
+
+  expect_message(run_transform(con, transform_func, path, data, test_file),
+                 "Running transform tests example_tests/connection_transform_test.R")
+
+  expect_message(run_transform(con, transform_func, path, data, test_file),
+                 "All transform tests passed.")
+})
