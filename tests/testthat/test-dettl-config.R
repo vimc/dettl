@@ -115,5 +115,23 @@ test_that("read config adds missing fields from defaults", {
 
 test_that("read config fails if required configuration is not available", {
   expect_error(read_config("broken_example"),
-               "File does not exist: 'script.R' in directory broken_example")
+    "No source files could be located from config at path broken_example")
+})
+
+test_that("wildcards in sources are expanded", {
+  sources <- "R/*.R"
+  files <- expand_wildcards(sources, "example")
+  expect_equal(files, c("example/R/extract.R", "example/R/load.R",
+                        "example/R/test_extract.R", "example/R/test_load.R",
+                        "example/R/test_transform.R", "example/R/transform.R",
+                        "example/R/verification_queries.R"))
+
+  sources <- c("example/R/extract.R", "example/R/load.R",
+               "example/R/transform.R")
+  files <- expand_wildcards(sources, ".")
+  expect_length(files, 3)
+
+  sources <- "no_match.R"
+  expect_message(expand_wildcards(sources, "."),
+                 "No files found matching file pattern no_match.R")
 })

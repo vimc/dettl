@@ -189,10 +189,40 @@ read_fields <- function(fields, config, env) {
 #' @keywords internal
 #'
 load_sources <- function(sources, path) {
+  files <- expand_wildcards(sources, path)
+  if (length(files) == 0) {
+    stop(sprintf("No source files could be located from config at path %s",
+                 path))
+  }
   env <- new.env(parent = .GlobalEnv)
-  for (source in sources) {
-    assert_file_exists(source, workdir = path)
-    sys.source(file.path(path, source), envir = env)
+  for (source in files) {
+    sys.source(source, envir = env)
   }
   env
+}
+
+
+#' Expand any wilcards in source file paths.
+#'
+#' Expands any wildcards in the sources, prints a message if file with
+#' name cannot be found.
+#'
+#' @param sources List of configured file paths some of which may contain
+#' wildcards. Relative to the root of the import.
+#' @param path Normalised path to the import directory.
+#'
+#' @return List of files to be used as sources
+#'
+#' @keywords internal
+expand_wildcards <- function(sources, path) {
+  all_files <- c()
+  for (source in sources) {
+    files <- Sys.glob(file.path(path, source))
+    if (length(files) > 0) {
+      all_files <- c(all_files, files)
+    } else {
+      message(sprintf("No files found matching file pattern %s", source))
+    }
+  }
+  all_files
 }
