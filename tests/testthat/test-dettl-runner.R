@@ -13,7 +13,7 @@ test_that("dettl works as expected", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   ## when creating import object
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
 
   ## object has been created
   expect_false(is.null(import))
@@ -72,7 +72,7 @@ test_that("import can be created using a default db", {
   path <- prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- new_import("example/")
+  import <- dettl("example/")
   con <- import$get_connection()
   expect_equal(con@dbname, path)
 })
@@ -89,7 +89,7 @@ test_that("run import runs a full import process", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
   import <- run_import(import)
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),
@@ -112,7 +112,7 @@ test_that("run step rolls back when tests fail", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example_failing_test/", "test")
+  import <- dettl("example_failing_test/", "test")
   expect_error(run_import(import),
                "Failed to load data - not all tests passed.")
 
@@ -124,7 +124,7 @@ test_that("transform cannot be run until extract stage has been run", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
 
   expect_error(import$transform(),
                "Cannot run transform as no data has been extracted.")
@@ -136,7 +136,7 @@ test_that("load cannot be run until transform stage has been run", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
 
   expect_error(import$load(),
                "Cannot run tests as no data has been transformed.")
@@ -153,7 +153,7 @@ test_that("import cannot be run on object of wrong type", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
   class(import) <- "data_import"
 
   expect_error(
@@ -164,7 +164,7 @@ test_that("import cannot be run on object of wrong type", {
 
 test_that("trying to create import for db missing from config fails", {
 
-  expect_error(new_import("example/", "missing"),
+  expect_error(dettl("example/", "missing"),
               "Cannot find config for database missing.")
 })
 
@@ -180,7 +180,7 @@ test_that("a dry run of the import can be executed", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
   con <- import$get_connection()
 
   ## when running extract + transform as a dry run

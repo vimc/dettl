@@ -148,7 +148,7 @@ After completing the implementation of the extract stage you can run just that s
 
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
-import <- dettl::new_import(import_path, "test")
+import <- dettl::dettl(import_path, "test")
 import <- dettl::run_import(import, "extract")
 extracted_data <- import$get_extracted_data()
 ```
@@ -248,7 +248,7 @@ on.exit(unlink(db_path2), add = TRUE)
 ```
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
-import <- dettl::new_import(import_path, "test")
+import <- dettl::dettl(import_path, "test")
 ```
 
 You can then run the import process by running
