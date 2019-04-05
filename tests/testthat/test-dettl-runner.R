@@ -13,7 +13,7 @@ test_that("dettl works as expected", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   ## when creating import object
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
 
   ## object has been created
   expect_false(is.null(import))
@@ -89,7 +89,7 @@ test_that("run import runs a full import process", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
   import <- run_import(import)
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),
@@ -112,7 +112,7 @@ test_that("run step rolls back when tests fail", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example_failing_test/", "test")
+  import <- dettl("example_failing_test/", db_name = "test")
   expect_error(run_import(import),
                "Failed to load data - not all tests passed.")
 
@@ -124,7 +124,7 @@ test_that("transform cannot be run until extract stage has been run", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
 
   expect_error(import$transform(),
                "Cannot run transform as no data has been extracted.")
@@ -136,7 +136,7 @@ test_that("load cannot be run until transform stage has been run", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
 
   expect_error(import$load(),
                "Cannot run tests as no data has been transformed.")
@@ -153,7 +153,7 @@ test_that("import cannot be run on object of wrong type", {
   prepare_example_db(db_name)
   on.exit(unlink(db_name))
 
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
   class(import) <- "data_import"
 
   expect_error(
@@ -164,7 +164,7 @@ test_that("import cannot be run on object of wrong type", {
 
 test_that("trying to create import for db missing from config fails", {
 
-  expect_error(dettl("example/", "missing"),
+  expect_error(dettl("example/", db_name = "missing"),
               "Cannot find config for database missing.")
 })
 
@@ -180,7 +180,7 @@ test_that("a dry run of the import can be executed", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", "test")
+  import <- dettl("example/", db_name = "test")
   con <- import$get_connection()
 
   ## when running extract + transform as a dry run
@@ -203,3 +203,28 @@ test_that("a dry run of the import can be executed", {
   ## then database has not been updated
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 })
+
+# test_that("dettl can be run using default_load function", {
+#   db_name <- "test.sqlite"
+#   prepare_example_db(db_name)
+#   on.exit(unlink(db_name))
+#
+#   ## Turn off reporting when running import so import tests do not print
+#   ## to avoid cluttering up test output.
+#   default_reporter <- testthat::default_reporter()
+#   options(testthat.default_reporter = "silent")
+#   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+#
+#   ## Setup mock
+#   mock_default_load <- mockery::mock()
+#   mock_load_tests <- mockery::mock()
+#
+#   import <- dettl("example/", default_load = TRUE, db_name = "test")
+#   with_mock(
+#     get_default_load = mock_default_load, run_load_tests = mock_load_tests, {
+#       import <- run_import(import)
+#     }
+#   )
+#
+#   mockery::expect_called(mock_default_load, 1)
+# })

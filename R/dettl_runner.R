@@ -1,6 +1,7 @@
 #' Create an import object using functions defined at specified path
 #'
 #' @param path Path to directory containing functions for import process.
+#' @param default_load If true then load step will use default implementation.
 #' @param db_name The name of the db to connect to. Connection info must be
 #' configured via the `db_config.yml`. If name is left blank this will default
 #' to using the first db configured.
@@ -8,17 +9,23 @@
 #' @return A DataImport object.
 #' @export
 #'
-dettl <- function(path, db_name = NULL) {
+dettl <- function(path, default_load = FALSE, db_name = NULL) {
 
   path <- normalizePath(path, mustWork = TRUE)
-  dettl_config <- read_config(path)
+  dettl_config <- read_config(path, default_load)
+
+  if (default_load) {
+    load_func <- get_default_load(dettl_config$rewrite_keys)
+  } else {
+    load_func <- dettl_config$load$func
+  }
 
   import <- DataImport$new(path,
                            extract = dettl_config$extract$func,
                            extract_test = dettl_config$extract$test,
                            transform = dettl_config$transform$func,
                            transform_test = dettl_config$transform$test,
-                           load = dettl_config$load$func,
+                           load = load_func,
                            load_test = dettl_config$load$test,
                            test_queries = dettl_config$load$verification_queries,
                            db_name = db_name

@@ -149,6 +149,10 @@ vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
 
+vnapply <- function(X, FUN, ...) {
+  vapply(X, FUN, numeric(1), ...)
+}
+
 file_split_base <- function(filename, lowercase = FALSE) {
   path <- strsplit(filename, "[/\\\\]")[[1L]]
   if (!nzchar(path[[1]])) {

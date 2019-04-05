@@ -122,3 +122,15 @@ test_that("read config fails if required configuration is not available", {
   expect_error(read_config("broken_example"),
                "File does not exist: 'script.R' in directory broken_example")
 })
+
+test_that("read config can be called with default load", {
+  cfg <- read_config("simple_example", default_load = TRUE)
+
+  expect_true("load" %in% names(cfg))
+  expect_length(cfg$load, 2)
+  expect_false("func" %in% names(cfg$load))
+  expect_true("test" %in% names(cfg$load))
+  expect_true("verification_queries" %in% names(cfg$load))
+  expect_is(cfg$load$verification_queries, "function")
+  expect_equal(cfg$load$test, "R/test_load.R")
+})
