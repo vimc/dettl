@@ -46,7 +46,7 @@ test_that("read config loads config from directory", {
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 2)
@@ -73,6 +73,9 @@ test_that("read config loads config from directory", {
 
   expect_true("name" %in% names(cfg))
   expect_equal(cfg$name, "example")
+
+  expect_true("rewrite_keys" %in% names(cfg))
+  expect_equal(class(cfg$rewrite_keys), c("ForeignKeyConstraints", "R6"))
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "example")
@@ -111,6 +114,8 @@ test_that("read config adds missing fields from defaults", {
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "simple_example")
+
+  expect_false("rewrite_keys" %in% names(cfg))
 })
 
 test_that("read config fails if required configuration is not available", {

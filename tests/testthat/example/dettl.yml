@@ -16,3 +16,13 @@ load:
   func: load
   verification_queries: test_queries
   test: R/test_load.R
+
+rewrite_keys:
+  example_table:
+    primary: id
+    foreign:
+      constrainted_table: constrained_field
+  example_table2:
+    primary: id
+    foreign:
+      constrainted_table: constrained_field

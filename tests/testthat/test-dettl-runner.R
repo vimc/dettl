@@ -17,7 +17,7 @@ test_that("dettl works as expected", {
 
   ## object has been created
   expect_false(is.null(import))
-  expect_equal(class(import), c("dataImport", "R6"))
+  expect_equal(class(import), c("DataImport", "R6"))
 
   ## and connection and DB have been setup
   con <- import$get_connection()
@@ -146,7 +146,7 @@ test_that("import cannot be run on object of wrong type", {
 
   expect_error(
     run_import(NULL),
-    "Can only run import for non null data import with class 'dataImport'."
+    "Can only run import for non null data import with class 'DataImport'."
   )
 
   db_name <- "test.sqlite"
@@ -158,7 +158,7 @@ test_that("import cannot be run on object of wrong type", {
 
   expect_error(
     run_import(import),
-    "Can only run import for non null data import with class 'dataImport'."
+    "Can only run import for non null data import with class 'DataImport'."
   )
 })
 

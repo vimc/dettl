@@ -90,7 +90,7 @@ db_config_read_yaml <- function(filename, path) {
 read_config <- function(path) {
   filename <- file.path(path, "dettl.yml")
   assert_file_exists(path, name = "Report working directory")
-  assert_file_exists(filename, name = "Orderly configuration")
+  assert_file_exists(filename, name = "Dettl configuration")
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
@@ -101,11 +101,14 @@ read_config <- function(path) {
   )
   info <- add_missing_function_fields(info, function_fields)
   required <- c(function_fields, "sources")
-  optional <- c()
+  optional <- c("rewrite_keys")
   check_fields(info, filename, required, optional)
 
   env <- load_sources(info$sources, path)
-  info <- read_fields(function_fields, info, env)
+  info <- read_function_fields(function_fields, info, env)
+  if (!is.null(info$rewrite_keys)) {
+    info$rewrite_keys <- ForeignKeyConstraints$new(info$rewrite_keys)
+  }
   info$name <- basename(normalizePath(path))
   info$path <- path
   class(info) <- "dettl_config"
@@ -157,7 +160,7 @@ set_missing_values <- function(info, field_name) {
 #' @param env Environment containing functions loaded from sources.
 #' @keywords internal
 #'
-read_fields <- function(fields, config, env) {
+read_function_fields <- function(fields, config, env) {
   for (field in fields) {
     assert_func_exists(config[[field]]$func, env)
     config[[field]]$func <- get0(config[[field]]$func,

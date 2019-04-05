@@ -1,6 +1,6 @@
-testDataImport <- R6::R6Class(
-  "testDataImport",
-  inherit = dataImport,
+TestDataImport <- R6::R6Class(
+  "TestDataImport",
+  inherit = DataImport,
   cloneable = FALSE,
 
   public = list(

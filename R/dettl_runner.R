@@ -5,7 +5,7 @@
 #' configured via the `db_config.yml`. If name is left blank this will default
 #' to using the first db configured.
 #'
-#' @return A dataImport object.
+#' @return A DataImport object.
 #' @export
 #'
 new_import <- function(path, db_name = NULL) {
@@ -13,7 +13,7 @@ new_import <- function(path, db_name = NULL) {
   path <- normalizePath(path, mustWork = TRUE)
   dettl_config <- read_config(path)
 
-  import <- dataImport$new(path,
+  import <- DataImport$new(path,
                            extract = dettl_config$extract$func,
                            extract_test = dettl_config$extract$test,
                            transform = dettl_config$transform$func,
@@ -30,20 +30,20 @@ new_import <- function(path, db_name = NULL) {
 #' This runs the full extract, transform, test and load steps or runs specific
 #' stages specified by 'run_stages'.
 #'
-#' @param import The dataImport object.
+#' @param import The DataImport object.
 #' @param run_stages Which stages should be run in the import process. Runs all
 #' if NULL.
 #' @param dry_run If TRUE then any database changes are rolled back when the
 #' import completes. i.e. the load stage can be run and tests executed but the
 #' db will be rolled back.
 #'
-#' @return The processed dataImport object.
+#' @return The processed DataImport object.
 #' @export
 #'
 run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
-  if (is.null(import) || class(import) != "dataImport") {
+  if (is.null(import) || class(import) != "DataImport") {
     stop(
-      "Can only run import for non null data import with class 'dataImport'.")
+      "Can only run import for non null data import with class 'DataImport'.")
   }
   if (is.null(run_stages) || "extract" %in% run_stages) {
     import$extract()

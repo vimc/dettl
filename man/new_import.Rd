@@ -14,7 +14,7 @@ configured via the \code{db_config.yml}. If name is left blank this will default
 to using the first db configured.}
 }
 \value{
-A dataImport object.
+A DataImport object.
 }
 \description{
 Create an import object using functions defined at specified path

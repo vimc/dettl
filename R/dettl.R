@@ -1,6 +1,6 @@
 
-dataImport <- R6::R6Class(
-  "dataImport",
+DataImport <- R6::R6Class(
+  "DataImport",
   cloneable = FALSE,
 
   private = list(
