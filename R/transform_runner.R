@@ -14,22 +14,22 @@
 #' @return The successfully transformed data.
 #' @keywords internal
 #'
-run_transform <-
-  function(con,
-           transform,
-           path,
-           extracted_data,
-           transform_test) {
+run_transform <- function(con, transform, path, extracted_data,
+                          transform_test) {
     if (is.null(extracted_data)) {
       stop("Cannot run transform as no data has been extracted.")
     }
     transformed_data <- transform(extracted_data)
     verify_data(con, transformed_data)
     if (!is.null(transform_test)) {
+      test_path <- file.path(path, transform_test)
+      message(sprintf("Running transform tests %s", test_path))
       test_results <-
-        run_transform_tests(path, transform_test, transformed_data, con)
+        run_transform_tests(test_path, transformed_data, con)
       if (!all_passed(test_results)) {
         stop("Not all transform tests passed. Fix tests before proceeding.")
+      } else {
+        message("All transform tests passed.")
       }
     }
     transformed_data
