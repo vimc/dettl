@@ -5,6 +5,10 @@ sudo: false
 cache: packages
 r_packages:
   - covr
+# Workaround for devtools bug see https://github.com/r-lib/devtools/issues/2020
+# Should be removed once that is fixed
+before_install:
+  - R -e 'source("https://install-github.me/r-lib/remotes")'
 before_script:
   - Rscript -e 'vaultr::vault_test_server_install()'
   - R CMD INSTALL .

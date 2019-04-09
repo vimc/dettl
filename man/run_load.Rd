@@ -4,13 +4,13 @@
 \alias{run_load}
 \title{Run the load step ensuring tests pass before db changes are committed.}
 \usage{
-run_load(load, con, transformed_data, test_queries, path, test_file,
+run_load(con, load, transformed_data, test_queries, path, test_file,
   dry_run)
 }
 \arguments{
-\item{load}{The load function for making the DB changes.}
-
 \item{con}{Connection to the database.}
+
+\item{load}{The load function for making the DB changes.}
 
 \item{transformed_data}{List of data frames representing the data to be
 loaded to the DB.}
