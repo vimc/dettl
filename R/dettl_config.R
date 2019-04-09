@@ -190,10 +190,6 @@ read_fields <- function(fields, config, env) {
 #'
 load_sources <- function(sources, path) {
   files <- expand_wildcards(sources, path)
-  if (length(files) == 0) {
-    stop(sprintf("No source files could be located from config at path %s",
-                 path))
-  }
   env <- new.env(parent = .GlobalEnv)
   for (source in files) {
     sys.source(source, envir = env)
@@ -215,14 +211,17 @@ load_sources <- function(sources, path) {
 #'
 #' @keywords internal
 expand_wildcards <- function(sources, path) {
-  all_files <- c()
-  for (source in sources) {
-    files <- Sys.glob(file.path(path, source))
-    if (length(files) > 0) {
-      all_files <- c(all_files, files)
-    } else {
-      message(sprintf("No files found matching file pattern %s", source))
-    }
+  withr::with_dir(path, {
+    sources <- unlist(lapply(sources, expand1), FALSE, FALSE)
+    sources <- normalizePath(sources, mustWork = TRUE)
+  })
+  sources
+}
+
+expand1 <- function(source) {
+  files <- Sys.glob(source)
+  if (length(files) == 0) {
+    stop(sprintf("No files found matching file pattern %s", source))
   }
-  all_files
+  files
 }
