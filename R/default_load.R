@@ -5,8 +5,8 @@ get_default_load <- function(rewrite_keys) {
       if (rewrite_keys$used_as_foreign_key(name)) {
         primary_key <- rewrite_keys$get_primary_key(name)
         old_key_values <- transformed_data[[name]][, primary_key]
-        not_primary_key <- !(names(transformed_data[[name]]) == primary_key)
-        insert_data <- transformed_data[[name]][, not_primary_key]
+        insert_data <- strip_primary_key_column(transformed_data[[name]],
+                                                primary_key)
         ids <- insert_values_into(con, name, insert_data, key = primary_key)
         table_key_pair <- rewrite_keys$get_foreign_key_usages(name)
         transformed_data <- update_child_tables(
@@ -16,6 +16,11 @@ get_default_load <- function(rewrite_keys) {
       }
     }
   }
+}
+
+strip_primary_key_column <- function(data, primary_key) {
+  column_names <- !(names(data) == primary_key)
+  data[, column_names]
 }
 
 #' Update child tables using inserted foreign keys
@@ -31,14 +36,19 @@ get_default_load <- function(rewrite_keys) {
 #'
 #' @keywords internal
 update_child_tables <- function(tables, table_key_pair, old_key_values, new_key_values) {
-  for (table_name in names(table_key_pair)) {
-    if (!is.null(tables[[table_name]])) {
+  update1 <- function(table_name) {
+    table <- tables[[table_name]]
+    if (!is.null(table_key_pair[[table_name]])) {
       foreign_key <- table_key_pair[[table_name]]
-      tables[[table_name]][, foreign_key] <-
-        unlist(map_values(tables[[table_name]][, foreign_key],
-                          old_key_values, new_key_values))
+      table[, foreign_key] <-
+        unlist(map_values(table[, foreign_key], old_key_values, new_key_values),
+               FALSE, FALSE)
     }
+    table
   }
+  list_names <- names(tables)
+  tables <- lapply(list_names, update1)
+  names(tables) <- list_names
   tables
 }
 
