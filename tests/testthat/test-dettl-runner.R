@@ -63,7 +63,7 @@ test_that("dettl works as expected", {
   import <- run_import(import, "load")
 
   ## then database contains correct data
-  expect_equal(DBI::dbGetQuery(con, "SELECT * from people"), expected_data[c(1,2), ])
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"), expected_data[c(1,2), ])
 })
 
 test_that("import can be created using a default db", {
@@ -97,7 +97,7 @@ test_that("run import runs a full import process", {
                               c(175, 187),
                               stringsAsFactors = FALSE)
   colnames(expected_data) <- c("name", "age", "height")
-  expect_equal(DBI::dbGetQuery(con, "SELECT * from people"), expected_data)
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"), expected_data)
 })
 
 test_that("run step rolls back when tests fail", {
@@ -204,27 +204,27 @@ test_that("a dry run of the import can be executed", {
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 })
 
-# test_that("dettl can be run using default_load function", {
-#   db_name <- "test.sqlite"
-#   prepare_example_db(db_name)
-#   on.exit(unlink(db_name))
-#
-#   ## Turn off reporting when running import so import tests do not print
-#   ## to avoid cluttering up test output.
-#   default_reporter <- testthat::default_reporter()
-#   options(testthat.default_reporter = "silent")
-#   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
-#
-#   ## Setup mock
-#   mock_default_load <- mockery::mock()
-#   mock_load_tests <- mockery::mock()
-#
-#   import <- dettl("example/", default_load = TRUE, db_name = "test")
-#   with_mock(
-#     get_default_load = mock_default_load, run_load_tests = mock_load_tests, {
-#       import <- run_import(import)
-#     }
-#   )
-#
-#   mockery::expect_called(mock_default_load, 1)
-# })
+test_that("dettl can be run using default_load function", {
+  db_name <- "test.sqlite"
+  prepare_example_db(db_name)
+  on.exit(unlink(db_name))
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Setup mock
+  mock_default_load <- mockery::mock()
+  mock_load_tests <- mockery::mock()
+
+  with_mock(
+    "dettl:::get_default_load" = mock_default_load,
+    "dettl:::run_load_tests" = mock_load_tests, {
+      import <- dettl("example/", default_load = TRUE, db_name = "test")
+    }
+  )
+
+  mockery::expect_called(mock_default_load, 1)
+})

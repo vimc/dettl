@@ -5,8 +5,9 @@ get_default_load <- function(rewrite_keys) {
       if (rewrite_keys$used_as_foreign_key(name)) {
         primary_key <- rewrite_keys$get_primary_key(name)
         old_key_values <- transformed_data[[name]][, primary_key]
-        ids <- insert_values_into(con, name, transformed_data[[name]],
-                                  key = primary_key)
+        not_primary_key <- !(names(transformed_data[[name]]) == primary_key)
+        insert_data <- transformed_data[[name]][, not_primary_key]
+        ids <- insert_values_into(con, name, insert_data, key = primary_key)
         table_key_pair <- rewrite_keys$get_foreign_key_usages(name)
         transformed_data <- update_child_tables(
           transformed_data, table_key_pair, old_key_values, ids)
@@ -34,8 +35,8 @@ update_child_tables <- function(tables, table_key_pair, old_key_values, new_key_
     if (!is.null(tables[[table_name]])) {
       foreign_key <- table_key_pair[[table_name]]
       tables[[table_name]][, foreign_key] <-
-        map_values(tables[[table_name]][, foreign_key],
-                   old_key_values, new_key_values)
+        unlist(map_values(tables[[table_name]][, foreign_key],
+                          old_key_values, new_key_values))
     }
   }
   tables
@@ -89,7 +90,7 @@ insert_values_into <- function(con, table, d, key = NULL, id = NULL) {
       ret <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
                              unname(x[key]))[[id]]
       if (length(ret) == 0L) {
-        ret <- DBI::dbGetQuery(con, sql, unname(x))[[id]]
+        ret <- insert_data(con, sql, x, id)
       }
       ret
     }
@@ -99,4 +100,8 @@ insert_values_into <- function(con, table, d, key = NULL, id = NULL) {
     d <- as.data.frame(d, stringsAsFactors = FALSE)
   }
   lapply(seq_len(nrow(d)), insert1)
+}
+
+insert_data <- function(con, sql, x, id) {
+  DBI::dbGetQuery(con, sql, unname(x))[[id]]
 }
