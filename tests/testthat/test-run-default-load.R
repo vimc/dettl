@@ -15,6 +15,11 @@ test_that("default load can be run", {
   import <- dettl("example_default_load/", default_load = TRUE,
                   db_name = "test")
 
+  ## Setup mock INSERT query for testing. This is needed because in real
+  ## impl we want to do an INSERT INTO RETURNING pattern but it is not possible
+  ## to INSERT and return id in SQLite. But SQLite does make a
+  ## "last_insert_rowid" function available so use this instead inside a mock
+  ## impl to update the table and get the ID of the inserted row back.
   sql <- "INSERT INTO people
           (name, age, height)
           VALUES
@@ -30,12 +35,11 @@ test_that("default load can be run", {
   mock_insert <- mockery::mock(insert_func(data[1, c("name", "age", "height")]),
                                insert_func(data[2, c("name", "age", "height")]))
 
-  ## Run load with mock
+  ## Run load with mock INSERT function
   with_mock("dettl:::insert_data" = mock_insert, {
     run_import(import, "load")
   })
 
-  ## Test data added correctly
   data <- DBI::dbGetQuery(con,
     "SELECT p.id, p.name, j.job
      FROM people p
