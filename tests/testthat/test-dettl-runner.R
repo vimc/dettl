@@ -203,28 +203,3 @@ test_that("a dry run of the import can be executed", {
   ## then database has not been updated
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 })
-
-test_that("dettl can be run using default_load function", {
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name))
-
-  ## Turn off reporting when running import so import tests do not print
-  ## to avoid cluttering up test output.
-  default_reporter <- testthat::default_reporter()
-  options(testthat.default_reporter = "silent")
-  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
-
-  ## Setup mock
-  mock_default_load <- mockery::mock()
-  mock_load_tests <- mockery::mock()
-
-  with_mock(
-    "dettl:::get_default_load" = mock_default_load,
-    "dettl:::run_load_tests" = mock_load_tests, {
-      import <- dettl("example/", default_load = TRUE, db_name = "test")
-    }
-  )
-
-  mockery::expect_called(mock_default_load, 1)
-})
