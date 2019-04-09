@@ -20,9 +20,13 @@ run_extract <- function(con, extract, path, extract_test){
     stop("DB connection is not valid cannot extract data")
   }
   if (!is.null(extract_test)) {
-    test_results <- run_extract_tests(path, extract_test, extracted_data, con)
+    test_path <- file.path(path, extract_test)
+    message(sprintf("Running extract tests %s", test_path))
+    test_results <- run_extract_tests(test_path, extracted_data, con)
     if (!all_passed(test_results)) {
       stop("Not all extract tests passed. Fix tests before proceeding.")
+    } else {
+      message("All extract tests passed.")
     }
   }
   extracted_data
