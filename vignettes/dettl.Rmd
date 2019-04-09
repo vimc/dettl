@@ -191,7 +191,7 @@ The transformed data can be inspected to ensure it looks as expected.
 print(transformed_data)
 ```
 
-The final stage to implement is the load stage. To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
+The final stage to implement is the load stage. Note that you can use a default implementation for the load stage. This will append the `transformed_data` to existing tables in the database respecting any foreign key constraints configured via the `dettl.yml`. See section below for details about [default load](#default_load). To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
 
 The important implementation for this stage is the testing. The load process will be run in a transaction then the tests will be run. If any of the tests fail the transaction will be rolled back, otherwise it will be committed. You can write two types of test here, the first simplest is using the active connection to the database to query the loaded data and test the output. For example
 
@@ -278,3 +278,44 @@ transformed_data <- import$get_transformed_data()
 ## Reset default reporter.
 options(testthat.default_reporter = default_reporter)
 ```
+
+
+## Default load stage {#default_load}
+
+`dettl` has a default implementation for the load stage of the import process. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the default load step initialise the import as 
+```{r}
+import <- dettl::dettl(import_path, default_load = TRUE, db_name = "test")
+```
+
+Using a default_load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
+
+The default load can also load data resepecting primary key constraints configured via `dettl.yml`. For example if we want to load data where we have `transformed_data` taking the form
+
+```{r echo = FALSE}
+people <- data.frame(c(1,2),
+                     c("Alice", "Bob"),
+                     c(25, 45),
+                     c(175, 187),
+                     stringsAsFactors = FALSE)
+colnames(people) <- c("id", "name", "age", "height")
+jobs <- data.frame(c(1, 2),
+                   c("researcher", "developer"),
+                   stringsAsFactors = FALSE)
+colnames(jobs) <- c("person", "job")
+knitr::kable(people, caption = "people")
+knitr::kable(jobs, caption = "jobs")
+```
+
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table. `jobs`. In the transformed data these `id`s are just temporary values used to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. 
+
+We need to configure in the `dettl.yml` which fields in which tables are primary keys and where they are used as foreign keys. For example data above this is done as follows
+
+```yaml
+rewrite_keys:
+  people:
+    primary: id
+    foreign:
+      jobs: person
+```
+
+This tells `dettl` that the primary key `id` of the table `people` is used as a foreign key in the `jobs` table as field `person`. This means when the import is run, the `people` table will be appended to and the new primary keys for the added rows retrieved. These ids will then be updated from the old ones to the new ones in every usage as a foreign key meaning when the `jobs` table is appended to the ids will refer to the correct `people`.
