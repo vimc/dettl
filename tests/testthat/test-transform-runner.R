@@ -62,8 +62,6 @@ testthat::test_that("verification passes if data adheres to schema", {
   expect_silent(verify_data(con, transformed_data))
 })
 
-context("load_runner")
-
 testthat::test_that("messages are printed to console when tests are run", {
   transform_func <- function(data, con) {
     list(people = stats::setNames(
