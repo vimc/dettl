@@ -75,7 +75,7 @@ test_that("read config loads config from directory", {
   expect_equal(cfg$name, "example")
 
   expect_true("rewrite_keys" %in% names(cfg))
-  expect_equal(class(cfg$rewrite_keys), c("ForeignKeyConstraints", "R6"))
+  expect_is(cfg$rewrite_keys, "ForeignKeyConstraints")
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "example")

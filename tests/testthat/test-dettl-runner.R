@@ -17,7 +17,7 @@ test_that("dettl works as expected", {
 
   ## object has been created
   expect_false(is.null(import))
-  expect_equal(class(import), c("DataImport", "R6"))
+  expect_is(import, "DataImport")
 
   ## and connection and DB have been setup
   con <- import$get_connection()
