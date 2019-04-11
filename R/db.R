@@ -7,8 +7,25 @@
 #'
 db_connect <- function(type, path) {
   x <- dettl_db_args(path, type)
-  con <- do.call(DBI::dbConnect,
+  con <- do.call(dbi_db_connect,
                  c(list(x$driver()), x$args))
+  con
+}
+
+#' Create a connection a DBMS.
+#'
+#' Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses
+#' \code{\link[RSQLite]{SQLite}} then it will ensure foreign key constraints are
+#' enabled.
+#'
+#' @keywords internal
+dbi_db_connect <- function(drv, ...) {
+  con <- DBI::dbConnect(drv, ...)
+  if (class(drv) == "SQLiteDriver") {
+    ## Foreign key constraints aren't enabled by default in SQLite. Ensure
+    ## they are enabled each time we connect to the db.
+    DBI::dbExecute(con, "PRAGMA foreign_keys = ON")
+  }
   con
 }
 

@@ -6,7 +6,7 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
     ## Ensure we always start with a fresh DB
     file.remove(path)
   }
-  con <- DBI::dbConnect(RSQLite::SQLite(), path)
+  con <- dbi_db_connect(RSQLite::SQLite(), path)
   people_query <- DBI::dbSendQuery(con,
     "CREATE TABLE people (
       id     INTEGER PRIMARY KEY,
