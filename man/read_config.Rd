@@ -4,7 +4,7 @@
 \alias{read_config}
 \title{Get dettl config from path.}
 \usage{
-read_config(path, default_load = FALSE)
+read_config(path)
 }
 \arguments{
 \item{path}{Path to directory containing config.}

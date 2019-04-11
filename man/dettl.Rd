@@ -4,12 +4,10 @@
 \alias{dettl}
 \title{Create an import object using functions defined at specified path}
 \usage{
-dettl(path, default_load = FALSE, db_name = NULL)
+dettl(path, db_name = NULL)
 }
 \arguments{
 \item{path}{Path to directory containing functions for import process.}
-
-\item{default_load}{If true then load step will use default implementation.}
 
 \item{db_name}{The name of the db to connect to. Connection info must be
 configured via the \code{db_config.yml}. If name is left blank this will default

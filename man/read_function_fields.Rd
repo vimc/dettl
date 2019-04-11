@@ -4,7 +4,7 @@
 \alias{read_function_fields}
 \title{Read file fields of the dettl config yaml file.}
 \usage{
-read_function_fields(fields, config, env, default_load = FALSE)
+read_function_fields(fields, config, env)
 }
 \arguments{
 \item{fields}{The name of the field.}
@@ -12,8 +12,6 @@ read_function_fields(fields, config, env, default_load = FALSE)
 \item{config}{The config being read.}
 
 \item{env}{Environment containing functions loaded from sources.}
-
-\item{default_load}{TRUE if this run is using default load code.}
 }
 \description{
 Reads the config file, and sources any file references.

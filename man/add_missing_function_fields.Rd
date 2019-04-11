@@ -4,15 +4,12 @@
 \alias{add_missing_function_fields}
 \title{Add any missing required fields to the config using defaults where available.}
 \usage{
-add_missing_function_fields(info, fields, default_load = FALSE)
+add_missing_function_fields(info, fields)
 }
 \arguments{
 \item{info}{The config loaded from file.}
 
 \item{fields}{Collection of fields to set defaults for.}
-
-\item{default_load}{TRUE if this run is using default load code. If so the
-function can be missing.}
 }
 \description{
 This defaults to using the field name for the function name.

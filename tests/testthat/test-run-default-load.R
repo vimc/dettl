@@ -12,8 +12,7 @@ test_that("default load can be run", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example_default_load/", default_load = TRUE,
-                  db_name = "test")
+  import <- dettl("example_default_load/", db_name = "test")
 
   ## Setup mock INSERT query for testing. This is needed because in real
   ## impl we want to do an INSERT INTO RETURNING pattern but it is not possible

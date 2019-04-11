@@ -87,7 +87,7 @@ db_config_read_yaml <- function(filename, path) {
 #'
 #' @keywords internal
 #'
-read_config <- function(path, default_load = FALSE) {
+read_config <- function(path) {
   filename <- file.path(path, "dettl.yml")
   assert_file_exists(path, name = "Report working directory")
   assert_file_exists(filename, name = "Dettl configuration")
@@ -99,16 +99,18 @@ read_config <- function(path, default_load = FALSE) {
     "transform",
     "load"
   )
-  info <- add_missing_function_fields(info, function_fields, default_load)
-  required <- c(function_fields, "sources")
+  if (is.null(info$default_load)) {
+    info$default_load <- FALSE
+  }
+  info <- add_missing_function_fields(info, function_fields)
+  required <- c(function_fields, "sources", "default_load")
   optional <- c("rewrite_keys")
   check_fields(info, filename, required, optional)
-
-  env <- load_sources(info$sources, path)
-  info <- read_function_fields(function_fields, info, env, default_load)
-  if (!is.null(info$rewrite_keys)) {
+  if (info$default_load) {
     info$rewrite_keys <- ForeignKeyConstraints$new(info$rewrite_keys)
   }
+  env <- load_sources(info$sources, path)
+  info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path))
   info$path <- path
   class(info) <- "dettl_config"
@@ -124,21 +126,19 @@ read_config <- function(path, default_load = FALSE) {
 #'
 #' @param info The config loaded from file.
 #' @param fields Collection of fields to set defaults for.
-#' @param default_load TRUE if this run is using default load code. If so the
-#' function can be missing.
 #'
 #' @keywords internal
 #'
-add_missing_function_fields <- function(info, fields, default_load = FALSE) {
+add_missing_function_fields <- function(info, fields) {
   for (field_name in fields) {
-    info <- set_missing_values(info, field_name, default_load)
+    info <- set_missing_values(info, field_name)
   }
   info
 }
 
-set_missing_values <- function(info, field_name, default_load = FALSE) {
+set_missing_values <- function(info, field_name) {
   ## Func can be empty for load field when running default load
-  if (field_name != "load" || !default_load) {
+  if (field_name != "load" || !info$default_load) {
     if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
       info[[field_name]]$func <- field_name
     }
@@ -164,12 +164,11 @@ set_missing_values <- function(info, field_name, default_load = FALSE) {
 #' @param fields The name of the field.
 #' @param config The config being read.
 #' @param env Environment containing functions loaded from sources.
-#' @param default_load TRUE if this run is using default load code.
 #' @keywords internal
 #'
-read_function_fields <- function(fields, config, env, default_load = FALSE) {
+read_function_fields <- function(fields, config, env) {
   for (field in fields) {
-    if (field != "load" || !default_load) {
+    if (field != "load" || !config$default_load) {
       assert_func_exists(config[[field]]$func, env)
       config[[field]]$func <- get0(config[[field]]$func,
         envir = env,
