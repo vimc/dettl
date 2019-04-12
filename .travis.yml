@@ -5,6 +5,9 @@ sudo: false
 cache: packages
 r_packages:
   - covr
+r_binary_packages:
+  - devtools
+  - roxygen2
 services:
   - postgresql
 before_script:
@@ -12,7 +15,7 @@ before_script:
   - psql -c 'create database dettl_test_db;' -U postgres
   - R CMD INSTALL .
 after_success:
-  - Rscript -e 'devtools::test()'
+  - Rscript -e 'devtools::install();devtools::test()'
   - Rscript -e 'covr::codecov(quiet = FALSE)'
 r_github_packages:
   - vimc/vaultr
