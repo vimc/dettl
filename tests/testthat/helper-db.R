@@ -1,6 +1,6 @@
 ## Create a simple "people" table in the psotgres DB for testing.
 prepare_example_postgres_db <- function() {
-  dbname <- "dettl-test-db"
+  dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
   dettl_test_postgres_connection(dbname, user, host)
