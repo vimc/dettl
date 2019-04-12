@@ -1,3 +1,5 @@
+options(error = traceback)
+
 con_sqlite <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 DBI::dbDisconnect(con_sqlite)
 
