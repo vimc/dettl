@@ -13,7 +13,7 @@ services:
 before_script:
   - Rscript -e 'vaultr::vault_test_server_install()'
   - psql -c 'create database dettl_test_db;' -U postgres
-  - psql -h localhost -c "\\dt"
+  - psql -h localhost -c "\l"
   - R CMD INSTALL .
 after_success:
   - Rscript -e 'devtools::install();devtools::test()'
