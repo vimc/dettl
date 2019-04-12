@@ -32,17 +32,3 @@ TestDataImport <- R6::R6Class(
     }
   )
 )
-
-trigger_dbi_warning <- function() {
-  oo <- options(warn = 0)
-  on.exit(options(oo))
-  con <- dbi_db_connect(RSQLite::SQLite(), ":memory:")
-  rm(con)
-  suppressWarnings(gc())
-}
-
-trigger_dbi_warning()
-
-get_local_connection <- function() {
-  dbi_db_connect(RSQLite::SQLite(), ":memory:")
-}

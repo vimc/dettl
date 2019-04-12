@@ -1,4 +1,6 @@
 ## Create a simple "people" table in the DB for testing the import process.
+## Ideally this would be in a helper-*.R file in testthat directory but we
+## need to be able to setup a DB for vignette.
 prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
                                add_job_table = FALSE) {
   path <- file.path(dir, db_name)
@@ -8,7 +10,7 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
   }
   con <- dbi_db_connect(RSQLite::SQLite(), path)
   people_query <- DBI::dbSendQuery(con,
-    "CREATE TABLE people (
+                                   "CREATE TABLE people (
       id     INTEGER PRIMARY KEY,
       name   TEXT,
       age    INTEGER,
@@ -28,7 +30,7 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
 
   if (add_job_table) {
     job_query <- DBI::dbSendQuery(con,
-      "CREATE TABLE jobs (
+                                  "CREATE TABLE jobs (
         id     INTEGER PRIMARY KEY,
         job    TEXT,
         person INTEGER,
@@ -41,4 +43,3 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
   DBI::dbDisconnect(con)
   path
 }
-
