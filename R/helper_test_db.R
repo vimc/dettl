@@ -10,7 +10,7 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
   }
   con <- dbi_db_connect(RSQLite::SQLite(), path)
   people_query <- DBI::dbSendQuery(con,
-                                   "CREATE TABLE people (
+    "CREATE TABLE people (
       id     INTEGER PRIMARY KEY,
       name   TEXT,
       age    INTEGER,
@@ -30,7 +30,7 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
 
   if (add_job_table) {
     job_query <- DBI::dbSendQuery(con,
-                                  "CREATE TABLE jobs (
+      "CREATE TABLE jobs (
         id     INTEGER PRIMARY KEY,
         job    TEXT,
         person INTEGER,
