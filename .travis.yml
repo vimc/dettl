@@ -18,6 +18,7 @@ before_script:
   - psql -h localhost -p 5432 -c "\l"
   - Rscript -e 'con <- DBI::dbConnect(RPostgres::Postgres(), dbname = "dettl_test_db", user = "postgres",
                  host = "localhost");DBI::dbListTables(con);DBI::dbDisconnect(con)'
+  - Rscript db_debug.R
   - R CMD INSTALL .
 after_success:
   - psql -h localhost -p 5432 -c "\l"
