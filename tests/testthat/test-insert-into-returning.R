@@ -44,6 +44,7 @@ test_that("can add data to Postgres database returning primary key", {
   con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(con))
 
+  ##browser()
   data <- data.frame(list(
     name = c("Alice", "Bob"),
     age = c(34, 54),

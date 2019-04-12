@@ -5,26 +5,13 @@ sudo: false
 cache: packages
 r_packages:
   - covr
-  - RPostgres
-  - DBI
-r_binary_packages:
-  - devtools
-  - roxygen2
 services:
   - postgresql
 before_script:
   - Rscript -e 'vaultr::vault_test_server_install()'
   - psql -c 'create database dettl_test_db;' -U postgres
-  - psql -h localhost -p 5432 -c "\l"
-  - Rscript -e 'con <- DBI::dbConnect(RPostgres::Postgres(), dbname = "dettl_test_db", user = "postgres",
-                 host = "localhost");DBI::dbListTables(con);DBI::dbDisconnect(con)'
-  - Rscript db_debug.R
   - R CMD INSTALL .
 after_success:
-  - psql -h localhost -p 5432 -c "\l"
-  - Rscript -e 'con <- DBI::dbConnect(RPostgres::Postgres(), dbname = "dettl_test_db", user = "postgres",
-                 host = "localhost");DBI::dbListTables(con);DBI::dbDisconnect(con)'
-  - Rscript -e 'devtools::install();devtools::test()'
   - Rscript -e 'covr::codecov(quiet = FALSE)'
 r_github_packages:
   - vimc/vaultr
