@@ -16,6 +16,7 @@ before_script:
   - psql -h localhost -c "\l"
   - R CMD INSTALL .
 after_success:
+  - psql -h localhost -c "\l"
   - Rscript -e 'devtools::install();devtools::test()'
   - Rscript -e 'covr::codecov(quiet = FALSE)'
 r_github_packages:
