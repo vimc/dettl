@@ -23,12 +23,12 @@ prepare_example_postgres_db <- function() {
 }
 
 dettl_test_postgres_connection <- function(dbname, user, host) {
-  tryCatch(
-    get_postgres_connection(dbname, user, host),
-    error = function(e) testthat::skip(sprintf(
-      "Failed to open db connection to postgres db %s with user %s and host %s.",
-      dbname, user, host))
-  )
+  # tryCatch(
+    get_postgres_connection(dbname, user, host)
+    # error = function(e) testthat::skip(sprintf(
+    #   "Failed to open db connection to postgres db %s with user %s and host %s.",
+    #   dbname, user, host))
+  # )
 }
 
 get_postgres_connection <- function(dbname, user, host) {
