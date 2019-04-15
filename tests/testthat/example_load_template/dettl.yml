@@ -4,4 +4,6 @@ sources:
   - R/script.R
 
 load:
-  func: load
+  <load>
+
+<rewrite_keys>

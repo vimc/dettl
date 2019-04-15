@@ -1,6 +1,6 @@
-testDataImport <- R6::R6Class(
-  "testDataImport",
-  inherit = dataImport,
+TestDataImport <- R6::R6Class(
+  "TestDataImport",
+  inherit = DataImport,
   cloneable = FALSE,
 
   public = list(
@@ -32,17 +32,3 @@ testDataImport <- R6::R6Class(
     }
   )
 )
-
-trigger_dbi_warning <- function() {
-  oo <- options(warn = 0)
-  on.exit(options(oo))
-  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-  rm(con)
-  suppressWarnings(gc())
-}
-
-trigger_dbi_warning()
-
-get_local_connection <- function() {
-  DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-}

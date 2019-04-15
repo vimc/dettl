@@ -12,6 +12,8 @@ db_connect(type, path)
 \item{path}{Path to directory contianing yaml config.}
 }
 \description{
-Connect to the database configured via yaml.
+Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses
+\code{\link[RSQLite]{SQLite}} then it will ensure foreign key constraints are
+enabled.
 }
 \keyword{internal}
