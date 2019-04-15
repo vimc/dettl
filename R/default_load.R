@@ -35,7 +35,7 @@ get_default_load <- function(rewrite_keys) {
 }
 
 strip_primary_key_column <- function(data, primary_key) {
-  column_names <- !(names(data) == primary_key)
+  column_names <- names(data) != primary_key
   data[, column_names]
 }
 
