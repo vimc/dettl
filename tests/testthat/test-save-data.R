@@ -18,7 +18,8 @@ test_that("extracted data can be saved", {
                "Can't save extracted data as stage has not been run.")
 
   run_import(import, "extract")
-  save_extracted_data(import, file)
+  expect_message(save_extracted_data(import, file),
+                 sprintf("Saved extracted data to %s", file))
 
   expect_equal(readxl::excel_sheets(file), "people")
   xl_data <- readxl::read_excel(file, sheet = "people")
