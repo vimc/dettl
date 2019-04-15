@@ -58,7 +58,7 @@ test_that("trying to save data with non data import object fails", {
                "Can't save transformed data for non-DataImport object.")
 })
 
-test_that("save data can create new file and save to default location", {
+test_that("save data can create new file", {
   db_name <- "test.sqlite"
   prepare_example_db(db_name)
   on.exit(unlink(db_name), add = TRUE)
@@ -76,4 +76,30 @@ test_that("save data can create new file and save to default location", {
   file <- file.path(dir, "test.xlsx")
   save_extracted_data(import, file)
   expect_true("test.xlsx" %in% list.files(dir))
+})
+
+test_that("saving data with multiple sheets is supported", {
+  db_name <- "test.sqlite"
+  prepare_example_db(db_name, add_data = TRUE, add_job_table = TRUE)
+  on.exit(unlink(db_name))
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl("example_default_load/", db_name = "test")
+  run_import(import, c("extract", "transform"))
+
+  file <- tempfile(fileext = "xlsx")
+  save_extracted_data(import, file)
+
+  expect_equal(readxl::excel_sheets(file), c("people", "jobs"))
+  people <- readxl::read_excel(file, sheet = "people")
+  expect_equal(colnames(people), c("id", "name", "age", "height"))
+  expect_equal(nrow(people), 3)
+  jobs <- readxl::read_excel(file, sheet = "jobs")
+  expect_equal(colnames(jobs), c("person", "job"))
+  expect_equal(nrow(jobs), 3)
 })
