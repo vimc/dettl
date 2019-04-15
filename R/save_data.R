@@ -27,7 +27,17 @@ save_extracted_data <- function(import, file) {
 #'
 #' @examples
 #' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
-#' run_import(import, c("extract", "transform))
+#' con <- import$get_connection()
+#' people_query <- DBI::dbSendQuery(con,
+#'   "CREATE TABLE people (
+#'      id     BIGSERIAL PRIMARY KEY,
+#'      name   TEXT,
+#'      age    INTEGER,
+#'      height INTEGER
+#'    )"
+#' )
+#' DBI::dbClearResult(people_query)
+#' run_import(import, c("extract", "transform"))
 #' t <- tempfile()
 #' save_transformed_data(import, t)
 save_transformed_data <- function(import, file) {

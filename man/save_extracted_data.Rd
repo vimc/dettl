@@ -4,13 +4,12 @@
 \alias{save_extracted_data}
 \title{Save extracted data}
 \usage{
-save_extracted_data(import, file = "extracted_data.xlsx")
+save_extracted_data(import, file)
 }
 \arguments{
 \item{import}{The import object to save the extracted data for.}
 
-\item{file}{Optional file to save the data to, defaults to creating file in
-current working directory called extracted_data.xlsx}
+\item{file}{File path at which to save the data.}
 }
 \description{
 Saves any extracted data as separate sheet of an xlsx file.
