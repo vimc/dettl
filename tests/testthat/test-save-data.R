@@ -76,9 +76,4 @@ test_that("save data can create new file and save to default location", {
   file <- file.path(dir, "test.xlsx")
   save_extracted_data(import, file)
   expect_true("test.xlsx" %in% list.files(dir))
-
-  withr::with_dir(dir, {
-    save_extracted_data(import)
-    expect_true("extracted_data.xlsx" %in% list.files())
-  })
 })

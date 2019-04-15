@@ -3,8 +3,7 @@
 #' Saves any extracted data as separate sheet of an xlsx file.
 #'
 #' @param import The import object to save the extracted data for.
-#' @param file Optional file to save the data to, defaults to creating file in
-#' current working directory called extracted_data.xlsx
+#' @param file File path at which to save the data.
 #'
 #' @export
 #'
@@ -13,7 +12,7 @@
 #' run_import(import, "extract")
 #' t <- tempfile()
 #' save_extracted_data(import, t)
-save_extracted_data <- function(import, file = "extracted_data.xlsx") {
+save_extracted_data <- function(import, file) {
   save_data(import, file, "extracted")
 }
 
@@ -22,8 +21,7 @@ save_extracted_data <- function(import, file = "extracted_data.xlsx") {
 #' Saves any transformed data as separate sheet of an xlsx file.
 #'
 #' @param import The import object to save the transformed data for.
-#' @param file Optional file to save the data to, defaults to creating file in
-#' current working directory called transformed_data.xlsx
+#' @param file File path at which to save the data.
 #'
 #' @export
 #'
@@ -32,7 +30,7 @@ save_extracted_data <- function(import, file = "extracted_data.xlsx") {
 #' run_import(import, c("extract", "transform))
 #' t <- tempfile()
 #' save_transformed_data(import, t)
-save_transformed_data <- function(import, file = "transformed_data.xlsx") {
+save_transformed_data <- function(import, file) {
   save_data(import, file, "transformed")
 }
 
