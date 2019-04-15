@@ -47,7 +47,7 @@ dettl <- function(path, db_name = NULL) {
 #' @export
 #'
 run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
-  if (is.null(import) || class(import) != "DataImport") {
+  if (is.null(import) || !inherits(import, "DataImport")) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
   }

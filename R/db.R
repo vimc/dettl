@@ -24,7 +24,7 @@ db_connect <- function(type, path) {
 #'
 #' @keywords internal
 sqlite_enable_fk <- function(con) {
-  if (class(con) == "SQLiteConnection") {
+  if (inherits(con, "SQLiteConnection")) {
     DBI::dbExecute(con, "PRAGMA foreign_keys = ON")
   }
 }
