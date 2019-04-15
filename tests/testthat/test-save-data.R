@@ -11,7 +11,7 @@ test_that("extracted data can be saved", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
 
   file <- tempfile()
   expect_error(save_extracted_data(import, file),
@@ -37,7 +37,7 @@ test_that("transformed data can be saved", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
 
   file <- tempfile()
   expect_error(save_transformed_data(import, file),
@@ -68,7 +68,7 @@ test_that("save data can create new file and save to default location", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- new_import("example/", "test")
+  import <- dettl("example/", "test")
   run_import(import, "extract")
 
   dir <- tempdir()

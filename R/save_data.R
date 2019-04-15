@@ -37,7 +37,7 @@ save_transformed_data <- function(import, file = "transformed_data.xlsx") {
 }
 
 save_data <- function(import, file, stage) {
-  if (!inherits(import, "dataImport")) {
+  if (!inherits(import, "DataImport")) {
     stop(sprintf("Can't save %s data for non-DataImport object.", stage))
   }
   if (!file.exists(file)) {
