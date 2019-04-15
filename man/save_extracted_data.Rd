@@ -16,7 +16,7 @@ current working directory called extracted_data.xlsx}
 Saves any extracted data as separate sheet of an xlsx file.
 }
 \examples{
-import <- new_import(system.file("examples/person_information", package = "dettl"), "test")
+import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
 run_import(import, "extract")
 t <- tempfile()
 save_extracted_data(import, t)

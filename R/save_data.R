@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' import <- new_import(system.file("examples/person_information", package = "dettl"), "test")
+#' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
 #' run_import(import, "extract")
 #' t <- tempfile()
 #' save_extracted_data(import, t)
@@ -28,7 +28,7 @@ save_extracted_data <- function(import, file = "extracted_data.xlsx") {
 #' @export
 #'
 #' @examples
-#' import <- new_import(system.file("examples/person_information", package = "dettl"), "test")
+#' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
 #' run_import(import, c("extract", "transform))
 #' t <- tempfile()
 #' save_transformed_data(import, t)
