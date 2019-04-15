@@ -40,9 +40,7 @@ save_data <- function(import, file, stage) {
   if (!inherits(import, "DataImport")) {
     stop(sprintf("Can't save %s data for non-DataImport object.", stage))
   }
-  if (!file.exists(file)) {
-    file.create(file)
-  }
+  file.create(dirname(file), FALSE, TRUE)
 
   if (stage == "extracted") {
     data <- import$get_extracted_data()
