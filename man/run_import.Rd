@@ -7,7 +7,7 @@
 run_import(import, run_stages = NULL, dry_run = FALSE)
 }
 \arguments{
-\item{import}{The dataImport object.}
+\item{import}{The DataImport object.}
 
 \item{run_stages}{Which stages should be run in the import process. Runs all
 if NULL.}
@@ -17,7 +17,7 @@ import completes. i.e. the load stage can be run and tests executed but the
 db will be rolled back.}
 }
 \value{
-The processed dataImport object.
+The processed DataImport object.
 }
 \description{
 This runs the full extract, transform, test and load steps or runs specific

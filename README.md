@@ -18,3 +18,7 @@ To set these create a file called `envir.yml` in the root of the directory which
 This section is only relevant if you want to run the automated package tests.
 
 Some testthat tests are configured which check the functionality of reading secrets from the vault. These tests are configured to use a test server which is controlled via `vaultr::vault_test_server()`. To set this up follow instructions in [vaultr packages vignette](https://vimc.github.io/vaultr/articles/packages.html).
+
+## Running tests which rely on PostgreSQL database
+
+Most tests run against a local SQLite database but some require a PostgreSQL database. These tests will be skipped by default when running locally. To enable them, run the `scripts/test_db_start.sh` script to run up a Postgres db within a docker container. When finished testing locally run `scripts/test_db_stop.sh` to stop the container.

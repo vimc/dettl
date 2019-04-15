@@ -90,10 +90,11 @@ db_config_read_yaml <- function(filename, path) {
 read_config <- function(path) {
   filename <- file.path(path, "dettl.yml")
   assert_file_exists(path, name = "Report working directory")
-  assert_file_exists(filename, name = "Orderly configuration")
+  assert_file_exists(filename, name = "Dettl configuration")
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
+  info <- validate_load(info)
   function_fields <- c(
     "extract",
     "transform",
@@ -101,14 +102,27 @@ read_config <- function(path) {
   )
   info <- add_missing_function_fields(info, function_fields)
   required <- c(function_fields, "sources")
-  optional <- c()
+  optional <- c("rewrite_keys")
   check_fields(info, filename, required, optional)
-
+  if (info$load$default) {
+    info$rewrite_keys <- ForeignKeyConstraints$new(info$rewrite_keys)
+  }
   env <- load_sources(info$sources, path)
-  info <- read_fields(function_fields, info, env)
+  info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path))
   info$path <- path
   class(info) <- "dettl_config"
+  info
+}
+
+validate_load <- function(info) {
+  default <- !is.null(info$load$default) && (info$load$default || tolower(info$load$default) == "true")
+  if (xor(default, !is.null(info$load$func))) {
+    info$load$default <- default
+  } else {
+    stop(sprintf("Load stage must specify a load function OR use the default load function. Got default %s and NULL func %s.",
+         default, is.null(info$load$func)))
+  }
   info
 }
 
@@ -132,8 +146,11 @@ add_missing_function_fields <- function(info, fields) {
 }
 
 set_missing_values <- function(info, field_name) {
-  if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
-    info[[field_name]]$func <- field_name
+  ## Func can be empty for load field when running default load
+  if (field_name != "load") {
+    if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
+      info[[field_name]]$func <- field_name
+    }
   }
   missing_verification_queries <- field_name == "load" &&
     (is.null(info[[field_name]]$verification_queries) ||
@@ -153,17 +170,20 @@ set_missing_values <- function(info, field_name) {
 #'
 #' Reads the config file, and sources any file references.
 #'
-#' @param fields The name of the field
+#' @param fields The name of the field.
+#' @param config The config being read.
 #' @param env Environment containing functions loaded from sources.
 #' @keywords internal
 #'
-read_fields <- function(fields, config, env) {
+read_function_fields <- function(fields, config, env) {
   for (field in fields) {
-    assert_func_exists(config[[field]]$func, env)
-    config[[field]]$func <- get0(config[[field]]$func,
-      envir = env,
-      mode = "function", inherits = FALSE
-    )
+    if (field != "load" || !config$load$default) {
+      assert_func_exists(config[[field]]$func, env)
+      config[[field]]$func <- get0(config[[field]]$func,
+        envir = env,
+        mode = "function", inherits = FALSE
+      )
+    }
     if (field == "load") {
       assert_func_exists(config[[field]]$verification_queries, env)
       config[[field]]$verification_queries <-
