@@ -50,10 +50,9 @@ save_data <- function(import, file, stage) {
     data <- import$get_transformed_data()
   }
 
-  if (!is.null(data)) {
-    writexl::write_xlsx(data, file)
-  } else {
+  if (is.null(data)) {
     stop(sprintf("Can't save %s data as stage has not been run.", stage))
   }
+  writexl::write_xlsx(data, file)
   invisible(file)
 }
