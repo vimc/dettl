@@ -17,10 +17,12 @@ Imports:
     DBI,
     R6,
     yaml,
-    withr
+    withr,
+    writexl
 Suggests: 
     knitr,
     mockery,
+    readxl,
     rmarkdown,
     RPostgres,
     RSQLite,
