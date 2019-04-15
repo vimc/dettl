@@ -8,7 +8,8 @@ prepare_example_db <- function(db_name, dir = getwd(), add_data = FALSE,
     ## Ensure we always start with a fresh DB
     file.remove(path)
   }
-  con <- dbi_db_connect(RSQLite::SQLite(), path)
+  con <- DBI::dbConnect(RSQLite::SQLite(), path)
+  sqlite_enable_fk(con)
   people_query <- DBI::dbSendQuery(con,
     "CREATE TABLE people (
       id     INTEGER PRIMARY KEY,

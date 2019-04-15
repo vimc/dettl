@@ -36,6 +36,12 @@ get_postgres_connection <- function(dbname, user, host) {
                  host = host)
 }
 
+dbi_db_connect <- function(drv, ...) {
+  con <- DBI::dbConnect(drv, ...)
+  sqlite_enable_fk(con)
+  con
+}
+
 trigger_dbi_warning <- function() {
   oo <- options(warn = 0)
   on.exit(options(oo))
@@ -49,3 +55,4 @@ trigger_dbi_warning()
 get_local_connection <- function() {
   dbi_db_connect(RSQLite::SQLite(), ":memory:")
 }
+

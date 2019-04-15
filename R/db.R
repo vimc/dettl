@@ -1,5 +1,9 @@
 #' Connect to the database configured via yaml.
 #'
+#' Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses
+#' \code{\link[RSQLite]{SQLite}} then it will ensure foreign key constraints are
+#' enabled.
+#'
 #' @param type The db to connect to, must match a db configured in db config.
 #' @param path Path to directory contianing yaml config.
 #'
@@ -7,26 +11,22 @@
 #'
 db_connect <- function(type, path) {
   x <- dettl_db_args(path, type)
-  con <- do.call(dbi_db_connect,
+  con <- do.call(DBI::dbConnect,
                  c(list(x$driver()), x$args))
+  sqlite_enable_fk(con)
   con
 }
 
-#' Create a connection a DBMS.
+#' Enable foreign key constraints for SQLite connections
 #'
-#' Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses
-#' \code{\link[RSQLite]{SQLite}} then it will ensure foreign key constraints are
-#' enabled.
+#' Foreign key constraints aren't enabled by default in SQLite. Ensure
+#' they are enabled each time we connect to the db.
 #'
 #' @keywords internal
-dbi_db_connect <- function(drv, ...) {
-  con <- DBI::dbConnect(drv, ...)
-  if (class(drv) == "SQLiteDriver") {
-    ## Foreign key constraints aren't enabled by default in SQLite. Ensure
-    ## they are enabled each time we connect to the db.
+sqlite_enable_fk <- function(con) {
+  if (class(con) == "SQLiteConnection") {
     DBI::dbExecute(con, "PRAGMA foreign_keys = ON")
   }
-  con
 }
 
 #' Get the DB args from config.
