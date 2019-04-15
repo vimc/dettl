@@ -5,13 +5,13 @@ sources:
 
 extract:
   func: extract
-  test: R/test_extract.R
+  test: tests/test_extract.R
 
 transform:
   func: transform
-  test: R/test_transform.R
+  test: tests/test_transform.R
 
 load:
   func: load
   verification_queries:
-  test: R/test_load.R
+  test: tests/test_load.R
