@@ -21,4 +21,4 @@ Some testthat tests are configured which check the functionality of reading secr
 
 ## Running tests which rely on PostgreSQL database
 
-Most tests run against a local SQLite database but some require a PostgreSQL database. These tests will be skipped by default when running locally. To enable them run the `scripts/test_db_start.sh` script to run up a Postgres db within a docker image. When finished testing locally run `scripts/test_db_stop.sh` to stop the image.
+Most tests run against a local SQLite database but some require a PostgreSQL database. These tests will be skipped by default when running locally. To enable them, run the `scripts/test_db_start.sh` script to run up a Postgres db within a docker container. When finished testing locally run `scripts/test_db_stop.sh` to stop the container.
