@@ -46,7 +46,7 @@ test_that("read config loads config from directory", {
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_config")
 
-  expect_length(cfg, 7)
+  expect_length(cfg, 6)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 2)
@@ -63,7 +63,7 @@ test_that("read config loads config from directory", {
   expect_equal(cfg$transform$test, "R/test_transform.R")
 
   expect_true("load" %in% names(cfg))
-  expect_length(cfg$load, 3)
+  expect_length(cfg$load, 4)
   expect_true("func" %in% names(cfg$load))
   expect_true("test" %in% names(cfg$load))
   expect_true("verification_queries" %in% names(cfg$load))
@@ -74,7 +74,7 @@ test_that("read config loads config from directory", {
   expect_true("name" %in% names(cfg))
   expect_equal(cfg$name, "example")
 
-  expect_false(cfg$default_load)
+  expect_false(cfg$load$default)
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "example")
@@ -84,7 +84,7 @@ test_that("read config adds missing fields from defaults", {
   cfg <- read_config("simple_example")
   expect_s3_class(cfg, "dettl_config")
 
-  expect_length(cfg, 7)
+  expect_length(cfg, 6)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 1)
@@ -99,7 +99,7 @@ test_that("read config adds missing fields from defaults", {
   expect_equal(cfg$transform$func(), "Executed transform function")
 
   expect_true("load" %in% names(cfg))
-  expect_length(cfg$load, 3)
+  expect_length(cfg$load, 4)
   expect_true("func" %in% names(cfg$load))
   expect_true("test" %in% names(cfg$load))
   expect_true("verification_queries" %in% names(cfg$load))
@@ -145,12 +145,34 @@ test_that("read config uses default load when rewrite_keys are configured", {
 
   expect_true("rewrite_keys" %in% names(cfg))
   expect_is(cfg$rewrite_keys, "ForeignKeyConstraints")
-  expect_true(cfg$default_load)
   expect_true("load" %in% names(cfg))
-  expect_length(cfg$load, 2)
+  expect_length(cfg$load, 3)
   expect_false("func" %in% names(cfg$load))
+  expect_true(cfg$load$default)
   expect_true("test" %in% names(cfg$load))
   expect_true("verification_queries" %in% names(cfg$load))
   expect_is(cfg$load$verification_queries, "function")
   expect_equal(cfg$load$test, "R/test_load.R")
+})
+
+test_that("default load can be specified in config", {
+  rewrite_keys <-
+  "rewrite_keys:
+    people:
+      primary: id
+      foreign:
+        jobs: person"
+  dir <- setup_dettl_config("default: true", rewrite_keys)
+  cfg <- read_config(dir)
+  expect_true(cfg$load$default)
+
+  dir <- setup_dettl_config("default: FALSE")
+  expect_error(read_config(dir),
+    "Load stage must specify a load function OR use the default load function. Got default FALSE and NULL func TRUE.")
+
+  dir <- setup_dettl_config("
+  default: TRUE
+  func: load", rewrite_keys)
+  expect_error(read_config(dir),
+    "Load stage must specify a load function OR use the default load function. Got default TRUE and NULL func FALSE.")
 })

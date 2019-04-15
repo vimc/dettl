@@ -282,10 +282,13 @@ options(testthat.default_reporter = default_reporter)
 
 ## Default load stage {#default_load}
 
-`dettl` has a default implementation for the load stage of the import process. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the default load step requires defining that the default load should be used in the `dettl.yml` by writing
+`dettl` has a default implementation for the load stage of the import process. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the default load step requires defining that the default load should be used in the load block of `dettl.yml` e.g.
 
 ```{yml}
-default_load: TRUE
+load:
+  default: TRUE
+  verification_queries: test_queries
+  test: R/test_load.R
 ```
 
 Using a default load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.

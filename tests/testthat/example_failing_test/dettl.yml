@@ -8,7 +8,7 @@ extract:
   func:
 
 load:
-  func:
+  func: load
 
 transform:
   func:

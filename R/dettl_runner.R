@@ -13,7 +13,7 @@ dettl <- function(path, db_name = NULL) {
   path <- normalizePath(path, mustWork = TRUE)
   dettl_config <- read_config(path)
 
-  if (dettl_config$default_load) {
+  if (dettl_config$load$default) {
     load_func <- get_default_load(dettl_config$rewrite_keys)
   } else {
     load_func <- dettl_config$load$func

@@ -12,10 +12,9 @@ transform:
   test: R/test_transform.R
 
 load:
+  default: TRUE
   verification_queries: test_queries
   test: R/test_load.R
-
-default_load: TRUE
 
 rewrite_keys:
   people:

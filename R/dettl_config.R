@@ -94,19 +94,17 @@ read_config <- function(path) {
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
+  info <- validate_load(info)
   function_fields <- c(
     "extract",
     "transform",
     "load"
   )
-  if (is.null(info$default_load)) {
-    info$default_load <- FALSE
-  }
   info <- add_missing_function_fields(info, function_fields)
-  required <- c(function_fields, "sources", "default_load")
+  required <- c(function_fields, "sources")
   optional <- c("rewrite_keys")
   check_fields(info, filename, required, optional)
-  if (info$default_load) {
+  if (info$load$default) {
     info$rewrite_keys <- ForeignKeyConstraints$new(info$rewrite_keys)
   }
   env <- load_sources(info$sources, path)
@@ -114,6 +112,17 @@ read_config <- function(path) {
   info$name <- basename(normalizePath(path))
   info$path <- path
   class(info) <- "dettl_config"
+  info
+}
+
+validate_load <- function(info) {
+  default <- !is.null(info$load$default) && (info$load$default || tolower(info$load$default) == "true")
+  if (xor(default, !is.null(info$load$func))) {
+    info$load$default <- default
+  } else {
+    stop(sprintf("Load stage must specify a load function OR use the default load function. Got default %s and NULL func %s.",
+         default, is.null(info$load$func)))
+  }
   info
 }
 
@@ -138,7 +147,7 @@ add_missing_function_fields <- function(info, fields) {
 
 set_missing_values <- function(info, field_name) {
   ## Func can be empty for load field when running default load
-  if (field_name != "load" || !info$default_load) {
+  if (field_name != "load") {
     if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
       info[[field_name]]$func <- field_name
     }
@@ -168,7 +177,7 @@ set_missing_values <- function(info, field_name) {
 #'
 read_function_fields <- function(fields, config, env) {
   for (field in fields) {
-    if (field != "load" || !config$default_load) {
+    if (field != "load" || !config$load$default) {
       assert_func_exists(config[[field]]$func, env)
       config[[field]]$func <- get0(config[[field]]$func,
         envir = env,
