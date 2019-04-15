@@ -13,7 +13,7 @@ test_that("extracted data can be saved", {
 
   import <- dettl("example/", "test")
 
-  file <- tempfile()
+  file <- tempfile(fileext = ".xlsx")
   expect_error(save_extracted_data(import, file),
                "Can't save extracted data as stage has not been run.")
 
@@ -39,7 +39,7 @@ test_that("transformed data can be saved", {
 
   import <- dettl("example/", "test")
 
-  file <- tempfile()
+  file <- tempfile(fileext = ".xlsx")
   expect_error(save_transformed_data(import, file),
     "Can't save transformed data as stage has not been run.")
 
