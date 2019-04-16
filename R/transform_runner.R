@@ -22,8 +22,8 @@ run_transform <- function(con, transform, path, extracted_data,
     transformed_data <- transform(extracted_data)
     verify_data(con, transformed_data)
     if (!is.null(transform_test)) {
+      message(sprintf("Running transform tests %s", transform_test))
       test_path <- file.path(path, transform_test)
-      message(sprintf("Running transform tests %s", test_path))
       test_results <-
         run_transform_tests(test_path, transformed_data, con)
       if (!all_passed(test_results)) {

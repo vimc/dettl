@@ -51,6 +51,7 @@ run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
   }
+  message(sprintf("Running import %s", import$path))
   if (is.null(run_stages) || "extract" %in% run_stages) {
     import$extract()
   }
@@ -60,5 +61,5 @@ run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
   if (is.null(run_stages) || "load" %in% run_stages) {
     import$load(dry_run)
   }
-  import
+  invisible(import)
 }
