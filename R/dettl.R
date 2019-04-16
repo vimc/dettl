@@ -64,6 +64,10 @@ DataImport <- R6::R6Class(
 
     get_transformed_data = function() {
       private$transformed_data
+    },
+
+    get_import_path = function() {
+      private$path
     }
   )
 )

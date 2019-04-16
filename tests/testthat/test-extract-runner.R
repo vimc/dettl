@@ -13,7 +13,7 @@ testthat::test_that("messages are printed to console when tests are run", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   expect_message(run_extract(con, extract_func, path, test_file),
-                 "Running extract tests example_tests/connection_extract_test.R")
+                 "Running extract tests connection_extract_test.R")
 
   expect_message(run_extract(con, extract_func, path, test_file),
                  "All extract tests passed.")

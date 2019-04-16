@@ -81,7 +81,7 @@ testthat::test_that("messages are printed to console when tests are run", {
   data <- list()
 
   expect_message(run_transform(con, transform_func, path, data, test_file),
-                 "Running transform tests example_tests/connection_transform_test.R")
+                 "Running transform tests connection_transform_test.R")
 
   expect_message(run_transform(con, transform_func, path, data, test_file),
                  "All transform tests passed.")

@@ -20,8 +20,8 @@ run_extract <- function(con, extract, path, extract_test){
     stop("DB connection is not valid cannot extract data")
   }
   if (!is.null(extract_test)) {
+    message(sprintf("Running extract tests %s", extract_test))
     test_path <- file.path(path, extract_test)
-    message(sprintf("Running extract tests %s", test_path))
     test_results <- run_extract_tests(test_path, extracted_data, con)
     if (!all_passed(test_results)) {
       stop("Not all extract tests passed. Fix tests before proceeding.")
@@ -31,3 +31,6 @@ run_extract <- function(con, extract, path, extract_test){
   }
   extracted_data
 }
+
+## work out paths as full path - working dir? If not possible then just use full path
+
