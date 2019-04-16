@@ -31,6 +31,3 @@ run_extract <- function(con, extract, path, extract_test){
   }
   extracted_data
 }
-
-## work out paths as full path - working dir? If not possible then just use full path
-
