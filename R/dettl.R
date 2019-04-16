@@ -4,7 +4,6 @@ DataImport <- R6::R6Class(
   cloneable = FALSE,
 
   private = list(
-    path = NULL,
     con = NULL,
     extract_ = NULL,
     transform_ = NULL,
@@ -19,10 +18,11 @@ DataImport <- R6::R6Class(
   ),
 
   public = list(
+    path = NULL,
     initialize = function(path, extract, extract_test, transform,
                           transform_test, load, load_test, test_queries,
                           db_name, rollback = NULL) {
-      private$path <- path
+      self$path <- path
       ## TODO: Only set up connection when it is actually needed
       private$con <- db_connect(db_name, path)
       private$extract_ <- extract
@@ -32,6 +32,7 @@ DataImport <- R6::R6Class(
       private$load_ <- load
       private$load_test_ <- load_test
       private$test_queries <- test_queries
+      lockBinding("path", self)
     },
 
     rollback = function() {
@@ -39,18 +40,18 @@ DataImport <- R6::R6Class(
 
     extract = function() {
       private$extracted_data <- run_extract(private$con, private$extract_,
-                                           private$path, private$extract_test_)
+                                            self$path, private$extract_test_)
     },
 
     transform = function() {
       private$transformed_data <- run_transform(private$con, private$transform_,
-                                           private$path, private$extracted_data,
+                                                self$path, private$extracted_data,
                                            private$transform_test_)
     },
 
     load = function(dry_run) {
       run_load(private$con, private$load_, private$transformed_data,
-               private$test_queries, private$path, private$load_test_, dry_run)
+               private$test_queries, self$path, private$load_test_, dry_run)
       invisible(TRUE)
     },
 
@@ -64,10 +65,6 @@ DataImport <- R6::R6Class(
 
     get_transformed_data = function() {
       private$transformed_data
-    },
-
-    get_import_path = function() {
-      private$path
     }
   )
 )
