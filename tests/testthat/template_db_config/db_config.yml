@@ -3,6 +3,7 @@ db:
     driver: <driver>
     args:
       dbname: test.sqlite
+    log_table: <log_table>
   uat:
     driver: RPostgres::Postgres
     args:
