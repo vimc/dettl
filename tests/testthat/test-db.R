@@ -63,7 +63,7 @@ test_that("no transient db", {
       args = list(dbname = ":memory:")
     )
   ))
-  writeLines(yaml::as.yaml(config), file.path(path, "db_config.yml"))
+  writeLines(yaml::as.yaml(config), file.path(path, "dettl_config.yml"))
   expect_error(
     dettl_db_args(path, "test"),
     "Cannot use a transient SQLite database with dettl"

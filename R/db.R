@@ -41,7 +41,7 @@ sqlite_enable_fk <- function(con) {
 #' @keywords internal
 #'
 dettl_db_args <- function(path, type = NULL) {
-  config <- db_config(path)
+  config <- dettl_config(path)
   if (is.null(type)) {
     type <- names(config$db)[[1]]
   }

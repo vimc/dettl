@@ -2,7 +2,7 @@
 #'
 #' @param path Path to directory containing functions for import process.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `db_config.yml`. If name is left blank this will default
+#' configured via the `dettl_config.yml`. If name is left blank this will default
 #' to using the first db configured.
 #'
 #' @return A DataImport object.

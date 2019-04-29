@@ -5,13 +5,13 @@
 #'
 #' @param path Path to directory containing path.
 #'
-#' @return The config as a db_config object.
+#' @return The config as a dettl_config object.
 #'
 #' @keywords internal
 #'
-db_config <- function(path) {
+dettl_config <- function(path) {
   config <- dettl_locate_config(path)
-  db_config_read_yaml(config$filename, config$path)
+  dettl_config_read_yaml(config$filename, config$path)
 }
 
 #' Locate the directory containing the config file.
@@ -24,14 +24,14 @@ db_config <- function(path) {
 #'
 dettl_locate_config <- function(path) {
   config <- list()
-  config$path <- find_file_descend("db_config.yml", path)
+  config$path <- find_file_descend("dettl_config.yml", path)
   if (is.null(config$path)) {
     stop(sprintf(
-      "Reached root from %s without finding 'db_config.yml'",
+      "Reached root from %s without finding 'dettl_config.yml'",
       path
     ))
   }
-  config$filename <- file.path(config$path, "db_config.yml")
+  config$filename <- file.path(config$path, "dettl_config.yml")
   config
 }
 
@@ -46,7 +46,7 @@ dettl_locate_config <- function(path) {
 #'
 #' @keywords internal
 #'
-db_config_read_yaml <- function(filename, path) {
+dettl_config_read_yaml <- function(filename, path) {
   info <- yaml_read(filename)
   check_fields(info, filename, "db", "vault_server")
 
@@ -72,7 +72,7 @@ db_config_read_yaml <- function(filename, path) {
   }
 
   info$path <- normalizePath(path, mustWork = TRUE)
-  class(info) <- "db_config"
+  class(info) <- "dettl_config"
   info
 }
 

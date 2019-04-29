@@ -4,8 +4,8 @@ setup_config <- function(db_driver = "RSQLite::SQLite",
                          log_table = "data_import_log") {
   path <- tempfile()
   dir.create(path)
-  filename <- file.path(path, "db_config.yml")
-  cfg <- readLines("template_db_config/db_config.yml")
+  filename <- file.path(path, "dettl_config.yml")
+  cfg <- readLines("template_dettl_config/dettl_config.yml")
   cfg_server <- gsub("<vault_server>", vault_server, cfg, fixed = TRUE)
   cfg_server <- gsub("<driver>", db_driver, cfg_server, fixed = TRUE)
   cfg_server <- gsub("<db_pw>", db_pw, cfg_server, fixed = TRUE)
