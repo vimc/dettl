@@ -80,8 +80,7 @@ set_missing_values <- function(info, field_name) {
     }
   }
   missing_verification_queries <- field_name == "load" &&
-    (is.null(info[[field_name]]$verification_queries) ||
-       is.na(info[[field_name]]$verification_queries))
+    is.null(info[[field_name]]$verification_queries)
   if (missing_verification_queries) {
     info[[field_name]]$verification_queries <- "verification_queries"
   }
