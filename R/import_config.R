@@ -43,7 +43,7 @@ read_config <- function(path) {
 }
 
 validate_load <- function(info) {
-  default <- !is.null(info$load$default) && (info$load$default || tolower(info$load$default) == "true")
+  default <- !is.null(info$load$default) && info$load$default
   if (xor(default, !is.null(info$load$func))) {
     info$load$default <- default
   } else {
