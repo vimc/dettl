@@ -146,7 +146,7 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one fo the databases configured in the `db_config.yml`. See example below for a previously configured example.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `db_config.yml`. See example below for a previously configured example.
 
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
@@ -279,6 +279,13 @@ transformed_data <- import$get_transformed_data()
 options(testthat.default_reporter = default_reporter)
 ```
 
+The import can be run in `dry_run` which will be useful for development. 
+
+```{r}
+dettl::run_import(import, dry_run = TRUE)
+```
+
+This will rollback any changes which have been made to the database before the connection is closed. Note that it also skips the check that the git repository is up to date with remote and so should be used when developing the import.
 
 ## Default load stage {#default_load}
 
