@@ -38,7 +38,7 @@ read_config <- function(path) {
   info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path))
   info$path <- path
-  class(info) <- "dettl_config"
+  class(info) <- "import_config"
   info
 }
 

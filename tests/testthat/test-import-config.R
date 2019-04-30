@@ -3,7 +3,7 @@ context("import-config")
 test_that("read config loads config from directory", {
 
   cfg <- read_config("example")
-  expect_s3_class(cfg, "dettl_config")
+  expect_s3_class(cfg, "import_config")
 
   expect_length(cfg, 6)
 
@@ -41,7 +41,7 @@ test_that("read config loads config from directory", {
 
 test_that("read config adds missing fields from defaults", {
   cfg <- read_config("simple_example")
-  expect_s3_class(cfg, "dettl_config")
+  expect_s3_class(cfg, "import_config")
 
   expect_length(cfg, 6)
 
