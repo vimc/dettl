@@ -17,9 +17,9 @@ Get the config containing information about location of functions containing
 import code.
 }
 \details{
-Sources any references to functions ready for use. Usea a default
+Sources any references to functions ready for use. Use a default
 configuration in the result that any fields are missing. This will use the
-field name as the expected file name and function anme. Required fields are
+field name as the expected file name and function name. Required fields are
 extract, transform, test_queries, test and load.
 }
 \keyword{internal}
