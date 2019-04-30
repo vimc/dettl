@@ -17,7 +17,7 @@ assert_scalar_character <- function(x, name = deparse(substitute(x))) {
 
 assert_db_name <- function(x, name = deparse(substitute(x))) {
   assert_character(x, name)
-  if (!grepl("^[[:lower:]_]+$", x)) {
+  if (!grepl("^[a-z_][a-z0-9_]*$", x)) {
     stop(sprintf("'%s' must consist of only lower case letters and underscores",
                  name), call. = FALSE)
   }
