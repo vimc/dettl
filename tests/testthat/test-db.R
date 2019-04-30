@@ -60,7 +60,8 @@ test_that("no transient db", {
   config <- list(db = list(
     test = list(
       driver = "RSQLite::SQLite",
-      args = list(dbname = ":memory:")
+      args = list(dbname = ":memory:"),
+      log_table = "log_table"
     )
   ))
   writeLines(yaml::as.yaml(config), file.path(path, "dettl_config.yml"))

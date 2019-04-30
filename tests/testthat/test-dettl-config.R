@@ -41,11 +41,6 @@ test_that("vault server details can be read from db config", {
   expect_error(dettl_config(path), "'.+:vault_server' must be character")
 })
 
-test_that("database log table uses default when not configured", {
-  cfg <- dettl_config(".")
-  expect_equal(cfg$db$test$log_table, "import_log")
-})
-
 test_that("database log table can be configured", {
   path <- setup_config()
   cfg <- dettl_config(path)

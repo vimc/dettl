@@ -12,5 +12,6 @@ db:
       port: 12345
       user: readonly
       password: <db_pw>
+    log_table: <log_table>
 
 vault_server: <vault_server>
