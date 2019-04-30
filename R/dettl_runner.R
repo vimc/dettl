@@ -51,7 +51,7 @@ run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
   }
-  if (!git_is_clean(import$path) && !dry_run) {
+  if (!dry_run && !git_is_clean(import$path)) {
     stop("Can't run import as repository has unstaged changes. Update git or run in dry-run mode.")
   }
   message(sprintf("Running import %s", import$path))

@@ -26,7 +26,7 @@ people_query <- DBI::dbSendQuery(con,
    )"
 )
 DBI::dbClearResult(people_query)
-run_import(import, c("extract", "transform"))
+run_import(import, c("extract", "transform"), dry_run = TRUE)
 t <- tempfile()
 save_transformed_data(import, t)
 }

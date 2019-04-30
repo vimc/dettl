@@ -22,6 +22,6 @@ Check that git status using \code{git status --porcelian}. Optionally
 ignoring untracked files.
 }
 \examples{
-git_run(c("status", "--porcelain"))
+dettl:::git_run(c("status", "--porcelain"))
 }
 \keyword{internal}

@@ -151,7 +151,7 @@ After completing the implementation of the extract stage you can run just that s
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
 import <- dettl::dettl(import_path, db_name = "test")
-import <- dettl::run_import(import, "extract")
+import <- dettl::run_import(import, "extract", dry_run = TRUE)
 extracted_data <- import$get_extracted_data()
 ```
 The extracted data can be inspected to ensure it looks as expected.
@@ -182,7 +182,7 @@ testthat::test_that("transformed data contains 2 rows", {
 Like with developing the extract stage you can now run the process up the transform step to check it is working though you should try to add any checks required for accepting the transform stage to the test file.
 
 ```{r}
-import <- dettl::run_import(import, "transform")
+import <- dettl::run_import(import, "transform", dry_run= TRUE)
 transformed_data <- import$get_transformed_data()
 ```
 
@@ -255,7 +255,7 @@ import <- dettl::dettl(import_path, db_name = "test")
 
 You can then run the import process by running
 
-```{r}
+```{r eval = FALSE}
 dettl::run_import(import)
 ```
 
@@ -263,7 +263,7 @@ This will fail if any of the stages fail.
 
 Alternatively you can run the process up to just a specific point to view the output if desired - which should be useful for debugging any process problems e.g.
 
-```{r}
+```{r eval = FALSE}
 dettl::run_import(import, c("extract", "transform"))
 ```
 

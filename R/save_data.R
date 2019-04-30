@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
-#' run_import(import, "extract")
+#' run_import(import, "extract", dry_run = TRUE)
 #' t <- tempfile()
 #' save_extracted_data(import, t)
 save_extracted_data <- function(import, file) {
@@ -37,7 +37,7 @@ save_extracted_data <- function(import, file) {
 #'    )"
 #' )
 #' DBI::dbClearResult(people_query)
-#' run_import(import, c("extract", "transform"))
+#' run_import(import, c("extract", "transform"), dry_run = TRUE)
 #' t <- tempfile()
 #' save_transformed_data(import, t)
 save_transformed_data <- function(import, file) {

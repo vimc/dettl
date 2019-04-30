@@ -46,7 +46,7 @@ git_status <- function(root = NULL, ignore_untracked = FALSE) {
 #' @keywords internal
 #'
 #' @examples
-#' git_run(c("status", "--porcelain"))
+#' dettl:::git_run(c("status", "--porcelain"))
 git_run <- function(args, root = NULL, check = FALSE) {
   git <- sys_which("git")
   if (!is.null(root)) {
