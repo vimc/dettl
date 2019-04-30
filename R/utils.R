@@ -222,3 +222,30 @@ file_copy <- function(..., overwrite = TRUE) {
   }
   ok
 }
+
+sys_which <- function(name) {
+  path <- Sys.which(name)
+  if (!nzchar(path)) {
+    stop(sprintf("Did not find '%s'", name), call. = FALSE)
+  }
+  unname(path)
+}
+
+system3 <- function(command, args) {
+  res <- suppressWarnings(system2(command, args, stdout = TRUE, stderr = TRUE))
+  code <- attr(res, "status") %||% 0
+  attr(res, "status") <- NULL
+  list(success = code == 0,
+       code = code,
+       output = res)
+}
+
+zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
+  owd <- setwd(dirname(path))
+  on.exit(setwd(owd))
+  code <- utils::zip(dest, basename(path), extras = "-q")
+  if (code != 0) {
+    stop("error running zip")
+  }
+  normalizePath(dest)
+}

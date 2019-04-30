@@ -189,3 +189,8 @@ test_that("check_length returns meaningful errors", {
   expect_error(check_length(test_list, "lt", 1),
                "Length of test_list must be less than 1.")
 })
+
+test_that("zip_dir", {
+  mockery::stub(zip_dir, "utils::zip", function(...) -1)
+  expect_error(zip_dir(tempfile()), "error running zip")
+})

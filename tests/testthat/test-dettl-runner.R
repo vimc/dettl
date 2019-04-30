@@ -1,9 +1,9 @@
 context("test-dettl-runner")
 
 test_that("dettl works as expected", {
-
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
+  prepare_example_db(db_name, dir = path)
   on.exit(unlink(db_name), add = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -13,7 +13,7 @@ test_that("dettl works as expected", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   ## when creating import object
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
 
   ## object has been created
   expect_false(is.null(import))
@@ -78,9 +78,9 @@ test_that("import can be created using a default db", {
 })
 
 test_that("run import runs a full import process", {
-
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
+  prepare_example_db(db_name, dir = path)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -89,7 +89,7 @@ test_that("run import runs a full import process", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
   import <- run_import(import)
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),
@@ -101,9 +101,9 @@ test_that("run import runs a full import process", {
 })
 
 test_that("run step rolls back when tests fail", {
-
+  path <- build_git_demo(example_dir = "example_failing_test")
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
+  prepare_example_db(db_name, dir = path)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -112,7 +112,7 @@ test_that("run step rolls back when tests fail", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example_failing_test/", db_name = "test")
+  import <- dettl(file.path(path, "example_failing_test/"), db_name = "test")
   expect_error(run_import(import),
                "Failed to load data - not all tests passed.")
 
@@ -170,8 +170,9 @@ test_that("trying to create import for db missing from config fails", {
 
 test_that("a dry run of the import can be executed", {
   ## Set up db for testing
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
+  prepare_example_db(db_name, dir = path)
   on.exit(unlink(db_name), add = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -180,7 +181,7 @@ test_that("a dry run of the import can be executed", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
   con <- import$get_connection()
 
   ## when running extract + transform as a dry run
@@ -205,9 +206,9 @@ test_that("a dry run of the import can be executed", {
 })
 
 test_that("run import prints import directory to the log", {
-
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
+  prepare_example_db(db_name, dir = path)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -216,7 +217,30 @@ test_that("run import prints import directory to the log", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
   expect_message(run_import(import, "extract"),
-    sprintf("Running import %s", normalizePath("example/")))
+    sprintf("Running import %s", file.path(path, "example")))
+})
+
+test_that("run import checks git state before import is run", {
+  path <- build_git_demo()
+  db_name <- "test.sqlite"
+  prepare_example_db(db_name, dir = path)
+  on.exit(unlink(db_name))
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Add a new file to test that git is checked
+  writeLines("test", file.path(path, "test"))
+  import <- dettl(file.path(path, "example/"), db_name = "test")
+  expect_error(run_import(import, "extract"),
+    sprintf("Can't run import as repository has unstaged changes. Update git or run in dry-run mode."))
+
+  ## Import can be run in dry-run mode still
+  run_import(import, "extract", dry_run = TRUE)
+  expect_true(!is.null(import$get_extracted_data()))
 })

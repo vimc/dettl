@@ -1,9 +1,10 @@
 context("save-data")
 
 test_that("extracted data can be saved", {
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name), add = TRUE)
+  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
+  on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -11,7 +12,7 @@ test_that("extracted data can be saved", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", "test")
+  import <- dettl(file.path(path, "example/"), "test")
 
   file <- tempfile(fileext = ".xlsx")
   expect_error(save_extracted_data(import, file),
@@ -28,9 +29,10 @@ test_that("extracted data can be saved", {
 })
 
 test_that("transformed data can be saved", {
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name), add = TRUE)
+  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
+  on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -38,7 +40,7 @@ test_that("transformed data can be saved", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", "test")
+  import <- dettl(file.path(path, "example/"), "test")
 
   file <- tempfile(fileext = ".xlsx")
   expect_error(save_transformed_data(import, file),
@@ -59,9 +61,10 @@ test_that("trying to save data with non data import object fails", {
 })
 
 test_that("save data can create new file", {
+  path <- build_git_demo()
   db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name), add = TRUE)
+  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
+  on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -69,7 +72,7 @@ test_that("save data can create new file", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example/", "test")
+  import <- dettl(file.path(path, "example/"), "test")
   run_import(import, "extract")
 
   dir <- tempdir()
@@ -79,8 +82,9 @@ test_that("save data can create new file", {
 })
 
 test_that("saving data with multiple sheets is supported", {
+  path <- build_git_demo(example_dir = "example_default_load")
   db_name <- "test.sqlite"
-  prepare_example_db(db_name, add_data = TRUE, add_job_table = TRUE)
+  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
   on.exit(unlink(db_name))
 
   ## Turn off reporting when running import so import tests do not print
@@ -89,7 +93,7 @@ test_that("saving data with multiple sheets is supported", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl("example_default_load/", db_name = "test")
+  import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
   run_import(import, c("extract", "transform"))
 
   file <- tempfile(fileext = "xlsx")
