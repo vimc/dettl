@@ -15,10 +15,12 @@ test_that("dettl DB args can be read from yaml config", {
   db_cfg <- dettl_db_args(path, "example")
   expect_identical(db_cfg$driver, RSQLite::SQLite)
   expect_match(db_cfg$args$dbname, ".+/test.sqlite")
+  expect_equal(db_cfg$log_table, "data_import_log")
 
   db_cfg <- dettl_db_args(path, "uat")
   expect_identical(db_cfg$driver, RPostgres::Postgres)
   expect_identical(db_cfg$args$dbname, "montagu")
+  expect_equal(db_cfg$log_table, "data_import_log")
 
   expect_error(
     dettl_db_args(path, "missing"),
@@ -31,6 +33,7 @@ test_that("db type will default to first configured db if NULL", {
   db_cfg <- dettl_db_args(path)
   expect_identical(db_cfg$driver, RSQLite::SQLite)
   expect_match(db_cfg$args$dbname, ".+/test.sqlite")
+  expect_equal(db_cfg$log_table, "data_import_log")
 })
 
 test_that("dettl DB args can be read from yaml config and the vault", {
@@ -41,7 +44,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
 
   withr::with_envvar(c(VAULTR_AUTH_METHOD = "token", VAULT_TOKEN = srv$token), {
     cfg <- dettl_db_args(path, "uat")
-    expect_length(cfg, 2)
+    expect_length(cfg, 3)
     expect_type(cfg$driver, "closure")
     expect_equal(cfg$driver, RPostgres::Postgres)
     expect_length(cfg$args, 5)
@@ -50,6 +53,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
     expect_equal(cfg$args$port, 12345)
     expect_equal(cfg$args$user, "readonly")
     expect_equal(cfg$args$password, "test")
+    expect_equal(cfg$log_table, "data_import_log")
   })
 })
 

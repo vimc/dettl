@@ -17,6 +17,19 @@ db_connect <- function(type, path) {
   con
 }
 
+#' Get the log table name from configuration for a particular db
+#'
+#' @param type The db to get the log table for, must match a db configured in
+#' db config.
+#' @param path Path to directory contianing yaml config.
+#'
+#' @keywords internal
+#'
+db_get_log_table <- function(type, path) {
+  x <- dettl_db_args(path, type)
+  x$log_table
+}
+
 #' Enable foreign key constraints for SQLite connections
 #'
 #' Foreign key constraints aren't enabled by default in SQLite. Ensure
@@ -65,5 +78,5 @@ dettl_db_args <- function(path, type = NULL) {
     resolved_args <- vaultr::vault_resolve_secrets(x$args,
                                                    addr = config$vault_server)
   )
-  list(driver = driver, args = resolved_args)
+  list(driver = driver, args = resolved_args, log_table = x$log_table)
 }
