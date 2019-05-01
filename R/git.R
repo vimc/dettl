@@ -69,7 +69,7 @@ git_run <- function(args, root = NULL, check = FALSE) {
 #'
 #' @keywords internal
 git_root_directory <- function(dir) {
-  args <- c("rev-parse", "--git-dir")
+  args <- c("rev-parse", "--absolute-git-dir")
   res <- git_run(args, root = dir)
   if (!res$success) {
     stop(sprintf(
