@@ -75,7 +75,7 @@ add_missing_function_fields <- function(info, fields) {
 set_missing_values <- function(info, field_name) {
   ## Func can be empty for load field when running default load
   if (field_name != "load") {
-    if (is.null(info[[field_name]]$func) || is.na(info[[field_name]]$func)) {
+    if (is.null(info[[field_name]]$func)) {
       info[[field_name]]$func <- field_name
     }
   }
@@ -85,7 +85,7 @@ set_missing_values <- function(info, field_name) {
     info[[field_name]]$verification_queries <- "verification_queries"
   }
   missing_postload_test <- field_name == "load" &&
-    (is.null(info[[field_name]]$test) || is.na(info[[field_name]]$test))
+    is.null(info[[field_name]]$test)
   if (missing_postload_test) {
     info[[field_name]]$test <- "R/test_load.R"
   }
