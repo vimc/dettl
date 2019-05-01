@@ -60,10 +60,11 @@ test_that("no transient db", {
   config <- list(db = list(
     test = list(
       driver = "RSQLite::SQLite",
-      args = list(dbname = ":memory:")
+      args = list(dbname = ":memory:"),
+      log_table = "log_table"
     )
   ))
-  writeLines(yaml::as.yaml(config), file.path(path, "db_config.yml"))
+  writeLines(yaml::as.yaml(config), file.path(path, "dettl_config.yml"))
   expect_error(
     dettl_db_args(path, "test"),
     "Cannot use a transient SQLite database with dettl"

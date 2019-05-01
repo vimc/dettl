@@ -10,7 +10,7 @@ dettl(path, db_name = NULL)
 \item{path}{Path to directory containing functions for import process.}
 
 \item{db_name}{The name of the db to connect to. Connection info must be
-configured via the \code{db_config.yml}. If name is left blank this will default
+configured via the \code{dettl_config.yml}. If name is left blank this will default
 to using the first db configured.}
 }
 \value{
