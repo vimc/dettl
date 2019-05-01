@@ -42,11 +42,13 @@ dettl <- function(path, db_name = NULL) {
 #' @param dry_run If TRUE then any database changes are rolled back when the
 #' import completes. i.e. the load stage can be run and tests executed but the
 #' db will be rolled back.
+#' @param comment An optional comment to be added to the import log table for
+#' this run.
 #'
 #' @return The processed DataImport object.
 #' @export
 #'
-run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
+run_import <- function(import, run_stages = NULL, dry_run = FALSE, comment = NULL) {
   if (is.null(import) || !inherits(import, "DataImport")) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
@@ -59,7 +61,7 @@ run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
     import$transform()
   }
   if (is.null(run_stages) || "load" %in% run_stages) {
-    import$load(dry_run)
+    import$load(dry_run, comment)
   }
   invisible(import)
 }

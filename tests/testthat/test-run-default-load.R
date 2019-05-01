@@ -13,6 +13,7 @@ test_that("default load can be run", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl("example_default_load/", db_name = "test")
+  browser()
   run_import(import, c("extract", "transform", "load"))
 
   con <- import$get_connection()

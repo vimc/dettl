@@ -13,8 +13,8 @@ DataImport <- R6::R6Class(
     load_test_ = NULL,
     test_queries = NULL,
     extracted_data = NULL,
-    transformed_data = NULL
-
+    transformed_data = NULL,
+    log_table = NULL
   ),
 
   public = list(
@@ -32,6 +32,7 @@ DataImport <- R6::R6Class(
       private$load_ <- load
       private$load_test_ <- load_test
       private$test_queries <- test_queries
+      private$log_table <- db_get_log_table(db_name, path)
       lockBinding("path", self)
     },
 
@@ -49,9 +50,10 @@ DataImport <- R6::R6Class(
                                            private$transform_test_)
     },
 
-    load = function(dry_run) {
+    load = function(dry_run, comment) {
       run_load(private$con, private$load_, private$transformed_data,
-               private$test_queries, self$path, private$load_test_, dry_run)
+               private$test_queries, self$path, private$load_test_, dry_run,
+               private$log_table, comment)
       invisible(TRUE)
     },
 
@@ -65,6 +67,10 @@ DataImport <- R6::R6Class(
 
     get_transformed_data = function() {
       private$transformed_data
+    },
+
+    get_log_table = function() {
+      private$log_table
     }
   )
 )

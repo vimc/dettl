@@ -4,7 +4,8 @@
 \alias{run_import}
 \title{Run the import process for a data_import object.}
 \usage{
-run_import(import, run_stages = NULL, dry_run = FALSE)
+run_import(import, run_stages = NULL, dry_run = FALSE,
+  comment = NULL)
 }
 \arguments{
 \item{import}{The DataImport object.}
@@ -15,6 +16,9 @@ if NULL.}
 \item{dry_run}{If TRUE then any database changes are rolled back when the
 import completes. i.e. the load stage can be run and tests executed but the
 db will be rolled back.}
+
+\item{comment}{An optional comment to be added to the import log table for
+this run.}
 }
 \value{
 The processed DataImport object.

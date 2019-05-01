@@ -25,6 +25,9 @@ test_that("dettl works as expected", {
   expect_true("people" %in% DBI::dbListTables(con))
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
+  ## and log table is available
+  expect_equal(import$get_log_table(), "log_table")
+
   ## and no data has been extracted or transformed
   extracted_data <- import$get_extracted_data()
   expect_null(extracted_data, "Expected data non null")
@@ -63,7 +66,9 @@ test_that("dettl works as expected", {
   import <- run_import(import, "load")
 
   ## then database contains correct data
-  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"), expected_data[c(1,2), ])
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
+               expected_data[c(1,2), ])
+
 })
 
 test_that("import can be created using a default db", {
