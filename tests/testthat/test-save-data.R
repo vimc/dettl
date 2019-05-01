@@ -1,10 +1,7 @@
 context("save-data")
 
 test_that("extracted data can be saved", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import(add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -29,10 +26,7 @@ test_that("extracted data can be saved", {
 })
 
 test_that("transformed data can be saved", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import(add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -61,10 +55,7 @@ test_that("trying to save data with non data import object fails", {
 })
 
 test_that("save data can create new file", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import(add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -82,10 +73,8 @@ test_that("save data can create new file", {
 })
 
 test_that("saving data with multiple sheets is supported", {
-  path <- build_git_demo(example_dir = "example_default_load")
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import("example_default_load",
+                              add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.

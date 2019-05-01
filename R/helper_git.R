@@ -1,6 +1,5 @@
-build_git_demo <- function(example_dir = "example",
-                           dettl_config_path = "dettl_config.yml") {
-  path <- setup_dettl(example_dir, dettl_config_path)
+build_git_demo <- function(example_dir = "example") {
+  path <- setup_dettl(example_dir)
   git_run("init", root = path)
   git_run(c("config", "user.email", "email@example.com"), root = path,
           check = TRUE)

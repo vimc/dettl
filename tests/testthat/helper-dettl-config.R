@@ -16,7 +16,7 @@ setup_config <- function(db_driver = "RSQLite::SQLite",
 
 setup_dettl_config <- function(load = "func: load",
                                rewrite_keys = "") {
-  path <- setup_dettl("example_load_template", "dettl_config.yml")
+  path <- setup_dettl("example_load_template")
   filename <- file.path(path, "example_load_template", "dettl.yml")
   cfg <- readLines(filename)
   cfg <- gsub("<load>", load, cfg, fixed = TRUE)
@@ -24,12 +24,4 @@ setup_dettl_config <- function(load = "func: load",
   cfg <- unlist(strsplit(cfg, "\n"))
   writeLines(cfg, filename)
   file.path(path, "example_load_template")
-}
-
-setup_dettl <- function(dir, dettl_config_path) {
-  path <- tempfile()
-  dir.create(path)
-  file.copy(dir, path, recursive = TRUE)
-  file.copy(dettl_config_path, path)
-  path
 }

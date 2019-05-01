@@ -1,10 +1,7 @@
 context("test-dettl-runner")
 
 test_that("dettl works as expected", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name), add = TRUE)
+  path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -67,21 +64,15 @@ test_that("dettl works as expected", {
 })
 
 test_that("import can be created using a default db", {
+  path <- prepare_test_import()
 
-  db_name <- "test.sqlite"
-  path <- prepare_example_db(db_name)
-  on.exit(unlink(db_name))
-
-  import <- dettl("example/")
+  import <- dettl(file.path(path, "example/"))
   con <- import$get_connection()
-  expect_equal(con@dbname, path)
+  expect_equal(con@dbname, file.path(path, "test.sqlite"))
 })
 
 test_that("run import runs a full import process", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -101,10 +92,7 @@ test_that("run import runs a full import process", {
 })
 
 test_that("run step rolls back when tests fail", {
-  path <- build_git_demo(example_dir = "example_failing_test")
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import("example_failing_test")
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -119,24 +107,18 @@ test_that("run step rolls back when tests fail", {
 })
 
 test_that("transform cannot be run until extract stage has been run", {
+  path <- prepare_test_import()
 
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name))
-
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
 
   expect_error(import$transform(),
                "Cannot run transform as no data has been extracted.")
 })
 
 test_that("load cannot be run until transform stage has been run", {
+  path <- prepare_test_import()
 
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name))
-
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
 
   expect_error(import$load(),
                "Cannot run tests as no data has been transformed.")
@@ -149,11 +131,9 @@ test_that("import cannot be run on object of wrong type", {
     "Can only run import for non null data import with class 'DataImport'."
   )
 
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import()
 
-  import <- dettl("example/", db_name = "test")
+  import <- dettl(file.path(path, "example/"), db_name = "test")
   class(import) <- "data_import"
 
   expect_error(
@@ -169,11 +149,7 @@ test_that("trying to create import for db missing from config fails", {
 })
 
 test_that("a dry run of the import can be executed", {
-  ## Set up db for testing
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name), add = TRUE)
+  path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -206,10 +182,7 @@ test_that("a dry run of the import can be executed", {
 })
 
 test_that("run import prints import directory to the log", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -223,10 +196,7 @@ test_that("run import prints import directory to the log", {
 })
 
 test_that("run import checks git state before import is run", {
-  path <- build_git_demo()
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.

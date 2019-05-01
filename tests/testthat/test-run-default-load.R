@@ -1,11 +1,7 @@
 context("run-default-load")
 
 test_that("default load can be run", {
-  path <- build_git_demo(example_dir = "example_default_load")
-  ## Set up a db with some people alread loaded
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name, dir = path, add_data = TRUE, add_job_table = TRUE)
-  on.exit(unlink(db_name))
+  path <- prepare_test_import("example_default_load", TRUE, TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
