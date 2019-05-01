@@ -147,14 +147,17 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `dettl_config.yml`. See example below for a previously configured example. Note that the preparation step which calls `prepare_test_import` is only used to setup the import in a temporary directory as this is a vignette. This won't be needed in a real world scenario.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `dettl_config.yml`. See example below for a previously configured example. Note that `import_path` is the path to an import directory with structure like above.
 
 
-```{r}
+```{r include = FALSE}
 path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")
+```
+
+```{r}
 import <- dettl::dettl(import_path, db_name = "test")
 dettl::run_import(import, "extract")
 extracted_data <- import$get_extracted_data()
@@ -242,14 +245,17 @@ After this stage has been implemeneted the import process can be run end-to-end.
 
 ## Running the process {#run}
 
-The process can be run by first creating a new import object using the name of the directory containing the process you want to run. Again note that the `prepare_test_import` call here is only needed because this is being run within a vignette and is not required in a real world scenario.
+The process can be run by first creating a new import object using the name of the directory containing the process you want to run. Again note that the `import_path` here is the path to import directory.
 
-```{r}
+```{r include = FALSE}
 path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
-import <- dettl::dettl(file.path(path, "person_information"), 
-                       db_name = "test")
+import_path <- file.path(path, "person_information")
+```
+
+```{r}
+import <- dettl::dettl(import_path, db_name = "test")
 ```
 
 You can then run the import process by running
