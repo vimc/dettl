@@ -148,7 +148,7 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `db_config.yml`. See example below for a previously configured example.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `dettl_config.yml`. See example below for a previously configured example.
 
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
