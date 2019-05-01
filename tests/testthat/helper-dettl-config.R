@@ -26,10 +26,10 @@ setup_dettl_config <- function(load = "func: load",
   file.path(path, "example_load_template")
 }
 
-setup_dettl <- function(dir, dettl_config) {
+setup_dettl <- function(dir, dettl_config_path) {
   path <- tempfile()
   dir.create(path)
   file.copy(dir, path, recursive = TRUE)
-  file.copy(dettl_config, path)
+  file.copy(dettl_config_path, path)
   path
 }
