@@ -19,6 +19,19 @@ prepare_example_postgres_db <- function() {
     )"
   )
   DBI::dbClearResult(people_query)
+
+  ## Make sure we have a fresh "log_table" table if one existed already
+  drop_log <- DBI::dbSendQuery(con,
+    "DROP TABLE IF EXISTS log_table")
+  DBI::dbClearResult(drop_log)
+  log_table_query <- DBI::dbSendQuery(con,
+    "CREATE TABLE log_table (
+      name    TEXT,
+      date    TIMESTAMP,
+      comment TEXT
+    )"
+  )
+  DBI::dbClearResult(log_table_query)
   con
 }
 
