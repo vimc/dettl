@@ -243,4 +243,8 @@ test_that("run import checks git state before import is run", {
   ## Import can be run in dry-run mode still
   run_import(import, "extract", dry_run = TRUE)
   expect_true(!is.null(import$get_extracted_data()))
+
+  ## Import can skip git checks using force
+  run_import(import, "transform", force = TRUE)
+  expect_true(!is.null(import$get_transformed_data()))
 })
