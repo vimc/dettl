@@ -19,14 +19,11 @@ git_is_clean <- function(import_dir) {
 #' ignoring untracked files.
 #'
 #' @param root The git project root directory.
-#' @param ignore_untracked Whether untracked files should be ignored or not.
-#' Passed as \code{--untracked-files} arg to \code{git status}
 #' @return Result from git including output and indication of success.
 #'
 #' @keywords internal
-git_status <- function(root = NULL, ignore_untracked = FALSE) {
-  args <- c("status", "--porcelain",
-            if (ignore_untracked) "--untracked-files=no")
+git_status <- function(root = NULL) {
+  args <- c("status", "--porcelain")
   res <- git_run(args, root = root, check = TRUE)
   res$clean <- length(res$output) == 0L
   res
