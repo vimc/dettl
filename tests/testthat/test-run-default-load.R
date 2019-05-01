@@ -1,7 +1,8 @@
 context("run-default-load")
 
 test_that("default load can be run", {
-  path <- prepare_test_import("example_default_load", TRUE, TRUE)
+  path <- prepare_test_import("example_default_load", add_data = TRUE,
+                              add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.

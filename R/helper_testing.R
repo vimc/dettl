@@ -66,13 +66,15 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE) {
 #' This should only be called from a test, vignette or roxygen example.
 #'
 #' @param example_dir The example directory to copy to temp.
+#' @param dettl_config Path to the dettl config file.
 #' @param add_data If TRUE data is bootstrapped to people table in test DB.
 #' @param add_job_table If TRUE also boostrap job table related to people table.
 #'
 #' @keywords internal
 prepare_test_import <- function(example_dir = "example",
+                                dettl_config = "dettl_config.yml",
                                 add_data = FALSE, add_job_table = FALSE) {
-  path <- build_git_demo(example_dir)
+  path <- build_git_demo(example_dir, dettl_config)
   prepare_example_db(path, add_data, add_job_table)
   path
 }
@@ -83,10 +85,10 @@ prepare_test_import <- function(example_dir = "example",
 #' @param dir The example directory to copy to tempdir.
 #'
 #' @keywords internal
-setup_dettl <- function(dir) {
+setup_dettl <- function(dir, dettl_config) {
   path <- tempfile()
   dir.create(path)
   file.copy(dir, path, recursive = TRUE)
-  file.copy("dettl_config.yml", path)
+  file.copy(dettl_config, path)
   path
 }

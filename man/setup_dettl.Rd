@@ -4,7 +4,7 @@
 \alias{setup_dettl}
 \title{Setup dettl import in a tempdir.}
 \usage{
-setup_dettl(dir)
+setup_dettl(dir, dettl_config)
 }
 \arguments{
 \item{dir}{The example directory to copy to tempdir.}
