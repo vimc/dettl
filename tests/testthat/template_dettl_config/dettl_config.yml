@@ -3,6 +3,7 @@ db:
     driver: <driver>
     args:
       dbname: test.sqlite
+    log_table: <log_table>
   uat:
     driver: RPostgres::Postgres
     args:
@@ -11,5 +12,6 @@ db:
       port: 12345
       user: readonly
       password: <db_pw>
+    log_table: <log_table>
 
 vault_server: <vault_server>

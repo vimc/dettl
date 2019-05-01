@@ -3,4 +3,4 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
-
+    log_table: log_table

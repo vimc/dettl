@@ -46,12 +46,12 @@ project_directory
 |── etl_process_2
 |   |── dettl.yml
 |── other import processes ...
-|── db_config.yml
+|── dettl_config.yml
 ```
 
 Configuration files are required at 2 levels
 
-* `db_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each ETL process subdirectory. e.g.
+* `dettl_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each ETL process subdirectory. Note that you must specify the `log_table` for each database. This is the table which import runs will be logged to.
 
 ```yaml
 db:
@@ -59,6 +59,7 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
+    log_table: import_log
   uat:
     driver: RPostgres::Postgresql
     args:
@@ -67,8 +68,9 @@ db:
       port: 12345
       user: example
       password: password
-
+    log_table: import_log
 ```
+
 * `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
 
 Taking a closer look at the structure of an individual process directory we expect something like.
@@ -120,7 +122,7 @@ on.exit(unlink(file.path(getwd(), import_name), recursive = TRUE), add = TRUE)
 
 This will create a new directory called `person_information` prepended with the current date containing the default `dettl.yml` config and 3 `R` files for you to fill in to the the extract, transform and load and 3 files for testing after each stage of the process.
 
-If you want to create a new process within a new project then you will need to manually create a new RStudio project and create a `db_config.yml` file. You can then proceed as above.
+If you want to create a new process within a new project then you will need to manually create a new RStudio project and create a `dettl_config.yml` file. You can then proceed as above.
 
 ## Developing the process
 
@@ -146,7 +148,7 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one fo the databases configured in the `db_config.yml`. See example below for a previously configured example.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one fo the databases configured in the `dettl_config.yml`. See example below for a previously configured example.
 
 ```{r}
 import_path <- system.file("examples", "person_information", package = "dettl")
