@@ -60,8 +60,7 @@ git_run <- function(args, root = NULL, check = FALSE) {
 #' Locate the git project root directory
 #'
 #' From a subdirectory within a git project locate the root directory.
-#' This is the directory contianing the .git files. Located using
-#' \code{git rev-parse --git-dir}.
+#' This is the directory contianing the .git files.
 #'
 #' @param dir The directory to locate the git project root from.
 #' @return The git project root normalized, or throws an error if this can't
@@ -69,13 +68,11 @@ git_run <- function(args, root = NULL, check = FALSE) {
 #'
 #' @keywords internal
 git_root_directory <- function(dir) {
-  args <- c("rev-parse", "--absolute-git-dir")
-  res <- git_run(args, root = dir)
-  if (!res$success) {
+  root_dir <- find_file_descend(".git", dir)
+  if (is.null(root_dir)) {
     stop(sprintf(
       "Can't run import as can't locate git directory from path %s. %s", dir,
       "Import must be under version control to be run."))
   }
-  ## Return just the path to dir containing the .git dir relative to dir
-  withr::with_dir(dir, normalizePath(dirname(res$output)))
+  root_dir
 }
