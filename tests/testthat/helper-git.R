@@ -8,7 +8,7 @@ build_git_demo <- function(example_dir = "example",
   writeLines(c("*.sqlite"), file.path(path, ".gitignore"))
   git_run(c("add", "."), root = path, check = TRUE)
   git_run(c("commit", "-m", "'initial-import'"), root = path, check = TRUE)
-  stopifnot(git_is_clean(path))
+  stopifnot(git_repo_is_clean(path))
 
   path
 }

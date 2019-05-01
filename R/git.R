@@ -1,15 +1,15 @@
 #' Check if git repo is clean
 #'
 #' Check that git repo is up to date with remote by checking
-#' \code{git status --porcelian}. If import_dir is not a git root directory
-#' this will search parents of the import_dir for the git root
+#' \code{git status --porcelian}. If import_path is not a git root directory
+#' this will search parents of the import_path for the git root
 #'
-#' @param import_dir The directory of the dettl import to check.
+#' @param import_path Path to the directory of the dettl import to check.
 #' @return True if repo is up to date. False otherwise.
 #'
 #' @keywords internal
-git_is_clean <- function(import_dir) {
-  root_dir <- git_root_directory(import_dir)
+git_repo_is_clean <- function(import_path) {
+  root_dir <- git_root_directory(import_path)
   git_status(root_dir)$clean
 }
 

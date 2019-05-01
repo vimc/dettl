@@ -4,13 +4,10 @@
 \alias{git_status}
 \title{Check git status}
 \usage{
-git_status(root = NULL, ignore_untracked = FALSE)
+git_status(root = NULL)
 }
 \arguments{
 \item{root}{The git project root directory.}
-
-\item{ignore_untracked}{Whether untracked files should be ignored or not.
-Passed as \code{--untracked-files} arg to \code{git status}}
 }
 \value{
 Result from git including output and indication of success.
