@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' path <- prepare_test_import(
+#' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
@@ -30,7 +30,7 @@ save_extracted_data <- function(import, file) {
 #' @export
 #'
 #' @examples
-#' path <- prepare_test_import(
+#' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
