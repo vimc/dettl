@@ -107,7 +107,7 @@ testthat::test_that("import fails if log table misconfigured", {
 
   mock_get_log_data <- mockery::mock(
     data.frame(name = "test", stringsAsFactors = FALSE))
-  with_mock(dettl:::get_log_data = mock_get_log_data, {
+  with_mock("dettl:::get_log_data" = mock_get_log_data, {
     expect_error(
       run_load(con, load_func, transformed_data, test_queries, path = test_dir,
                test_file = test_file, dry_run = FALSE, log_table = "log_table",
