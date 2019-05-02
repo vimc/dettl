@@ -118,7 +118,7 @@ git_config <- function(path, field) {
 #' throws an error if branch can't be retrieved.
 #'
 #' @param path Path to the directory to get the branch for.
-#' @return The git branch or error if can't be found
+#' @return The git branch or error if can't be found.
 #'
 #' @keywords internal
 git_branch <- function(path) {
@@ -130,5 +130,20 @@ git_branch <- function(path) {
       "Check repo is up to date and HEAD is not detatched."
     ))
   }
+  res$output
+}
+
+
+#' Get the full hash of the current git HEAD
+#'
+#' Get SHA-1 hash of HEAD using \code{git rev-parse HEAD}
+#'
+#' @param path Path to the directory to get the hash for.
+#' @return Hash of HEAD.
+#'
+#' @keywords internal
+git_hash <- function(path) {
+  args <- c("rev-parse", "HEAD")
+  res <- git_run(args, root = path , check = TRUE)
   res$output
 }

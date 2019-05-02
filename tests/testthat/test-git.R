@@ -59,3 +59,11 @@ test_that("git branch can be retrieved", {
     "Can't get current branch from path %s. %s", path,
     "Check repo is up to date and HEAD is not detatched."))
 })
+
+test_that("git hash can be retrieved", {
+  path <- build_git_demo()
+  hash <- git_hash(path)
+  ## Hash of temp dir will change - check that we do indeed get a hash.
+  expect_equal(nchar(hash), 40)
+  expect_true(grepl("[0-9a-f]+", hash))
+})

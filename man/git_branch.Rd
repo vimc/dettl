@@ -10,7 +10,7 @@ git_branch(path)
 \item{path}{Path to the directory to get the branch for.}
 }
 \value{
-The git branch or error if can't be found
+The git branch or error if can't be found.
 }
 \description{
 From a path to a git controlled dir get the current active branch. This
