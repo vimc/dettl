@@ -1,8 +1,25 @@
-log_import <- function(con, log_table, log_data) {
-  query <- DBI::dbAppendTable(con, log_table, log_data)
+#' Write the log data to the database.
+#'
+#' @param con Connection to the database to be written to.
+#' @param log_table The name of the table to write to.
+#' @param log_data The log data to be written to the DB.
+#'
+#' @keywords internal
+write_log <- function(con, log_table, log_data) {
+  DBI::dbAppendTable(con, log_table, log_data)
 }
 
-get_log_data <- function(con, log_table, import_path, comment) {
+#' Get the data to be written to the import log
+#'
+#' @param import_path Path to the import process directory.
+#' @param comment An optional comment for this import run.
+#'
+#' @return The prepared data for the log table. This is the name
+#' of the import, the date, comment and git information including
+#' user name, user email, current branch and hash of HEAD.
+#'
+#' @keywords internal
+get_log_data <- function(import_path, comment) {
   if (is.null(comment)) {
     comment <- ""
   }

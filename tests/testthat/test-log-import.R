@@ -5,9 +5,8 @@ test_that("log data is persisted", {
   sqlite_con <- db_connect("test", path)
   on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
 
-  log_data <- get_log_data(sqlite_con, "log_table", file.path(path, "example"),
-                           "test comment")
-  log_import(sqlite_con, "log_table", log_data)
+  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  write_log(sqlite_con, "log_table", log_data)
   sqlite_data <- DBI::dbGetQuery(sqlite_con, "SELECT * FROM log_table")
   expect_true(nrow(sqlite_data) == 1)
   expect_equal(sqlite_data$name, "example")
@@ -27,9 +26,8 @@ test_that("postgres log data is persisted", {
   postgres_con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
-  log_data <- get_log_data(postgres_con, "log_table", file.path(path, "example"),
-                           "test comment")
-  log_import(postgres_con, "log_table", log_data)
+  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  write_log(postgres_con, "log_table", log_data)
   postgres_data <- DBI::dbGetQuery(postgres_con, "SELECT * FROM log_table")
   expect_true(nrow(postgres_data) == 1)
   expect_equal(postgres_data$name, "example")
@@ -52,10 +50,9 @@ test_that("sqlite and postgres dates agree", {
   postgres_con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
-  log_data <- get_log_data(sqlite_con, "log_table", file.path(path, "example"),
-                           "test comment")
-  log_import(sqlite_con, "log_table", log_data)
-  log_import(postgres_con, "log_table", log_data)
+  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  write_log(sqlite_con, "log_table", log_data)
+  write_log(postgres_con, "log_table", log_data)
 
   sl_date <- DBI::dbGetQuery(sqlite_con, "SELECT date FROM log_table")[1, ]
   pg_date <- DBI::dbGetQuery(postgres_con, "SELECT date FROM log_table")[1, ]
