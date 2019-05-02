@@ -59,7 +59,7 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   log_table_query <- DBI::dbSendQuery(con, sprintf(
     "CREATE TABLE %s (
       name       TEXT,
-      date       TEXT,
+      date       REAL,
       comment    TEXT,
       git_user   TEXT,
       git_email  TEXT,

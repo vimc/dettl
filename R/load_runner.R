@@ -25,6 +25,8 @@ run_load <- function(con, load, transformed_data, test_queries, path,
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
+  log_data <- get_log_data(con, log_table, path, comment)
+  verify_log_table(con, log_table, log_data)
   before <- test_queries(con)
   DBI::dbBegin(con)
   transaction_active <- TRUE
@@ -40,7 +42,7 @@ run_load <- function(con, load, transformed_data, test_queries, path,
       message("All tests passed, rolling back dry run import.")
     } else {
       message("All tests passed, commiting changes to database.")
-      log_import(con, log_table, path, comment)
+      log_import(con, log_table, log_data)
       DBI::dbCommit(con)
     }
     transaction_active <- FALSE

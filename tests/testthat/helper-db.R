@@ -27,7 +27,7 @@ prepare_example_postgres_db <- function() {
   log_table_query <- DBI::dbSendQuery(con,
     "CREATE TABLE log_table (
       name       TEXT,
-      date       TIMESTAMP,
+      date       TIMESTAMP WITH TIME ZONE,
       comment    TEXT,
       git_user   TEXT,
       git_email  TEXT,

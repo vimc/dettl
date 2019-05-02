@@ -11,8 +11,10 @@
 #'
 db_connect <- function(type, path) {
   x <- dettl_db_args(path, type)
-  con <- do.call(DBI::dbConnect,
-                 c(list(x$driver()), x$args))
+  con <- do.call(
+    DBI::dbConnect,
+    c(list(x$driver()), x$args)
+  )
   sqlite_enable_fk(con)
   con
 }
@@ -74,9 +76,51 @@ dettl_db_args <- function(path, type = NULL) {
     }
   }
 
-  withr::with_envvar(envir_read(config$path),
+  withr::with_envvar(
+    envir_read(config$path),
     resolved_args <- vaultr::vault_resolve_secrets(x$args,
-                                                   addr = config$vault_server)
+      addr = config$vault_server
+    )
   )
   list(driver = driver, args = resolved_args, log_table = x$log_table)
+}
+
+#' Verify the data adhered to the DB schema.
+#'
+#' Ensure that table is in the DB and has only columns which exist in the DB.
+#' And optionally check that table contains exactly the columns in the DB.
+#'
+#' @param con The active DB connection to check the schema for.
+#' @param table_name The name of the table to check.
+#' @param table The table to check.
+#' @param context_info Info to be logged should a check fail.
+#'
+#' @keywords internal
+#'
+verify_table <- function(con, table_name, table, identical_columns = FALSE,
+                         context_info = "") {
+  if (!DBI::dbExistsTable(con, table_name)) {
+    stop(sprintf(
+      "%s: Table '%s' is missing from db schema.",
+      context_info, table_name
+    ))
+  }
+  col_names <- DBI::dbListFields(con, table_name)
+  for (col_name in colnames(table)) {
+    if (!(col_name %in% col_names)) {
+      stop(sprintf(
+        "%s: Column '%s' in table '%s' but is missing from db schema.",
+        context_info, col_name, table_name
+      ))
+    }
+  }
+  if (identical_columns) {
+    for(col_name in col_names) {
+      if (!(col_name %in% colnames(table))) {
+        stop(sprintf(
+          "%s: Column '%s' in table '%s' in DB but is missing from local table.",
+          context_info, col_name, table_name))
+      }
+    }
+  }
 }
