@@ -58,9 +58,13 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 
   log_table_query <- DBI::dbSendQuery(con, sprintf(
     "CREATE TABLE %s (
-      name    TEXT,
-      date    TEXT,
-      comment TEXT
+      name       TEXT,
+      date       TEXT,
+      comment    TEXT,
+      git_user   TEXT,
+      git_email  TEXT,
+      git_branch TEXT,
+      git_hash   TEXT
     )",
     log_table_name))
   DBI::dbClearResult(log_table_query)
@@ -84,9 +88,12 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 #' @keywords internal
 prepare_test_import <- function(example_dir = "example",
                                 dettl_config = "dettl_config.yml",
+                                create_db = TRUE,
                                 add_data = FALSE, add_job_table = FALSE) {
   path <- build_git_demo(example_dir, dettl_config)
-  prepare_example_db(path, add_data, add_job_table)
+  if (create_db) {
+    prepare_example_db(path, add_data, add_job_table)
+  }
   path
 }
 

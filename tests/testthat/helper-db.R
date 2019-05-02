@@ -26,9 +26,13 @@ prepare_example_postgres_db <- function() {
   DBI::dbClearResult(drop_log)
   log_table_query <- DBI::dbSendQuery(con,
     "CREATE TABLE log_table (
-      name    TEXT,
-      date    TIMESTAMP,
-      comment TEXT
+      name       TEXT,
+      date       TIMESTAMP,
+      comment    TEXT,
+      git_user   TEXT,
+      git_email  TEXT,
+      git_branch TEXT,
+      git_hash   CHARACTER(40)
     )"
   )
   DBI::dbClearResult(log_table_query)

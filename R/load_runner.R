@@ -40,7 +40,7 @@ run_load <- function(con, load, transformed_data, test_queries, path,
       message("All tests passed, rolling back dry run import.")
     } else {
       message("All tests passed, commiting changes to database.")
-      log_import(con, log_table, basename(path), comment)
+      log_import(con, log_table, path, comment)
       DBI::dbCommit(con)
     }
     transaction_active <- FALSE

@@ -5,8 +5,8 @@
 \title{Prepare example import inside a git repo}
 \usage{
 prepare_test_import(example_dir = "example",
-  dettl_config = "dettl_config.yml", add_data = FALSE,
-  add_job_table = FALSE)
+  dettl_config = "dettl_config.yml", create_db = TRUE,
+  add_data = FALSE, add_job_table = FALSE)
 }
 \arguments{
 \item{example_dir}{The example directory to copy to temp.}
