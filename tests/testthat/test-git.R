@@ -36,3 +36,26 @@ test_that("git run returns errors", {
                "Error code 1 running command:[.\n]+")
 })
 
+test_that("git user and email can be retrieved", {
+  path <- build_git_demo()
+  user <- git_user(path)
+  expect_equal(user, "dettl")
+  email <- git_email(path)
+  expect_equal(email, "email@example.com")
+})
+
+test_that("git branch can be retrieved", {
+  path <- build_git_demo()
+  branch <- git_branch(path)
+  expect_equal(branch, "master")
+
+  ## Error thrown when HEAD is detatched
+  writeLines("hello", file.path(path, "hello"))
+  git_run(c("add", "."), root = path, check = TRUE)
+  git_run(c("commit", "-m", "'second-import'"), root = path,
+          check = TRUE)
+  git_run(c("checkout", "HEAD~1"), root = path, check = TRUE)
+  expect_error(git_branch(path), sprintf(
+    "Can't get current branch from path %s. %s", path,
+    "Check repo is up to date and HEAD is not detatched."))
+})
