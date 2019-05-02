@@ -1,10 +1,8 @@
 context("insert-into-returning")
 
 test_that("can add data to SQLite database retuning primary key", {
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name))
-  con <- dbi_db_connect(RSQLite::SQLite(), db_name)
+  path <- prepare_test_import()
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
   data <- data.frame(list(
     name = c("Alice", "Bob"),

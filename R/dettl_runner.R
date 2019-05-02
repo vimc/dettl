@@ -42,14 +42,18 @@ dettl <- function(path, db_name = NULL) {
 #' @param dry_run If TRUE then any database changes are rolled back when the
 #' import completes. i.e. the load stage can be run and tests executed but the
 #' db will be rolled back.
+#' @param force If TRUE then git checks for running the import are skipped
 #'
 #' @return The processed DataImport object.
 #' @export
 #'
-run_import <- function(import, run_stages = NULL, dry_run = FALSE) {
+run_import <- function(import, run_stages = NULL, dry_run = FALSE, force = FALSE) {
   if (is.null(import) || !inherits(import, "DataImport")) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
+  }
+  if (!force && !dry_run && !git_repo_is_clean(import$path)) {
+    stop("Can't run import as repository has unstaged changes. Update git or run in dry-run mode.")
   }
   message(sprintf("Running import %s", import$path))
   if (is.null(run_stages) || "extract" %in% run_stages) {
