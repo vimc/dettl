@@ -51,8 +51,10 @@ git_run <- function(args, root = NULL, check = FALSE) {
   }
   res <- system3(git, args)
   if (check && !res$success) {
-    stop(sprintf("Error code %d running command:\n%s",
-                 res$code, paste0("  > ", res$output, collapse = "\n")))
+    stop(sprintf(
+      "Error code %d running command:\n%s",
+      res$code, paste0("  > ", res$output, collapse = "\n")
+    ))
   }
   res
 }
@@ -72,7 +74,8 @@ git_root_directory <- function(dir) {
   if (is.null(root_dir)) {
     stop(sprintf(
       "Can't run import as can't locate git directory from path %s. %s", dir,
-      "Import must be under version control to be run."))
+      "Import must be under version control to be run."
+    ))
   }
   root_dir
 }
@@ -121,10 +124,11 @@ git_config <- function(path, field) {
 git_branch <- function(path) {
   args <- c("symbolic-ref", "--short", "HEAD")
   res <- git_run(args, root = path, check = FALSE)
-  if (!res$success){
+  if (!res$success) {
     stop(sprintf(
       "Can't get current branch from path %s. %s", path,
-      "Check repo is up to date and HEAD is not detatched."))
+      "Check repo is up to date and HEAD is not detatched."
+    ))
   }
   res$output
 }
