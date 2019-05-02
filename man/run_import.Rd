@@ -5,7 +5,7 @@
 \title{Run the import process for a data_import object.}
 \usage{
 run_import(import, run_stages = NULL, dry_run = FALSE,
-  comment = NULL)
+  comment = NULL, force = FALSE)
 }
 \arguments{
 \item{import}{The DataImport object.}
@@ -19,6 +19,8 @@ db will be rolled back.}
 
 \item{comment}{An optional comment to be added to the import log table for
 this run.}
+
+\item{force}{If TRUE then git checks for running the import are skipped}
 }
 \value{
 The processed DataImport object.

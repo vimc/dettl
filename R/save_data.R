@@ -8,8 +8,12 @@
 #' @export
 #'
 #' @examples
-#' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
-#' run_import(import, "extract")
+#' path <- dettl:::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl")
+#' )
+#' import <- dettl(file.path(path, "person_information"), "test")
+#' run_import(import, "extract", dry_run = TRUE)
 #' t <- tempfile()
 #' save_extracted_data(import, t)
 save_extracted_data <- function(import, file) {
@@ -26,18 +30,12 @@ save_extracted_data <- function(import, file) {
 #' @export
 #'
 #' @examples
-#' import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
-#' con <- import$get_connection()
-#' people_query <- DBI::dbSendQuery(con,
-#'   "CREATE TABLE people (
-#'      id     BIGSERIAL PRIMARY KEY,
-#'      name   TEXT,
-#'      age    INTEGER,
-#'      height INTEGER
-#'    )"
+#' path <- dettl:::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
-#' DBI::dbClearResult(people_query)
-#' run_import(import, c("extract", "transform"))
+#' import <- dettl(file.path(path, "person_information"), "test")
+#' run_import(import, c("extract", "transform"), dry_run = TRUE)
 #' t <- tempfile()
 #' save_transformed_data(import, t)
 save_transformed_data <- function(import, file) {

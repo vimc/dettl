@@ -44,14 +44,19 @@ dettl <- function(path, db_name = NULL) {
 #' db will be rolled back.
 #' @param comment An optional comment to be added to the import log table for
 #' this run.
+#' @param force If TRUE then git checks for running the import are skipped
 #'
 #' @return The processed DataImport object.
 #' @export
 #'
-run_import <- function(import, run_stages = NULL, dry_run = FALSE, comment = NULL) {
+run_import <- function(import, run_stages = NULL, dry_run = FALSE,
+                       comment = NULL, force = FALSE) {
   if (is.null(import) || !inherits(import, "DataImport")) {
     stop(
       "Can only run import for non null data import with class 'DataImport'.")
+  }
+  if (!force && !dry_run && !git_repo_is_clean(import$path)) {
+    stop("Can't run import as repository has unstaged changes. Update git or run in dry-run mode.")
   }
   message(sprintf("Running import %s", import$path))
   if (is.null(run_stages) || "extract" %in% run_stages) {

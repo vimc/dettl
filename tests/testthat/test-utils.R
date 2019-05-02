@@ -189,3 +189,18 @@ test_that("check_length returns meaningful errors", {
   expect_error(check_length(test_list, "lt", 1),
                "Length of test_list must be less than 1.")
 })
+
+test_that("sys_which", {
+  expect_error(sys_which("non existent command"),
+               "Did not find 'non existent command'")
+})
+
+test_that("zip_dir", {
+  t <- tempfile()
+  dir.create(t, FALSE)
+  zip <- zip_dir(t)
+  expect_equal(zip, paste0(t, ".zip"))
+
+  mockery::stub(zip_dir, "utils::zip", function(...) -1)
+  expect_error(zip_dir(tempfile()), "error running zip")
+})

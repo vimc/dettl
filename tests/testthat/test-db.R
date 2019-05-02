@@ -1,11 +1,9 @@
 context("test-db")
 
 test_that("db can connect to database using yaml config", {
-  db_name <- "test.sqlite"
-  prepare_example_db(db_name)
-  on.exit(unlink(db_name), add = TRUE)
+  path <- prepare_test_import()
 
-  con <- db_connect("test", ".")
+  con <- db_connect("test", path)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
   expect_true(DBI::dbIsValid(con))
 })
@@ -59,7 +57,6 @@ test_that("dettl DB args can be read from yaml config and the vault", {
 
 test_that("no transient db", {
   path <- tempfile()
-  on.exit(unlink(path, recursive = TRUE))
   dir.create(path, FALSE, TRUE)
   config <- list(db = list(
     test = list(
