@@ -50,9 +50,9 @@ verify_data <- function(con, transformed_data) {
   if (length(transformed_data) == 0) {
     stop("Data transform failed, returned empty list.")
   }
-  lapply(names(transformed_data), function(x) {
-    verify_table(con, x, transformed_data[[x]],
+  for (table_name in names(transformed_data)) {
+    verify_table(con, table_name, transformed_data[[table_name]],
                  context_info = "Transformed data")
-  })
+  }
 }
 
