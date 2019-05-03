@@ -25,7 +25,7 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
   con <- DBI::dbConnect(RSQLite::SQLite(), path)
   sqlite_enable_fk(con)
-  people_query <- DBI::dbSendQuery(con,
+  DBI::dbExecute(con,
     "CREATE TABLE people (
       id     INTEGER PRIMARY KEY,
       name   TEXT,
@@ -33,7 +33,6 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
       height INTEGER
     )"
   )
-  DBI::dbClearResult(people_query)
   if (add_data) {
     person <- data.frame(list(
       name = "Daisy",
@@ -45,7 +44,7 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
 
   if (add_job_table) {
-    job_query <- DBI::dbSendQuery(con,
+    DBI::dbExecute(con,
       "CREATE TABLE jobs (
         id     INTEGER PRIMARY KEY,
         job    TEXT,
@@ -53,13 +52,11 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
         FOREIGN KEY (person) REFERENCES people(id)
       )"
     )
-    DBI::dbClearResult(job_query)
   }
 
   query_text <- read_lines(
     system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
-  log_table_query <- DBI::dbSendQuery(con, query_text)
-  DBI::dbClearResult(log_table_query)
+  DBI::dbExecute(con, query_text)
 
   DBI::dbDisconnect(con)
   path

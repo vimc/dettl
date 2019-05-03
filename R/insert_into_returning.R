@@ -31,8 +31,7 @@ insert_into_returning.SQLiteConnection <- function(con, table, d, key = NULL,
             )
     sql <- paste(sql, collapse = "\n")
     if (is.null(key)) {
-      query <- DBI::dbSendQuery(con, sql, unname(x))
-      DBI::dbClearResult(query)
+      DBI::dbExecute(con, sql, unname(x))
       ## TODO: What happens here if we insert but the table has no rowid?
       rowid_last_entry <- DBI::dbGetQuery(con, "SELECT last_insert_rowid()")[1, 1]
       DBI::dbGetQuery(con, sprintf("SELECT %s FROM %s WHERE rowid = $2", id, table), rowid_last_entry)[[1]]
@@ -44,8 +43,7 @@ insert_into_returning.SQLiteConnection <- function(con, table, d, key = NULL,
       ret <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
                              unname(x[key]))[[id]]
       if (length(ret) == 0L) {
-        query <- DBI::dbSendQuery(con, sql, unname(x))
-        DBI::dbClearResult(query)
+        DBI::dbExecute(con, sql, unname(x))
         rowid_last_entry <- DBI::dbGetQuery(con, "SELECT last_insert_rowid()")[1, 1]
         ret <- DBI::dbGetQuery(con, sprintf("SELECT %s FROM %s WHERE rowid = $1", id, table), rowid_last_entry)[[1]]
       }
