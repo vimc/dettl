@@ -21,7 +21,7 @@ write_log <- function(con, log_table, log_data) {
 #' @keywords internal
 get_log_data <- function(import_path, comment) {
   if (is.null(comment)) {
-    comment <- ""
+    comment <- NA_character_
   }
   date <- Sys.time()
   ## Convert date to UTC for persitence

@@ -65,3 +65,21 @@ test_that("sqlite and postgres dates agree", {
   expect_true(pg_date - 1 < sl_utc)
   expect_true(sl_utc < pg_date + 1)
 })
+
+test_that("a NULL comment can be persisted", {
+  path <- prepare_test_import()
+  sqlite_con <- db_connect("test", path)
+  on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
+
+  postgres_con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
+
+  log_data <- get_log_data(file.path(path, "example"), NULL)
+  write_log(sqlite_con, "log_table", log_data)
+  write_log(postgres_con, "log_table", log_data)
+
+  sl <- DBI::dbGetQuery(sqlite_con, "SELECT comment FROM log_table")[1, ]
+  pg <- DBI::dbGetQuery(postgres_con, "SELECT comment FROM log_table")[1, ]
+  expect_true(is.na(sl))
+  expect_true(is.na(pg))
+})
