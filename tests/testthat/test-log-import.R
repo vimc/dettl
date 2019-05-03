@@ -44,7 +44,7 @@ test_that("postgres log data is persisted", {
   expect_equal(postgres_data$git_branch, "master")
 })
 
-test_that("sqlite and postgres dates agree", {
+test_that("sqlite and postgres dates can be parsed and agree", {
   path <- prepare_test_import()
   sqlite_con <- db_connect("test", path)
   on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
@@ -68,6 +68,11 @@ test_that("sqlite and postgres dates agree", {
   sl_utc <- as.POSIXct(sl_date, origin = "1970-01-01", tz = "UTC")
   expect_true(pg_date - 1 < sl_utc)
   expect_true(sl_utc < pg_date + 1)
+
+  ## Test date parsing
+  parsed_date <- parse_sql_date(sqlite_con, sl_date)
+  expect_true(pg_date - 1 < parsed_date)
+  expect_true(parsed_date < pg_date + 1)
 })
 
 test_that("a NULL comment can be persisted", {

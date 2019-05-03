@@ -125,3 +125,23 @@ verify_table <- function(con, table_name, table, identical_columns = FALSE,
     }
   }
 }
+
+
+#' Parse date into POSIXct UTC from SQL db.
+#'
+#' Parses the date according to the SQL driver used. Expects that if
+#' driver is Postgres this will already be POSIXct otherwise if SQLite
+#' driver converts to POSIXct.
+#'
+#' @param con Active db connection.
+#' @param date The date.
+#'
+#' @return The parsed date
+#'
+#' @keywords internal
+parse_sql_date <- function(con, date) {
+  if (class(con) == "SQLiteConnection") {
+    date <- as.POSIXct(date, origin = "1970-01-01", tz = "UTC")
+  }
+  date
+}

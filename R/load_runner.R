@@ -27,6 +27,7 @@ run_load <- function(con, load, transformed_data, test_queries, path,
   }
   log_data <- get_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
+  verify_first_run(con, log_table, log_data)
   before <- test_queries(con)
   DBI::dbBegin(con)
   transaction_active <- TRUE

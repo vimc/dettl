@@ -40,3 +40,27 @@ verify_log_table <- function(con, log_table_name, log_data) {
   verify_table(con, log_table_name, log_data, identical_columns = TRUE,
                context_info = "Cannot import data")
 }
+
+verify_first_run <- function(con, log_table_name, log_data) {
+  previous_runs <- DBI::dbGetQuery(
+    con,
+    sprintf("SELECT * FROM %s WHERE name = $1", log_table_name),
+    log_data$name)
+  if (nrow(previous_runs) > 0) {
+    stop(sprintf("Import has previously been run. Previous run log:
+  name:           %s
+  date:           %s
+  comment:        %s
+  git user.name:  %s
+  git user.email: %s
+  git branch:     %s
+  git hash:       %s",
+                 previous_runs[1, ]$name,
+                 parse_sql_date(con, previous_runs[1, ]$date),
+                 previous_runs[1, ]$comment,
+                 previous_runs[1, ]$git_user,
+                 previous_runs[1, ]$git_email,
+                 previous_runs[1, ]$git_branch,
+                 previous_runs[1, ]$git_hash))
+  }
+}

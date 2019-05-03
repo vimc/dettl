@@ -19,9 +19,8 @@ testthat::test_that("messages are printed to console when tests are run", {
   ## individually.
   run_load_call <- function() {
     run_load(con, load_func, transformed_data, test_queries,
-                            path = test_dir, test_file = test_file,
-                            dry_run = FALSE, log_table = "dettl_import_log",
-                            comment = NULL)
+             path = test_dir, test_file = test_file, dry_run = FALSE,
+             log_table = "dettl_import_log", comment = NULL)
   }
   res <- evaluate_promise(run_load_call())
   expect_true(any(grepl(sprintf(
@@ -62,7 +61,6 @@ testthat::test_that("log table is appended to", {
 
 testthat::test_that("postgres log table is appended to", {
   con <- prepare_example_postgres_db()
-  browser()
   on.exit(DBI::dbDisconnect(con))
   path <- prepare_test_import("example_tests")
 
@@ -121,4 +119,35 @@ testthat::test_that("import fails if log table misconfigured", {
       "Cannot import data: Column 'date' in table 'dettl_import_log' in DB but is missing from local table."
     )
   })
+})
+
+test_that("import can only be run once", {
+  path <- prepare_test_import("example_tests")
+  con <- db_connect("test", path)
+  load_func <- function(data, con) {}
+  transformed_data <- list()
+  test_queries <- function(con) {}
+  test_dir <- file.path(path, "example_tests")
+  test_file <- "connection_load_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  run_load(con, load_func, transformed_data, test_queries,
+           path = test_dir, test_file = test_file,
+           dry_run = FALSE, log_table = "dettl_import_log",
+           comment = NULL)
+
+  expect_error(run_load(con, load_func, transformed_data, test_queries,
+                        path = test_dir, test_file = test_file,
+                        dry_run = FALSE, log_table = "dettl_import_log",
+                        comment = NULL),
+"Import has previously been run. Previous run log:
+  name:           example_tests
+  date:           [0-9:\\s-]+
+  comment:        NA
+  git user.name:  dettl
+  git user.email: email@example.com
+  git branch:     master
+  git hash:       \\w+", perl = TRUE)
 })
