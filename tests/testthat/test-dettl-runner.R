@@ -23,7 +23,7 @@ test_that("dettl works as expected", {
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
   ## and log table is available
-  expect_equal(import$get_log_table(), "log_table")
+  expect_equal(import$get_log_table(), "dettl_import_log")
 
   ## and no data has been extracted or transformed
   extracted_data <- import$get_extracted_data()

@@ -6,8 +6,8 @@ test_that("log data is persisted", {
   on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
 
   log_data <- get_log_data(file.path(path, "example"), "test comment")
-  write_log(sqlite_con, "log_table", log_data)
-  sqlite_data <- DBI::dbGetQuery(sqlite_con, "SELECT * FROM log_table")
+  write_log(sqlite_con, "dettl_import_log", log_data)
+  sqlite_data <- DBI::dbGetQuery(sqlite_con, "SELECT * FROM dettl_import_log")
   expect_true(nrow(sqlite_data) == 1)
   expect_equal(sqlite_data$name, "example")
   ## We want to check logged time is within some reasonable range.
@@ -27,8 +27,9 @@ test_that("postgres log data is persisted", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   log_data <- get_log_data(file.path(path, "example"), "test comment")
-  write_log(postgres_con, "log_table", log_data)
-  postgres_data <- DBI::dbGetQuery(postgres_con, "SELECT * FROM log_table")
+  write_log(postgres_con, "dettl_import_log", log_data)
+  postgres_data <- DBI::dbGetQuery(postgres_con,
+                                   "SELECT * FROM dettl_import_log")
   expect_true(nrow(postgres_data) == 1)
   expect_equal(postgres_data$name, "example")
   ## We want to check logged time is within some reasonable range.
@@ -51,11 +52,13 @@ test_that("sqlite and postgres dates agree", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   log_data <- get_log_data(file.path(path, "example"), "test comment")
-  write_log(sqlite_con, "log_table", log_data)
-  write_log(postgres_con, "log_table", log_data)
+  write_log(sqlite_con, "dettl_import_log", log_data)
+  write_log(postgres_con, "dettl_import_log", log_data)
 
-  sl_date <- DBI::dbGetQuery(sqlite_con, "SELECT date FROM log_table")[1, ]
-  pg_date <- DBI::dbGetQuery(postgres_con, "SELECT date FROM log_table")[1, ]
+  sl_date <- DBI::dbGetQuery(sqlite_con,
+                             "SELECT date FROM dettl_import_log")[1, ]
+  pg_date <- DBI::dbGetQuery(postgres_con,
+                             "SELECT date FROM dettl_import_log")[1, ]
   expect_type(sl_date, "double")
   expect_type(pg_date, "double")
   expect_s3_class(pg_date, "POSIXct")
@@ -75,11 +78,12 @@ test_that("a NULL comment can be persisted", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   log_data <- get_log_data(file.path(path, "example"), NULL)
-  write_log(sqlite_con, "log_table", log_data)
-  write_log(postgres_con, "log_table", log_data)
+  write_log(sqlite_con, "dettl_import_log", log_data)
+  write_log(postgres_con, "dettl_import_log", log_data)
 
-  sl <- DBI::dbGetQuery(sqlite_con, "SELECT comment FROM log_table")[1, ]
-  pg <- DBI::dbGetQuery(postgres_con, "SELECT comment FROM log_table")[1, ]
+  sl <- DBI::dbGetQuery(sqlite_con, "SELECT comment FROM dettl_import_log")[1, ]
+  pg <- DBI::dbGetQuery(postgres_con,
+                        "SELECT comment FROM dettl_import_log")[1, ]
   expect_true(is.na(sl))
   expect_true(is.na(pg))
 })

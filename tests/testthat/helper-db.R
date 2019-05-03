@@ -20,21 +20,13 @@ prepare_example_postgres_db <- function() {
   )
   DBI::dbClearResult(people_query)
 
-  ## Make sure we have a fresh "log_table" table if one existed already
+  ## Make sure we have a fresh "dettl_import_log" table if one existed already
   drop_log <- DBI::dbSendQuery(con,
-    "DROP TABLE IF EXISTS log_table")
+    "DROP TABLE IF EXISTS dettl_import_log")
   DBI::dbClearResult(drop_log)
-  log_table_query <- DBI::dbSendQuery(con,
-    "CREATE TABLE log_table (
-      name       TEXT,
-      date       TIMESTAMP WITH TIME ZONE,
-      comment    TEXT,
-      git_user   TEXT,
-      git_email  TEXT,
-      git_branch TEXT,
-      git_hash   CHARACTER(40)
-    )"
-  )
+  query_text <- read_lines(
+    system.file("sql", "sqlite", "create_log_table.sql", package = "dettl"))
+  log_table_query <- DBI::dbSendQuery(con, query_text)
   DBI::dbClearResult(log_table_query)
   con
 }

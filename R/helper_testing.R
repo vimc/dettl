@@ -56,17 +56,9 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     DBI::dbClearResult(job_query)
   }
 
-  log_table_query <- DBI::dbSendQuery(con, sprintf(
-    "CREATE TABLE %s (
-      name       TEXT,
-      date       REAL,
-      comment    TEXT,
-      git_user   TEXT,
-      git_email  TEXT,
-      git_branch TEXT,
-      git_hash   TEXT
-    )",
-    log_table_name))
+  query_text <- read_lines(
+    system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
+  log_table_query <- DBI::dbSendQuery(con, query_text)
   DBI::dbClearResult(log_table_query)
 
   DBI::dbDisconnect(con)

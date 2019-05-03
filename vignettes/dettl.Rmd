@@ -55,7 +55,7 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
-    log_table: import_log
+    log_table: dettl_import_log
   uat:
     driver: RPostgres::Postgresql
     args:
@@ -64,7 +64,7 @@ db:
       port: 12345
       user: example
       password: password
-    log_table: import_log
+    log_table: dettl_import_log
 ```
 
 * `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
