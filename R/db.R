@@ -78,7 +78,8 @@ dettl_db_args <- function(path, type = NULL) {
 
   withr::with_envvar(
     envir_read(config$path),
-    resolved_args <- vaultr::vault_resolve_secrets(x$args,
+    resolved_args <- vaultr::vault_resolve_secrets(
+      x$args,
       addr = config$vault_server
     )
   )
