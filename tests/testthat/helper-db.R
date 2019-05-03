@@ -25,7 +25,7 @@ prepare_example_postgres_db <- function() {
     "DROP TABLE IF EXISTS dettl_import_log")
   DBI::dbClearResult(drop_log)
   query_text <- read_lines(
-    system.file("sql", "sqlite", "create_log_table.sql", package = "dettl"))
+    system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
   log_table_query <- DBI::dbSendQuery(con, query_text)
   DBI::dbClearResult(log_table_query)
   con

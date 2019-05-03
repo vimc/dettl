@@ -28,6 +28,7 @@ test_that("postgres log data is persisted", {
 
   log_data <- get_log_data(file.path(path, "example"), "test comment")
   write_log(postgres_con, "dettl_import_log", log_data)
+  browser()
   postgres_data <- DBI::dbGetQuery(postgres_con,
                                    "SELECT * FROM dettl_import_log")
   expect_true(nrow(postgres_data) == 1)

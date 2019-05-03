@@ -1,9 +1,9 @@
 context("load_runner")
 
 testthat::test_that("messages are printed to console when tests are run", {
-  load_func <- function(data, con) {}
   path <- prepare_test_import("example_tests")
   con <- db_connect("test", path)
+  load_func <- function(data, con) {}
   transformed_data <- list()
   test_queries <- function(con) {}
   test_dir <- file.path(path, "example_tests")
@@ -12,18 +12,23 @@ testthat::test_that("messages are printed to console when tests are run", {
   options(testthat.default_reporter = "Silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  expect_message(run_load(con, load_func, transformed_data, test_queries,
-                          path = test_dir, test_file = test_file,
-                          dry_run = FALSE, log_table = "dettl_import_log",
-                          comment = NULL), sprintf(
-                 "Running load tests %s/example_tests/connection_load_test.R",
-                 path))
-
-  expect_message(run_load(con, load_func, transformed_data, test_queries,
-                          path = test_dir, test_file = test_file,
-                          dry_run = FALSE, log_table = "dettl_import_log",
-                          comment = NULL),
-                 "All tests passed, commiting changes to database.")
+  ## Ideally here we would run run_load and check for messages using
+  ## expect_message. This doesn't support checking for 2 messages from one call
+  ## and calling run_load twice violates the unique key constraint so work
+  ## around this by storing the messages in a variable and checking these
+  ## individually.
+  run_load_call <- function() {
+    run_load(con, load_func, transformed_data, test_queries,
+                            path = test_dir, test_file = test_file,
+                            dry_run = FALSE, log_table = "dettl_import_log",
+                            comment = NULL)
+  }
+  res <- evaluate_promise(run_load_call())
+  expect_true(any(grepl(sprintf(
+    "Running load tests %s/example_tests/connection_load_test.R", path),
+    res$messages)))
+  expect_true(any(grepl("All tests passed, commiting changes to database.",
+    res$messages)))
 })
 
 testthat::test_that("log table is appended to", {
@@ -57,6 +62,7 @@ testthat::test_that("log table is appended to", {
 
 testthat::test_that("postgres log table is appended to", {
   con <- prepare_example_postgres_db()
+  browser()
   on.exit(DBI::dbDisconnect(con))
   path <- prepare_test_import("example_tests")
 

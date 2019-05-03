@@ -1,5 +1,5 @@
 CREATE TABLE dettl_import_log (
-  name       TEXT,
+  name       TEXT PRIMARY KEY,
   date       TIMESTAMP WITH TIME ZONE,
   comment    TEXT,
   git_user   TEXT,

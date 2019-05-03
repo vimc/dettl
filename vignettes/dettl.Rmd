@@ -268,6 +268,14 @@ This will fail if any of the stages fail.
 
 Alternatively you can run the process up to just a specific point to view the output if desired - which should be useful for debugging any process problems e.g.
 
+```{r include = FALSE}
+## Get a clean DB for running import a second time
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+import <- dettl::dettl(import_path, db_name = "test")
+```
 ```{r}
 dettl::run_import(import, c("extract", "transform"))
 ```
