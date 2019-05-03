@@ -1,4 +1,4 @@
-CREATE TABLE import_log (
+CREATE TABLE dettl_import_log (
   name       TEXT,
   date       TIMESTAMP WITH TIME ZONE,
   comment    TEXT,
