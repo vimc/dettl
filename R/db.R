@@ -39,7 +39,7 @@ db_get_log_table <- function(type, path) {
 #'
 #' @keywords internal
 sqlite_enable_fk <- function(con) {
-  if (inherits(con, "SQLiteConnection")) {
+  if (is.SQLiteConnection(con)) {
     DBI::dbExecute(con, "PRAGMA foreign_keys = ON")
   }
 }
@@ -140,8 +140,30 @@ verify_table <- function(con, table_name, table, identical_columns = FALSE,
 #'
 #' @keywords internal
 parse_sql_date <- function(con, date) {
-  if (class(con) == "SQLiteConnection") {
+  if (is.SQLiteConnection(con)) {
     date <- as.POSIXct(date, origin = "1970-01-01", tz = "UTC")
   }
   date
+}
+
+#' Tests for objects of type "SQLiteConnection".
+#'
+#' @param x Object to test.
+#'
+#' @return True if object is a "SQLiteConnection".
+#'
+#' @keywords internal
+is.SQLiteConnection <- function(x) {
+  inherits(x, "SQLiteConnection")
+}
+
+#' Tests for objects of type "PqConnection".
+#'
+#' @param x Object to test.
+#'
+#' @return True if object is a "PqConnection".
+#'
+#' @keywords internal
+is.PqConnection <- function(x) {
+  inherits(x, "PqConnection")
 }

@@ -71,3 +71,15 @@ test_that("no transient db", {
     "Cannot use a transient SQLite database with dettl"
   )
 })
+
+test_that("sqlite connection can be identified", {
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  on.exit(DBI::dbDisconnect(con))
+  expect_true(is.SQLiteConnection(con))
+})
+
+test_that("Rpostgres connection can be identified", {
+  con <- prepare_example_postgres_db(FALSE)
+  on.exit(DBI::dbDisconnect(con))
+  expect_true(is.PqConnection(con))
+})
