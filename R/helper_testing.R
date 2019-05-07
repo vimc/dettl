@@ -13,11 +13,11 @@
 #' @param dir Directory to create the db in
 #' @param add_data If TRUE data is bootstrapped to people table
 #' @param add_job_table If TRUE also boostrap job table related to people table
-#' @param log_table_name The name of the log table to create in the test DB
+#' @param add_log_table If TRUE also boostrap log table using sql in inst dir
 #'
 #' @keywords internal
 prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
-                               log_table_name = "log_table") {
+                               add_log_table = TRUE) {
   path <- file.path(dir, "test.sqlite")
   if (file.exists(path)) {
     ## Ensure we always start with a fresh DB
@@ -54,9 +54,11 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     )
   }
 
-  query_text <- read_lines(
-    system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
-  DBI::dbExecute(con, query_text)
+  if (add_log_table) {
+    query_text <- read_lines(system.file(
+      "sql", "postgresql", "create_log_table.sql", package = "dettl"))
+    DBI::dbExecute(con, query_text)
+  }
 
   DBI::dbDisconnect(con)
   path
@@ -73,15 +75,17 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 #' @param dettl_config Path to the dettl config file.
 #' @param add_data If TRUE data is bootstrapped to people table in test DB.
 #' @param add_job_table If TRUE also boostrap job table related to people table.
+#' @param add_log_table If TRUE then also boostrap log table.
 #'
 #' @keywords internal
 prepare_test_import <- function(example_dir = "example",
                                 dettl_config = "dettl_config.yml",
                                 create_db = TRUE,
-                                add_data = FALSE, add_job_table = FALSE) {
+                                add_data = FALSE, add_job_table = FALSE,
+                                add_log_table = TRUE) {
   path <- build_git_demo(example_dir, dettl_config)
   if (create_db) {
-    prepare_example_db(path, add_data, add_job_table)
+    prepare_example_db(path, add_data, add_job_table, add_log_table)
   }
   path
 }
