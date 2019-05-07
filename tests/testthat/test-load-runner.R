@@ -106,7 +106,7 @@ testthat::test_that("import fails if log table misconfigured", {
     run_load(con, load_func, transformed_data, test_queries, path = test_dir,
              test_file = test_file, dry_run = FALSE, log_table = "table log",
              comment = "Test comment"),
-    "Cannot import data: Table 'table log' is missing from db schema."
+    "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_initialise first."
   )
 
   mock_get_log_data <- mockery::mock(

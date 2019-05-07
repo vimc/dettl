@@ -5,7 +5,7 @@
 \title{Verify the data adhered to the DB schema.}
 \usage{
 verify_table(con, table_name, table, identical_columns = FALSE,
-  context_info = "")
+  context_info = "", solution_text = "")
 }
 \arguments{
 \item{con}{The active DB connection to check the schema for.}
@@ -15,6 +15,8 @@ verify_table(con, table_name, table, identical_columns = FALSE,
 \item{table}{The table to check.}
 
 \item{context_info}{Info to be logged should a check fail.}
+
+\item{solution_text}{Text describing possible solution should error occur.}
 }
 \description{
 Ensure that table is in the DB and has only columns which exist in the DB.

@@ -38,7 +38,8 @@ get_log_data <- function(import_path, comment) {
 
 verify_log_table <- function(con, log_table_name, log_data) {
   verify_table(con, log_table_name, log_data, identical_columns = TRUE,
-               context_info = "Cannot import data")
+              context_info = "Cannot import data",
+              solution_text = "Please run dettl::dettl_initialise first.")
 }
 
 #' Verify that this is the first time the import has been run.

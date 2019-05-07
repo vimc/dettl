@@ -95,15 +95,16 @@ dettl_db_args <- function(path, type = NULL) {
 #' @param table_name The name of the table to check.
 #' @param table The table to check.
 #' @param context_info Info to be logged should a check fail.
+#' @param solution_text Text describing possible solution should error occur.
 #'
 #' @keywords internal
 #'
 verify_table <- function(con, table_name, table, identical_columns = FALSE,
-                         context_info = "") {
+                         context_info = "", solution_text = "") {
   if (!DBI::dbExistsTable(con, table_name)) {
     stop(sprintf(
-      "%s: Table '%s' is missing from db schema.",
-      context_info, table_name
+      "%s: Table '%s' is missing from db schema. %s",
+      context_info, table_name, solution_text
     ))
   }
   col_names <- DBI::dbListFields(con, table_name)
