@@ -41,6 +41,19 @@ verify_log_table <- function(con, log_table_name, log_data) {
                context_info = "Cannot import data")
 }
 
+#' Verify that this is the first time the import has been run.
+#'
+#' Check whether an import with the same name has been run already. If
+#' so then stop with a human understandable message.
+#'
+#' @param con Connection to the DB to be imported to.
+#' @param log_table_name The name of the log table to search for records.
+#' @param log_data The data which will be written to the log table should
+#' the import run.
+#'
+#' @return Throws an error if an import with the same name has already been run
+#'
+#' @keywords internal
 verify_first_run <- function(con, log_table_name, log_data) {
   previous_runs <- DBI::dbGetQuery(
     con,
