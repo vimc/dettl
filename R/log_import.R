@@ -19,7 +19,7 @@ write_log <- function(con, log_table, log_data) {
 #' user name, user email, current branch and hash of HEAD.
 #'
 #' @keywords internal
-get_log_data <- function(import_path, comment) {
+build_log_data <- function(import_path, comment) {
   if (is.null(comment)) {
     comment <- NA_character_
   }

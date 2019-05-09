@@ -5,7 +5,7 @@ test_that("log data is persisted", {
   sqlite_con <- db_connect("test", path)
   on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
 
-  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  log_data <- build_log_data(file.path(path, "example"), "test comment")
   write_log(sqlite_con, "dettl_import_log", log_data)
   sqlite_data <- DBI::dbGetQuery(sqlite_con, "SELECT * FROM dettl_import_log")
   expect_true(nrow(sqlite_data) == 1)
@@ -26,7 +26,7 @@ test_that("postgres log data is persisted", {
   postgres_con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
-  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  log_data <- build_log_data(file.path(path, "example"), "test comment")
   write_log(postgres_con, "dettl_import_log", log_data)
   browser()
   postgres_data <- DBI::dbGetQuery(postgres_con,
@@ -52,7 +52,7 @@ test_that("sqlite and postgres dates can be parsed and agree", {
   postgres_con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
-  log_data <- get_log_data(file.path(path, "example"), "test comment")
+  log_data <- build_log_data(file.path(path, "example"), "test comment")
   write_log(sqlite_con, "dettl_import_log", log_data)
   write_log(postgres_con, "dettl_import_log", log_data)
 
@@ -83,7 +83,7 @@ test_that("a NULL comment can be persisted", {
   postgres_con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
-  log_data <- get_log_data(file.path(path, "example"), NULL)
+  log_data <- build_log_data(file.path(path, "example"), NULL)
   write_log(sqlite_con, "dettl_import_log", log_data)
   write_log(postgres_con, "dettl_import_log", log_data)
 

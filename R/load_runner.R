@@ -25,7 +25,7 @@ run_load <- function(con, load, transformed_data, test_queries, path,
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
-  log_data <- get_log_data(path, comment)
+  log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
   before <- test_queries(con)
