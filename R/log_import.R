@@ -9,7 +9,7 @@ write_log <- function(con, log_table, log_data) {
   DBI::dbAppendTable(con, log_table, log_data)
 }
 
-#' Get the data to be written to the import log
+#' Build the data to be written to the import log
 #'
 #' @param import_path Path to the import process directory.
 #' @param comment An optional comment for this import run.
