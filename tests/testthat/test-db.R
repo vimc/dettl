@@ -72,14 +72,12 @@ test_that("no transient db", {
   )
 })
 
-test_that("sqlite connection can be identified", {
+test_that("sql dilect connection can be identified", {
   con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   on.exit(DBI::dbDisconnect(con))
-  expect_true(is.SQLiteConnection(con))
-})
+  expect_equal(sql_dialect(con), "sqlite")
 
-test_that("Rpostgres connection can be identified", {
   con <- prepare_example_postgres_db(FALSE)
   on.exit(DBI::dbDisconnect(con))
-  expect_true(is.PqConnection(con))
+  expect_equal(sql_dialect(con), "postgres")
 })

@@ -19,19 +19,20 @@ dettl_initialise <- function(path, db_name) {
   con <- db_connect(db_name, path)
   on.exit(DBI::dbDisconnect(con))
   ## Create the table
-  if (is.SQLiteConnection(con)) {
-    query_text <- read_lines(
-      system.file("sql", "sqlite", "create_log_table.sql", package = "dettl"))
-    execute_with_return_message(con, query_text, db_name)
-  } else if (is.PqConnection(con)) {
-    query_text <- read_lines(system.file(
-      "sql", "postgresql", "create_log_table.sql",package = "dettl"))
-    execute_with_return_message(con, query_text, db_name)
-  } else {
+  dialect <- sql_dialect(con)
+  path <- switch(
+    dialect,
+    sqlite = system.file("sql", "sqlite", "create_log_table.sql",
+                         package = "dettl"),
+    postgres = system.file("sql", "postgresql", "create_log_table.sql",
+                           package = "dettl"),
     stop(sprintf(
       "Can't initialise DB %s as not a SQLite or Postgres type. Got %s.",
-       db_name, class(con)))
-  }
+       db_name, class(con)
+    ))
+  )
+  query_text <- read_lines(path)
+  execute_with_return_message(con, query_text, db_name)
 }
 
 execute_with_return_message <- function(con, query, db_name) {
