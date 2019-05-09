@@ -20,17 +20,13 @@ dettl_initialise <- function(path, db_name) {
   on.exit(DBI::dbDisconnect(con))
   ## Create the table
   dialect <- sql_dialect(con)
-  path <- switch(
-    dialect,
-    sqlite = system.file("sql", "sqlite", "create_log_table.sql",
-                         package = "dettl"),
-    postgres = system.file("sql", "postgresql", "create_log_table.sql",
-                           package = "dettl"),
+  if (is.null(dialect)) {
     stop(sprintf(
       "Can't initialise DB %s as not a SQLite or Postgres type. Got %s.",
-       db_name, class(con)
+      db_name, class(con)
     ))
-  )
+  }
+  path <- system.file("sql", dialect, "create_log_table.sql", package = "dettl")
   query <- read_lines(path)
   message(sprintf("Creating log table in DB %s.", db_name))
   DBI::dbExecute(con, query)

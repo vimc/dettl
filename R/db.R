@@ -155,11 +155,11 @@ parse_sql_date <- function(con, date) {
 #'
 #' @keywords internal
 sql_dialect <- function(con) {
-  dialect <- ""
+  dialect <- NULL
   if (inherits(con, "SQLiteConnection")) {
     dialect <- "sqlite"
   } else if (inherits(con, "PqConnection")) {
-    dialect <- "postgres"
+    dialect <- "postgresql"
   }
   dialect
 }

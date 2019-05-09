@@ -79,5 +79,5 @@ test_that("sql dilect connection can be identified", {
 
   con <- prepare_example_postgres_db(FALSE)
   on.exit(DBI::dbDisconnect(con))
-  expect_equal(sql_dialect(con), "postgres")
+  expect_equal(sql_dialect(con), "postgresql")
 })
