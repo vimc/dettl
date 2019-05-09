@@ -7,12 +7,12 @@ test_that("table is initialised and success message returned", {
 
   with_mock("dettl::db_connect" = mock_db_connect, {
     expect_message(dettl_initialise(".", "test"),
-                   "Created log table in DB test.")
+                   "Creating log table in DB test.")
     con <- DBI::dbConnect(RSQLite::SQLite(), path)
     expect_true(DBI::dbExistsTable(con, "dettl_import_log"))
 
     expect_error(dettl_initialise(".", "test"),
-      "Failed to create log table in DB test: table dettl_import_log already exists")
+                 "table dettl_import_log already exists")
   })
 })
 
@@ -21,12 +21,12 @@ test_that("table is initialised and success message returned postgres", {
   mock_db_connect <- mockery::mock(con, cycle = TRUE)
   with_mock("dettl::db_connect" = mock_db_connect, {
     expect_message(dettl_initialise(".", "test"),
-                   "Created log table in DB test.")
+                   "Creating log table in DB test.")
     con <- get_postgres_connection("dettl_test_db", "postgres", "localhost")
     expect_true(DBI::dbExistsTable(con, "dettl_import_log"))
 
     expect_error(dettl_initialise(".", "test"),
-      'Failed to create log table in DB test: [a-zA-Z: ]+ relation "dettl_import_log" already exists\n')
+      'Failed to fetch row: ERROR:  relation "dettl_import_log" already exists\n')
   })
 })
 

@@ -31,16 +31,7 @@ dettl_initialise <- function(path, db_name) {
        db_name, class(con)
     ))
   )
-  query_text <- read_lines(path)
-  execute_with_return_message(con, query_text, db_name)
-}
-
-execute_with_return_message <- function(con, query, db_name) {
-  tryCatch({
-    DBI::dbExecute(con, query)
-    message(sprintf("Created log table in DB %s.", db_name))
-  }, error = function(e) {
-    stop(sprintf("Failed to create log table in DB %s: %s", db_name,
-                 e$message))
-  })
+  query <- read_lines(path)
+  message(sprintf("Creating log table in DB %s.", db_name))
+  DBI::dbExecute(con, query)
 }
