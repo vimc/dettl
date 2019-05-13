@@ -15,8 +15,12 @@ save_extracted_data(import, file)
 Saves any extracted data as separate sheet of an xlsx file.
 }
 \examples{
-import <- dettl(system.file("examples/person_information", package = "dettl"), "test")
-run_import(import, "extract")
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl")
+)
+import <- dettl(file.path(path, "person_information"), "test")
+run_import(import, "extract", dry_run = TRUE)
 t <- tempfile()
 save_extracted_data(import, t)
 }

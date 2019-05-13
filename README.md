@@ -7,9 +7,15 @@ Data extract, transform, test and load.
 
 Disinfect your workflow.
 
+## Using dettl
+
+`dettl` requires a log table to exist in the target database for an import to be run. Please run `dettl::dettl_initialise` to create the log table. This executes the relevant query at `inst/sql/` for create the log table. The name of the table can be changed and configured via the import `dettl_config.yml` but the fields must remain the same.
+
+For details of how to write and run a data import using `dettl` see package vignettes.
+
 ## Using vault
 
-Note that to use vault secrets in the `db_config.yml` to manage db access requires vault to be configured according to [vaultr vignette](https://vimc.github.io/vaultr/articles/vaultr.html) i.e. environmental variables need to be set which tell `vaultr` how it should authenticate users with access to the vault. 
+Note that to use vault secrets in the `dettl_config.yml` to manage db access requires vault to be configured according to [vaultr vignette](https://vimc.github.io/vaultr/articles/vaultr.html) i.e. environmental variables need to be set which tell `vaultr` how it should authenticate users with access to the vault. 
 
 To set these create a file called `envir.yml` in the root of the directory which sets the required properties for the chosen authentication method. You should probably create a `setup` script like [orderly](https://github.com/vimc/montagu-reports/blob/master/setup) to manage this.
 

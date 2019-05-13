@@ -1,16 +1,14 @@
 ## Create a simple "people" table in the psotgres DB for testing.
-prepare_example_postgres_db <- function() {
+prepare_example_postgres_db <- function(create_log = TRUE) {
   dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
   dettl_test_postgres_connection(dbname, user, host)
   con <- get_postgres_connection(dbname, user, host)
   ## Make sure we have a fresh "people" table if one existed already
-  drop_query <- DBI::dbSendQuery(con,
-    "DROP TABLE IF EXISTS people")
-  DBI::dbClearResult(drop_query)
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS people")
 
-  people_query <- DBI::dbSendQuery(con,
+  DBI::dbExecute(con,
     "CREATE TABLE people (
       id     BIGSERIAL PRIMARY KEY,
       name   TEXT,
@@ -18,7 +16,15 @@ prepare_example_postgres_db <- function() {
       height INTEGER
     )"
   )
-  DBI::dbClearResult(people_query)
+
+  ## Make sure we have a fresh "dettl_import_log" table if one existed already
+  drop_log <- DBI::dbExecute(con,
+    "DROP TABLE IF EXISTS dettl_import_log")
+  if (create_log) {
+    query_text <- read_lines(
+      system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
+    DBI::dbExecute(con, query_text)
+  }
   con
 }
 

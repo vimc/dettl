@@ -2,7 +2,7 @@ context("test-helper")
 
 test_that("test helper can set up db for testing", {
   dir <- tempdir()
-  path <- prepare_example_db("db.sqlite", dir)
+  path <- prepare_example_db(dir)
 
   con <- dbi_db_connect(RSQLite::SQLite(), path)
   on.exit(DBI::dbDisconnect(con))
@@ -20,7 +20,7 @@ test_that("test helper can set up db for testing", {
   DBI::dbDisconnect(con)
 
   ## Calling prepare_example_db recreats the database
-  path <- prepare_example_db("db.sqlite", dir)
+  path <- prepare_example_db(dir)
   con <- dbi_db_connect(RSQLite::SQLite(), path)
   expect_true(DBI::dbIsValid(con))
   expect_true("people" %in% DBI::dbListTables(con))

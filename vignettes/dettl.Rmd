@@ -4,7 +4,7 @@ author: "Robert Ashton"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{detll}
+  %\VignetteIndexEntry{dettl}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,13 +17,9 @@ knitr::opts_chunk$set(
 default_reporter <- testthat::default_reporter()
 options(testthat.default_reporter = "summary")
 ```
-```{r echo = FALSE, results = "hide"}
-db_name <- "test.sqlite"
-db_path <- dettl:::prepare_example_db(db_name, 
-  system.file("examples", package = "dettl"))
-```
 
-Dettl provides a way to make data tidying and ingestion into a database easier, more testable anmd more robust. Do that by employing an ETL (extract, transform, load) like workflow to separate out different concerns of your data import process and allow testing after each stage of the process.
+
+Dettl provides a way to make data tidying and ingestion into a database easier, more testable and more robust. We do that by employing an ETL (extract, transform, load) like workflow to separate out different concerns of your data import process and allow testing after each stage of the process.
 
 ## ETL
 
@@ -46,12 +42,12 @@ project_directory
 |── etl_process_2
 |   |── dettl.yml
 |── other import processes ...
-|── db_config.yml
+|── dettl_config.yml
 ```
 
 Configuration files are required at 2 levels
 
-* `db_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each ETL process subdirectory. e.g.
+* `dettl_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each ETL process subdirectory. Note that you must specify the `log_table` for each database. This is the table which import runs will be logged to.
 
 ```yaml
 db:
@@ -59,6 +55,7 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
+    log_table: dettl_import_log
   uat:
     driver: RPostgres::Postgresql
     args:
@@ -67,8 +64,9 @@ db:
       port: 12345
       user: example
       password: password
-
+    log_table: dettl_import_log
 ```
+
 * `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
 
 Taking a closer look at the structure of an individual process directory we expect something like.
@@ -83,6 +81,10 @@ etl_process_directory
 |   |── source_file_1.csv
 |   |── source_file_2.csv
 |   |── ...
+|── tests
+|   |── test_extract.R
+|   |── test_transform.R
+|   |── test_load.R
 ```
 Which will then be tied together to form the process using the `dettl.yml` config file e.g.
 
@@ -109,18 +111,17 @@ The process at a minimum needs code to define 3 functions one for each stage of 
 
 ## Creating a new ETL process
 
-If creating a new process within an existing project it can be created by opening the project as an RStudio project and using `new_dettl()` for example to create a new process to load new person data.
+If you want to create a new process within an existing project this can be done by opening the project as an RStudio project and using `new_dettl()`. Note that the use of `withr::with_dir(tempdir(), ...)` in the example below is because this is running in a vignette and the code is an example. This is not necessary when using `dettl` in a real environment.
 
 ```{r}
-import_name <- dettl::new_dettl("person_information")
-```
-```{r echo = FALSE, results = "hide"}
-on.exit(unlink(file.path(getwd(), import_name), recursive = TRUE), add = TRUE)
+withr::with_dir(tempdir(), 
+  import_name <- dettl::new_dettl("person_information")
+)
 ```
 
 This will create a new directory called `person_information` prepended with the current date containing the default `dettl.yml` config and 3 `R` files for you to fill in to the the extract, transform and load and 3 files for testing after each stage of the process.
 
-If you want to create a new process within a new project then you will need to manually create a new RStudio project and create a `db_config.yml` file. You can then proceed as above.
+If you want to create a new process within a new project then you will need to manually create a new RStudio project and create a `dettl_config.yml` file. You can then proceed as above.
 
 ## Developing the process
 
@@ -146,12 +147,19 @@ testthat::test_that("extracted data contains 3 rows", {
 })
 ```
 
-After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one fo the databases configured in the `db_config.yml`. See example below for a previously configured example.
+After completing the implementation of the extract stage you can run just that step to check that the extracted data looks as expected. Note that the directory must be under version control and up to date with remote to run the import process. This check is skipped if running in `dry_run` mode. See [Running the process](#run) for more details about this. When creating a new import also pass the database which this import is for, this must match one of the databases configured in the `dettl_config.yml`. See example below for a previously configured example. Note that `import_path` is the path to an import directory with structure like above.
+
+
+```{r include = FALSE}
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+```
 
 ```{r}
-import_path <- system.file("examples", "person_information", package = "dettl")
 import <- dettl::dettl(import_path, db_name = "test")
-import <- dettl::run_import(import, "extract")
+dettl::run_import(import, "extract")
 extracted_data <- import$get_extracted_data()
 ```
 The extracted data can be inspected to ensure it looks as expected.
@@ -182,7 +190,7 @@ testthat::test_that("transformed data contains 2 rows", {
 Like with developing the extract stage you can now run the process up the transform step to check it is working though you should try to add any checks required for accepting the transform stage to the test file.
 
 ```{r}
-import <- dettl::run_import(import, "transform")
+dettl::run_import(import, "transform")
 transformed_data <- import$get_transformed_data()
 ```
 
@@ -205,7 +213,7 @@ testthat::test_that("people has 2 rows 2", {
 
 These type of tests can only be used to look at the DB after the load has been done. You can also define tests which can test for changes in the DB between before and after the load has run. These require 2 steps.
 
-First you need to define a function to get query the database to get data you're interested in. e.g.
+First you need to define a function to query the database to get data you're interested in. e.g.
 
 ```r
 test_queries <- function(con) {
@@ -215,7 +223,7 @@ test_queries <- function(con) {
 }
 ```
 
-These should write the data into a list with meaningful names as these names will be used in the test. You need to then define the function used in the `dettl.yml` config in the `load` block using the following,
+This should write the data into a list with meaningful names as these names will be used in the test. You need to then define the function used in the `dettl.yml` config in the `load` block using the following,
 
 ```yaml
 load:
@@ -233,23 +241,20 @@ testthat::test_that("No of rows in people increases by 2", {
 })
 ```
 
-After this stage has been implemeneted the import process can be run end-to-end. See below for details.
+After this stage has been implemeneted the import process can be run end-to-end.
 
 ## Running the process {#run}
 
-The process can be run by first creating a new import object using the name of the directory containing the process you want to run
+The process can be run by first creating a new import object using the name of the directory containing the process you want to run. Again note that the `import_path` here is the path to import directory.
 
-```{r echo = FALSE, results = "hide"}
-## Get a new DB for the second import run.
-## We want to keep the DB around until the vignette has been built.
-## TODO: Manage this up using tmp files instead.
-db_name2 <- "test2.sqlite"
-db_path2 <- dettl:::prepare_example_db(db_name2, 
-  system.file("examples", package = "dettl"))
-on.exit(unlink(db_path2), add = TRUE)
+```{r include = FALSE}
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
 ```
+
 ```{r}
-import_path <- system.file("examples", "person_information", package = "dettl")
 import <- dettl::dettl(import_path, db_name = "test")
 ```
 
@@ -263,6 +268,14 @@ This will fail if any of the stages fail.
 
 Alternatively you can run the process up to just a specific point to view the output if desired - which should be useful for debugging any process problems e.g.
 
+```{r include = FALSE}
+## Get a clean DB for running import a second time
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+import <- dettl::dettl(import_path, db_name = "test")
+```
 ```{r}
 dettl::run_import(import, c("extract", "transform"))
 ```
@@ -274,17 +287,44 @@ extracted_data <- import$get_extracted_data()
 transformed_data <- import$get_transformed_data()
 ```
 
+The load stage can then be run separately
+
+```{r}
+dettl::run_import(import, "load")
+```
+
+We can then inspect the database to see that the data has indeed been loaded
+```{r}
+con <- import$get_connection()
+DBI::dbGetQuery(con, "SELECT * FROM people")
+```
+
+The import can be run in `dry_run` which will be useful for development. 
+
+```{r include = FALSE}
+## Get a clean DB for running dry run import
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+import <- dettl::dettl(import_path, db_name = "test")
+```
+```{r}
+dettl::run_import(import, dry_run = TRUE)
+```
+
+This will rollback any changes which have been made to the database before the connection is closed. Note that it also skips the check that the git repository is up to date with remote and so should be used when developing the import.
+
 ```{r echo = FALSE, results = "hide"}
 ## Reset default reporter.
 options(testthat.default_reporter = default_reporter)
 ```
 
-
 ## Default load stage {#default_load}
 
 `dettl` has a default implementation for the load stage of the import process. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the default load step requires defining that the default load should be used in the load block of `dettl.yml` e.g.
 
-```{yml}
+```yml
 load:
   default: TRUE
   verification_queries: test_queries
@@ -310,9 +350,9 @@ knitr::kable(people, caption = "people")
 knitr::kable(jobs, caption = "jobs")
 ```
 
-where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table. `jobs`. In the transformed data these `id`s are just temporary values used to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. 
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. In the transformed data these ids are just temporary values used to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. 
 
-We need to configure in the `dettl.yml` which fields in which tables are primary keys and where they are used as foreign keys. For example data above this is done as follows
+We need to configure in the `dettl.yml` which fields in which tables are primary keys and where they are used as foreign keys. For the example data above this is done as follows
 
 ```yaml
 rewrite_keys:

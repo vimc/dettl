@@ -3,3 +3,4 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
+    log_table: dettl_import_log
