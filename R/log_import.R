@@ -69,12 +69,12 @@ verify_first_run <- function(con, log_table_name, log_data) {
   git user.email: %s
   git branch:     %s
   git hash:       %s",
-                 previous_runs[[1]],
-                 parse_sql_date(con, previous_runs[[2]]),
-                 previous_runs[[3]],
-                 previous_runs[[4]],
-                 previous_runs[[5]],
-                 previous_runs[[6]],
-                 previous_runs[[7]]))
+                 previous_runs$name,
+                 parse_sql_date(con, previous_runs$date),
+                 previous_runs$comment,
+                 previous_runs$git_user,
+                 previous_runs$git_email,
+                 previous_runs$git_branch,
+                 previous_runs$git_hash))
   }
 }
