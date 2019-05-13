@@ -51,23 +51,8 @@ verify_data <- function(con, transformed_data) {
     stop("Data transform failed, returned empty list.")
   }
   for (table_name in names(transformed_data)) {
-    if (!DBI::dbExistsTable(con, table_name)) {
-      stop(sprintf(
-        "Table '%s' returned by transform but is missing from db schema.",
-        table_name
-      ))
-    }
-    col_names <- DBI::dbListFields(con, table_name)
-    for(col_name in colnames(transformed_data[[table_name]])) {
-      if(!(col_name %in% col_names)) {
-        stop(sprintf(
-          "Column '%s' in table '%s' returned by transform but is missing from db schema.",
-          col_name,
-          table_name
-        ))
-      }
-    }
+    verify_table(con, table_name, transformed_data[[table_name]],
+                 context_info = "Transformed data")
   }
-  ## TODO: Also check each table doesn't violate any constraints
 }
 

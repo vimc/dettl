@@ -18,7 +18,7 @@ testthat::test_that("verification fails if any tables are missing from db", {
   transformed_data <- list("missing_table" = data.frame(c(1, 2), c(3, 4)))
   expect_error(
     verify_data(con, transformed_data),
-    "Table 'missing_table' returned by transform but is missing from db schema."
+    "Transformed data: Table 'missing_table' is missing from db schema."
   )
 })
 
@@ -35,7 +35,7 @@ testthat::test_that("verification fails if any rows are missing from db", {
   colnames(transformed_data$people) <- c("name", "age", "missing_column")
   expect_error(
     verify_data(con, transformed_data),
-    "Column 'missing_column' in table 'people' returned by transform but is missing from db schema."
+    "Transformed data: Column 'missing_column' in table 'people' but is missing from db schema."
   )
 })
 

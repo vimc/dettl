@@ -55,7 +55,7 @@ db:
     driver: RSQLite::SQLite
     args:
       dbname: test.sqlite
-    log_table: import_log
+    log_table: dettl_import_log
   uat:
     driver: RPostgres::Postgresql
     args:
@@ -64,7 +64,7 @@ db:
       port: 12345
       user: example
       password: password
-    log_table: import_log
+    log_table: dettl_import_log
 ```
 
 * `dettl.yml` - Configuration at the individual process level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
@@ -268,6 +268,14 @@ This will fail if any of the stages fail.
 
 Alternatively you can run the process up to just a specific point to view the output if desired - which should be useful for debugging any process problems e.g.
 
+```{r include = FALSE}
+## Get a clean DB for running import a second time
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+import <- dettl::dettl(import_path, db_name = "test")
+```
 ```{r}
 dettl::run_import(import, c("extract", "transform"))
 ```
@@ -293,6 +301,14 @@ DBI::dbGetQuery(con, "SELECT * FROM people")
 
 The import can be run in `dry_run` which will be useful for development. 
 
+```{r include = FALSE}
+## Get a clean DB for running dry run import
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+import <- dettl::dettl(import_path, db_name = "test")
+```
 ```{r}
 dettl::run_import(import, dry_run = TRUE)
 ```

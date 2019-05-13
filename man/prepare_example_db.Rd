@@ -4,7 +4,8 @@
 \alias{prepare_example_db}
 \title{Prepare example db}
 \usage{
-prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE)
+prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE,
+  add_log_table = TRUE)
 }
 \arguments{
 \item{dir}{Directory to create the db in}
@@ -12,6 +13,8 @@ prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE)
 \item{add_data}{If TRUE data is bootstrapped to people table}
 
 \item{add_job_table}{If TRUE also boostrap job table related to people table}
+
+\item{add_log_table}{If TRUE also boostrap log table using sql in inst dir}
 }
 \description{
 Create a SQLite database for testing called test.sqlite in specified

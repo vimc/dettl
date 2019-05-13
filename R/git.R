@@ -51,8 +51,10 @@ git_run <- function(args, root = NULL, check = FALSE) {
   }
   res <- system3(git, args)
   if (check && !res$success) {
-    stop(sprintf("Error code %d running command:\n%s",
-                 res$code, paste0("  > ", res$output, collapse = "\n")))
+    stop(sprintf(
+      "Error code %d running command:\n%s",
+      res$code, paste0("  > ", res$output, collapse = "\n")
+    ))
   }
   res
 }
@@ -72,7 +74,76 @@ git_root_directory <- function(dir) {
   if (is.null(root_dir)) {
     stop(sprintf(
       "Can't run import as can't locate git directory from path %s. %s", dir,
-      "Import must be under version control to be run."))
+      "Import must be under version control to be run."
+    ))
   }
   root_dir
+}
+
+#' Get the git user.name from git dir
+#'
+#' From a path to a git controlled dir get the user.name. This will be the
+#' global user.name or local if it has been overriden.
+#'
+#' @param path Path to the directory to get the git user.name for.
+#' @return The git user.name.
+#'
+#' @keywords internal
+git_user <- function(path) {
+  git_config(path, "user.name")
+}
+
+#' Get the git user.email from git dir
+#'
+#' From a path to a git controlled dir get the user.email. This will be the
+#' global user.email or local if it has been overriden.
+#'
+#' @param path Path to the directory to get the git user.email for.
+#' @return The git user.email.
+#'
+#' @keywords internal
+git_email <- function(path) {
+  git_config(path, "user.email")
+}
+
+git_config <- function(path, field) {
+  args <- c("config", field)
+  res <- git_run(args, root = path, check = TRUE)
+  res$output
+}
+
+#' Get the current git branch from path.
+#'
+#' From a path to a git controlled dir get the current active branch. This
+#' throws an error if branch can't be retrieved.
+#'
+#' @param path Path to the directory to get the branch for.
+#' @return The git branch or error if can't be found.
+#'
+#' @keywords internal
+git_branch <- function(path) {
+  args <- c("symbolic-ref", "--short", "HEAD")
+  res <- git_run(args, root = path, check = FALSE)
+  if (!res$success) {
+    stop(sprintf(
+      "Can't get current branch from path %s. %s", path,
+      "Check repo is up to date and HEAD is not detatched."
+    ))
+  }
+  res$output
+}
+
+
+#' Get the full hash of the current git HEAD
+#'
+#' Get SHA-1 hash of HEAD using \code{git rev-parse HEAD}
+#'
+#' @param path Path to the directory to get the hash for.
+#' @return Hash of HEAD.
+#'
+#' @keywords internal
+git_hash <- function(path) {
+  args <- c("rev-parse", "HEAD")
+  res <- git_run(args, root = path , check = TRUE)
+  res$output
 }
