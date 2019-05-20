@@ -3,6 +3,5 @@
 export(dettl)
 export(dettl_db_create_log_table)
 export(dettl_new)
+export(dettl_save)
 export(run_import)
-export(save_extracted_data)
-export(save_transformed_data)
