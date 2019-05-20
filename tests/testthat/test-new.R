@@ -4,7 +4,7 @@ testthat::test_that("create new creates directory and code template", {
 
   expect_false(file_exists("temp-test"))
 
-  project_dir <- new_dettl("temp-test")
+  project_dir <- dettl_new("temp-test")
   ## Clear up temporary file
   on.exit(unlink(project_dir, recursive = TRUE))
 
@@ -19,7 +19,7 @@ testthat::test_that("create new creates directory and code template", {
   expect_true(file_exists(file.path(project_dir, "tests", "test_transform.R")))
   expect_true(file_exists(file.path(project_dir, "tests", "test_load.R")))
 
-  expect_error(new_dettl("temp-test"), sprintf(
+  expect_error(dettl_new("temp-test"), sprintf(
     "Can't create new dettl process, failed to create directory with name %s from name temp-test. One may already exist.",
     project_dir))
 })

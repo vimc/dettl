@@ -2,7 +2,7 @@
 
 export(dettl)
 export(dettl_db_create_log_table)
-export(new_dettl)
+export(dettl_new)
 export(run_import)
 export(save_extracted_data)
 export(save_transformed_data)
