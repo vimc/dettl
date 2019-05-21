@@ -51,8 +51,6 @@ dettl_save <- function(import, file, stage) {
   }
   writexl::write_xlsx(data, file)
   messages <- sprintf("Saved %s data to %s", stage, file)
-  for (message in messages) {
-    message(message)
-  }
+  message(paste(messages, collapse = "\n"))
   invisible(file)
 }
