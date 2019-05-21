@@ -114,8 +114,8 @@ The import at a minimum needs code to define 3 functions one for each stage of t
 If you want to create a new import within an existing project this can be done by opening the project as an RStudio project and using `dettl_new()`. Note that the use of `withr::with_dir(tempdir(), ...)` in the example below is because this is running in a vignette and the code is an example. This is not necessary when using `dettl` in a real environment.
 
 ```{r}
-withr::with_dir(tempdir(), 
-  import_name <- dettl::dettl_new("person_information")
+import_name <- withr::with_dir(tempdir(), 
+  dettl::dettl_new("person_information")
 )
 ```
 
