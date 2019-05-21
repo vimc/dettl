@@ -76,3 +76,23 @@ testthat::test_that("messages are printed to console when tests are run", {
   expect_message(run_transform(con, transform_func, test_dir, data, test_file),
                  "All transform tests passed.")
 })
+
+testthat::test_that("useful error returned when transform tests fail", {
+  transform_func <- function(data, con) {
+    list(people = stats::setNames(
+      c("Test", 2, 3),
+      c("name", "age", "height")
+    ))
+  }
+  path <- prepare_test_import()
+  con <- db_connect("test", path)
+  test_dir <- "example_tests"
+  test_file <- "failing_transform_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+  data <- list()
+
+  expect_error(run_transform(con, transform_func, test_dir, data, test_file),
+               "Not all transform tests passed. Fix tests before proceeding.")
+})
