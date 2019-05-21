@@ -15,7 +15,7 @@ test_that("extracted data can be saved", {
   expect_error(dettl_save(import, file, "extract"),
                "Can't save extract data as stage has not been run.")
 
-  run_import(import, "extract")
+  import$extract()
   expect_message(dettl_save(import, file, "extract"),
                  sprintf("Saved extract data to %s", file))
 
@@ -40,7 +40,8 @@ test_that("transformed data can be saved", {
   expect_error(dettl_save(import, file, "transform"),
     "Can't save transform data as stage has not been run.")
 
-  run_import(import, c("extract", "transform"))
+  import$extract()
+  import$transform()
   dettl_save(import, file, "transform")
 
   expect_equal(readxl::excel_sheets(file), "people")
@@ -65,7 +66,7 @@ test_that("save data can create new file", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example/"), "test")
-  run_import(import, "extract")
+  import$extract()
 
   dir <- tempdir()
   file <- file.path(dir, "test.xlsx")
@@ -84,7 +85,8 @@ test_that("saving data with multiple sheets is supported", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
-  run_import(import, c("extract", "transform"))
+  import$extract()
+  import$transform()
 
   file <- tempfile(fileext = "xlsx")
   dettl_save(import, file, "extract")
@@ -109,7 +111,8 @@ test_that("saving data can save extract and transform at same time", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
-  run_import(import, c("extract", "transform"))
+  import$extract()
+  import$transform()
 
   file <- tempfile(fileext = "xlsx")
   dettl_save(import, file, c("extract", "transform"))

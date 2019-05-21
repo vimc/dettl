@@ -32,7 +32,7 @@ test_that("dettl works as expected", {
   expect_null(transformed_data, "Transformed data is non-null")
 
   ## when data is extracted
-  import <- run_import(import, "extract")
+  import$extract()
   extracted_data <- import$get_extracted_data()
   expected_data <- data.frame(c("Alice", "Bob", "Clive"),
                               c(25, 43, 76),
@@ -49,7 +49,7 @@ test_that("dettl works as expected", {
   expect_null(transformed_data, "Transformed data is non-null")
 
   ## when running transform
-  import <- run_import(import, "transform")
+  import$transform()
   transformed_data <- import$get_transformed_data()
 
   ## transform data is available
@@ -60,7 +60,7 @@ test_that("dettl works as expected", {
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
   ## when load is run
-  import <- run_import(import, "load")
+  import$load()
 
   ## then database contains correct data
   expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
@@ -86,7 +86,9 @@ test_that("run import runs a full import process", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example/"), db_name = "test")
-  import <- run_import(import)
+  import$extract()
+  import$transform()
+  import$load()
   con <- import$get_connection()
   expected_data <- data.frame(c("Alice", "Bob"),
                               c(25, 43),
@@ -106,7 +108,9 @@ test_that("run step rolls back when tests fail", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example_failing_test/"), db_name = "test")
-  expect_error(run_import(import),
+  import$extract()
+  import$transform()
+  expect_error(import$load(),
                "Failed to load data - not all tests passed.")
 
 })
@@ -129,24 +133,6 @@ test_that("load cannot be run until transform stage has been run", {
                "Cannot run tests as no data has been transformed.")
 })
 
-test_that("import cannot be run on object of wrong type", {
-
-  expect_error(
-    run_import(NULL),
-    "Can only run import for non null data import with class 'DataImport'."
-  )
-
-  path <- prepare_test_import()
-
-  import <- dettl(file.path(path, "example/"), db_name = "test")
-  class(import) <- "data_import"
-
-  expect_error(
-    run_import(import),
-    "Can only run import for non null data import with class 'DataImport'."
-  )
-})
-
 test_that("trying to create import for db missing from config fails", {
 
   expect_error(dettl("example/", db_name = "missing"),
@@ -165,11 +151,12 @@ test_that("a dry run of the import can be executed", {
   import <- dettl(file.path(path, "example/"), db_name = "test")
   con <- import$get_connection()
 
-  ## when running extract + transform as a dry run
-  import <- run_import(import, c("extract", "transform"), dry_run = TRUE)
+  ## when running extract + transform
+  import$extract()
+  import$transform()
   transformed_data <- import$get_transformed_data()
 
-  ## transform is unchanged
+  ## transformed data is available
   expected_data <- data.frame(c("Alice", "Bob"),
                               c(25, 43),
                               c(175, 187),
@@ -180,7 +167,7 @@ test_that("a dry run of the import can be executed", {
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
   ## when load is run as a dry run
-  import <- run_import(import, "load", dry_run = TRUE)
+  import$load(dry_run = TRUE)
 
   ## then database has not been updated
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
@@ -196,8 +183,8 @@ test_that("run import prints import directory to the log", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example/"), db_name = "test")
-  expect_message(run_import(import, "extract"),
-    sprintf("Running import %s", file.path(path, "example")))
+  expect_message(import$extract(),
+    sprintf("Running extract %s", file.path(path, "example")))
 })
 
 test_that("run import checks git state before import is run", {
@@ -212,14 +199,16 @@ test_that("run import checks git state before import is run", {
   ## Add a new file to test that git is checked
   writeLines("test", file.path(path, "test"))
   import <- dettl(file.path(path, "example/"), db_name = "test")
-  expect_error(run_import(import, "extract"),
-    sprintf("Can't run import as repository has unstaged changes. Update git or run in dry-run mode."))
+  import$extract()
+  import$transform()
+  expect_error(import$load(),
+    sprintf("Can't run load as repository has unstaged changes. Update git or run in dry-run mode."))
 
   ## Import can be run in dry-run mode still
-  run_import(import, "extract", dry_run = TRUE)
-  expect_true(!is.null(import$get_extracted_data()))
+  import_load <- import$load(dry_run = TRUE)
+  expect_true(import_load)
 
   ## Import can skip git checks using force
-  run_import(import, "transform", force = TRUE)
-  expect_true(!is.null(import$get_transformed_data()))
+  import_load <- import$load(force = TRUE)
+  expect_true(import_load)
 })

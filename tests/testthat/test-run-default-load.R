@@ -11,7 +11,9 @@ test_that("default load can be run", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example_default_load"), db_name = "test")
-  run_import(import, c("extract", "transform", "load"))
+  import$extract()
+  import$transform()
+  import$load()
 
   con <- import$get_connection()
   data <- DBI::dbGetQuery(con,

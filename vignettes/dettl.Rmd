@@ -159,7 +159,7 @@ import_path <- file.path(path, "person_information")
 
 ```{r}
 import <- dettl::dettl(import_path, db_name = "test")
-dettl::run_import(import, "extract")
+import$extract()
 extracted_data <- import$get_extracted_data()
 ```
 The extracted data can be inspected to ensure it looks as expected.
@@ -190,7 +190,7 @@ testthat::test_that("transformed data contains 2 rows", {
 Like with developing the extract stage you can now run the process up the transform step to check it is working though you should try to add any checks required for accepting the transform stage to the test file.
 
 ```{r}
-dettl::run_import(import, "transform")
+import$transform()
 transformed_data <- import$get_transformed_data()
 ```
 
@@ -261,7 +261,9 @@ import <- dettl::dettl(import_path, db_name = "test")
 You can then run the import process by running
 
 ```{r}
-dettl::run_import(import)
+import$extract()
+import$transform()
+import$load()
 ```
 
 This will fail if any of the stages fail. 
@@ -277,7 +279,8 @@ import_path <- file.path(path, "person_information")
 import <- dettl::dettl(import_path, db_name = "test")
 ```
 ```{r}
-dettl::run_import(import, c("extract", "transform"))
+import$extract()
+import$transform()
 ```
 
 Will run just the `extract` and `transform` stages of the import process. Note that when any stage is run we automatically run any of the tests associated with that stage which have been configured. You can use the import object to view the extracted or transformed data.
@@ -290,7 +293,7 @@ transformed_data <- import$get_transformed_data()
 The load stage can then be run separately
 
 ```{r}
-dettl::run_import(import, "load")
+import$load()
 ```
 
 We can then inspect the database to see that the data has indeed been loaded
@@ -310,7 +313,9 @@ import_path <- file.path(path, "person_information")
 import <- dettl::dettl(import_path, db_name = "test")
 ```
 ```{r}
-dettl::run_import(import, dry_run = TRUE)
+import$extract()
+import$transform()
+import$load(dry_run = TRUE)
 ```
 
 This will rollback any changes which have been made to the database before the connection is closed. Note that it also skips the check that the git repository is up to date with remote and so should be used when developing the import.
