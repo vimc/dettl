@@ -3,15 +3,16 @@
 devtools::load_all(".")
 
 add_usage <- function(dat, cl) {
-  capture_usage <- function(name) {
-    tmp <- capture.output(args(cl$public_methods[[name]]))
-    tmp <- strip_trailing_whitespace(paste(tmp[-length(tmp)], collapse = "\n"))
-    sub("^function\\s*", name, tmp)
-  }
-
   valid_fields <- names(cl$public_fields)
   valid_active <- names(cl$active)
   valid_methods <- names(cl$public_methods)
+
+  if (is.null(cl$inherit)) {
+    parent <- NULL
+  } else {
+    parent <- get(as.character(cl$inherit))
+    valid_methods <- c(valid_methods, names(parent$public_methods))
+  }
 
   valid <- c(valid_fields, valid_active, valid_methods)
   extra <- setdiff(names(dat), valid)
@@ -25,11 +26,20 @@ add_usage <- function(dat, cl) {
   for (name in names(dat)) {
     dat[[name]]$method_name <- name
     if (name %in% valid_methods) {
-      dat[[name]]$usage <- capture_usage(name)
-      dat[[name]]$order <- names(formals(cl$public_methods[[name]]))
+      method <- cl$public_methods[[name]] %||% parent$public_methods[[name]]
+      dat[[name]]$usage <- capture_usage(name, method)
+      dat[[name]]$order <- names(formals(method))
     }
   }
+
   dat
+}
+
+
+capture_usage <- function(name, method) {
+  tmp <- capture.output(args(method))
+  tmp <- strip_trailing_whitespace(paste(tmp[-length(tmp)], collapse = "\n"))
+  sub("^function\\s*", name, tmp)
 }
 
 
@@ -76,7 +86,8 @@ format_method <- function(x) {
 
   body <- x$short
   if (!is.null(x$usage)) {
-    body <- paste0(body, sprintf("\n\n\\emph{Usage:}\\code{%s}", x$usage))
+    body <- paste0(body,
+                   sprintf("\n\\cr\\emph{Usage:}\\preformatted{%s}", x$usage))
   }
   if (!is.null(x$params)) {
     body <- paste0(body, "\n\n\\emph{Arguments:}\n", format_params(x$params))
@@ -127,7 +138,6 @@ process <- function(path, class) {
   message("writing ", dest)
   writeLines(str, dest)
 }
-
 
 process_all <- function() {
   process("man-roxygen/DataImport.yml", DataImport)
