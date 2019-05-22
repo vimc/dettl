@@ -1,3 +1,22 @@
+##' Manage data import.
+##'
+##' @template dettl
+##'
+##' @title Data Import
+##' @name DataImport
+##'
+##' @examples
+##'
+##' path <- dettl:::prepare_test_import(
+##' system.file("examples", "person_information", package = "dettl"),
+##' system.file("examples", "dettl_config.yml", package = "dettl"))
+##' import_path <- file.path(path, "person_information")
+##'
+##' import <- dettl::dettl(import_path, db_name = "test")
+##' import$extract()
+##' import$transform()
+##' import$load()
+NULL
 
 DataImport <- R6::R6Class(
   "DataImport",
