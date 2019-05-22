@@ -212,3 +212,69 @@ test_that("run import checks git state before import is run", {
   import_load <- import$load(force = TRUE)
   expect_true(import_load)
 })
+
+test_that("extract can be run from path", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  extracted_data <- dettl_run_extract(file.path(path, "example/"),
+                                      db_name = "test")
+
+  expected_data <- data.frame(c("Alice", "Bob", "Clive"),
+                              c(25, 43, 76),
+                              c(175, 187, 163),
+                              stringsAsFactors = FALSE)
+  colnames(expected_data) <- c("name", "age", "height")
+
+  expect_equal(length(extracted_data), 1)
+  expect_equal(extracted_data$people, expected_data)
+})
+
+test_that("transform can be run from path", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  transformed_data <- dettl_run_transform(file.path(path, "example/"),
+                                      db_name = "test")
+
+  expected_data <- data.frame(c("Alice", "Bob"),
+                              c(25, 43),
+                              c(175, 187),
+                              stringsAsFactors = FALSE)
+  colnames(expected_data) <- c("name", "age", "height")
+
+  expect_equal(length(transformed_data), 1)
+  expect_equal(transformed_data$people, expected_data)
+})
+
+test_that("extract can be run from path", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  dettl_run_load(file.path(path, "example/"), db_name = "test")
+
+  expected_data <- data.frame(c("Alice", "Bob"),
+                              c(25, 43),
+                              c(175, 187),
+                              stringsAsFactors = FALSE)
+  colnames(expected_data) <- c("name", "age", "height")
+
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
+               expected_data)
+})
