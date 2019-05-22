@@ -18,10 +18,10 @@
 ##'     \item{\code{comment}:   Optional comment which will be persisted in the log of the import run in the database.
 ##'     }
 ##'
-##'     \item{\code{dry_run}:   Whether to run in dry run mode. If TRUE then any database changes will be rolled back.
+##'     \item{\code{dry_run}:   Whether to run in dry run mode. If TRUE then any database changes will be rolled back. Defaults to FALSE.
 ##'     }
 ##'
-##'     \item{\code{force}:   If TRUE then checks that repo is up to date with git remote will be skipped.
+##'     \item{\code{force}:   If TRUE then checks that repo is up to date with git remote will be skipped. Defautls to FALSE.
 ##'     }
 ##'   }
 ##' }
