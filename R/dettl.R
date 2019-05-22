@@ -1,6 +1,6 @@
 ##' Manage data import.
 ##'
-##' @template dettl
+##' @template DataImport
 ##'
 ##' @title Data Import
 ##' @name DataImport
