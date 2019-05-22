@@ -42,24 +42,16 @@ test_that("assert_file_exists", {
   expect_silent(assert_file_exists(path))
 })
 
-test_that("assert_file_exists works with incorrect case", {
-  ## Note this would only ever work on windows or mac as linux filesystems
-  ## are case-sensitive. Therefore to test this requires some mocking to
-  ## mimic behaviour as windows would run it.
-  mock_is_linux <- mockery::mock(FALSE, cycle = TRUE)
-  mock_file_has_canonical_case <- mockery::mock(FALSE, cycle = TRUE)
-  path <- tempfile()
-  writeLines(character(0), path)
-  with_mock(
-    "dettl:::is_linux" = mock_is_linux,
-    "dettl:::file_has_canonical_case" = mock_file_has_canonical_case,
-    {
-      expect_error(
-        assert_file_exists(path),
-        sprintf("File does not exist: '%s' \\(should be '%s'\\) in directory .",
-                path, path))
-    })
+test_that("assert_file_exists: error in case", {
+  mockery::stub(assert_file_exists, "file_exists",
+                structure(c(TRUE, FALSE, FALSE),
+                          incorrect_case = c(FALSE, TRUE, FALSE),
+                          correct_case = c("FOO" = "foo")))
+  expect_error(assert_file_exists(c("bar", "FOO", "gaz")),
+               "File does not exist: 'FOO' (should be 'foo'), 'gaz'",
+               fixed = TRUE)
 })
+
 
 test_that("assert_named", {
   expect_error(assert_named(1), "must be named")
