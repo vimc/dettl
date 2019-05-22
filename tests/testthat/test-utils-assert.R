@@ -52,7 +52,6 @@ test_that("assert_file_exists: error in case", {
                fixed = TRUE)
 })
 
-
 test_that("assert_named", {
   expect_error(assert_named(1), "must be named")
   expect_error(assert_named(setNames(1:2, c("a", "a")), TRUE),
