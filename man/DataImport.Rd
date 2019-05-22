@@ -12,18 +12,15 @@ Manage data import.
 \describe{
 \item{\code{extract}}{
 Run the extract stage of the data import
-
-\emph{Usage:}\code{extract()}
+\cr\emph{Usage:}\preformatted{extract()}
 }
 \item{\code{transform}}{
 Run the transform stage of the data import
-
-\emph{Usage:}\code{transform()}
+\cr\emph{Usage:}\preformatted{transform()}
 }
 \item{\code{load}}{
 Run the load stage of the data import
-
-\emph{Usage:}\code{load(comment = NULL, dry_run = FALSE, force = FALSE)}
+\cr\emph{Usage:}\preformatted{load(comment = NULL, dry_run = FALSE, force = FALSE)}
 
 \emph{Arguments:}
 \itemize{
@@ -39,13 +36,11 @@ Run the load stage of the data import
 }
 \item{\code{get_extracted_data}}{
 Get the extracted data created by the extract step
-
-\emph{Usage:}\code{get_extracted_data()}
+\cr\emph{Usage:}\preformatted{get_extracted_data()}
 }
 \item{\code{get_transformed_data}}{
 Get the transformed data created by the transform step
-
-\emph{Usage:}\code{get_transformed_data()}
+\cr\emph{Usage:}\preformatted{get_transformed_data()}
 }
 }
 }
