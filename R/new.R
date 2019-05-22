@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' dettl_new("test import")
+#' dettl::dettl_new("test import")
 dettl_new <- function(name) {
   clean_name <- paste(Sys.Date(), gsub("[^[:alnum:]]", "_" ,name),
                 sep = "_")

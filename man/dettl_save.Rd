@@ -22,13 +22,13 @@ path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl")
 )
-import <- dettl(file.path(path, "person_information"), "test")
+import <- dettl::dettl(file.path(path, "person_information"), "test")
 import$extract()
 import$transform()
 t <- tempfile()
-dettl_save(import, t, "extract")
+dettl::dettl_save(import, t, "extract")
 t2 <- tempfile()
-dettl_save(import, t2, "transform")
+dettl::dettl_save(import, t2, "transform")
 t3 <- tempfile()
-dettl_save(import, t3, c("extract", "transform"))
+dettl::dettl_save(import, t3, c("extract", "transform"))
 }

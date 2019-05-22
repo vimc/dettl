@@ -15,5 +15,5 @@ and replaced with _s. Directory name will be preprended with created date.}
 Create new directory and templated code for new dettl process.
 }
 \examples{
-dettl_new("test import")
+dettl::dettl_new("test import")
 }
