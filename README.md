@@ -9,7 +9,7 @@ Disinfect your workflow.
 
 ## Using dettl
 
-`dettl` requires a log table to exist in the target database for an import to be run. Please run `dettl::dettl_initialise` to create the log table. This executes the relevant query at `inst/sql/` for create the log table. The name of the table can be changed and configured via the import `dettl_config.yml` but the fields must remain the same.
+`dettl` requires a log table to exist in the target database for an import to be run. Run `dettl::dettl_db_create_log_table` to create the log table. This executes the relevant query at `inst/sql/` for create the log table. The name of the table can be changed and configured via the import `dettl_config.yml` but the fields must remain the same.
 
 For details of how to write and run a data import using `dettl` see package vignettes.
 

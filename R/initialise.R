@@ -11,9 +11,9 @@
 #'   system.file("examples", "dettl_config.yml", package = "dettl"),
 #'   add_log_table = FALSE
 #' )
-#' dettl_initialise(file.path(path, "person_information"), "test")
+#' dettl::dettl_db_create_log_table(file.path(path, "person_information"), "test")
 #'
-dettl_initialise <- function(path, db_name) {
+dettl_db_create_log_table <- function(path, db_name) {
   ## Get the connection info
   path <- normalizePath(path, mustWork = TRUE)
   con <- db_connect(db_name, path)

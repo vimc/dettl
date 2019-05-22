@@ -63,3 +63,10 @@ testthat::test_that("connection is available to tests", {
   expect_true(all_passed(result))
 
 })
+
+testthat::test_that("no tests completing counts as passed suite", {
+  test_path <- "example_tests/empty_extract_test.R"
+  extracted_data <- list("test_data" = data.frame(c(1,2), c(3,4)))
+  result <- run_extract_tests(test_path, extracted_data, NULL, SilentReporter)
+  expect_true(all_passed(result))
+})

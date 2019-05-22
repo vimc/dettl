@@ -12,12 +12,12 @@ test_that("extracted data can be saved", {
   import <- dettl(file.path(path, "example/"), "test")
 
   file <- tempfile(fileext = ".xlsx")
-  expect_error(save_extracted_data(import, file),
-               "Can't save extracted data as stage has not been run.")
+  expect_error(dettl_save(import, file, "extract"),
+               "Can't save extract data as stage has not been run.")
 
-  run_import(import, "extract")
-  expect_message(save_extracted_data(import, file),
-                 sprintf("Saved extracted data to %s", file))
+  import$extract()
+  expect_message(dettl_save(import, file, "extract"),
+                 sprintf("Saved extract data to %s", file))
 
   expect_equal(readxl::excel_sheets(file), "people")
   xl_data <- readxl::read_excel(file, sheet = "people")
@@ -37,11 +37,12 @@ test_that("transformed data can be saved", {
   import <- dettl(file.path(path, "example/"), "test")
 
   file <- tempfile(fileext = ".xlsx")
-  expect_error(save_transformed_data(import, file),
-    "Can't save transformed data as stage has not been run.")
+  expect_error(dettl_save(import, file, "transform"),
+    "Can't save transform data as stage has not been run.")
 
-  run_import(import, c("extract", "transform"))
-  save_transformed_data(import, file)
+  import$extract()
+  import$transform()
+  dettl_save(import, file, "transform")
 
   expect_equal(readxl::excel_sheets(file), "people")
   xl_data <- readxl::read_excel(file, sheet = "people")
@@ -50,8 +51,9 @@ test_that("transformed data can be saved", {
 })
 
 test_that("trying to save data with non data import object fails", {
-  expect_error(save_transformed_data("test"),
-               "Can't save transformed data for non-DataImport object.")
+  t <- tempfile()
+  expect_error(dettl_save("test", t, "transform"),
+               "Can't save transform data for non-DataImport object.")
 })
 
 test_that("save data can create new file", {
@@ -64,11 +66,11 @@ test_that("save data can create new file", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example/"), "test")
-  run_import(import, "extract")
+  import$extract()
 
   dir <- tempdir()
   file <- file.path(dir, "test.xlsx")
-  save_extracted_data(import, file)
+  dettl_save(import, file, "extract")
   expect_true("test.xlsx" %in% list.files(dir))
 })
 
@@ -83,10 +85,11 @@ test_that("saving data with multiple sheets is supported", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
-  run_import(import, c("extract", "transform"))
+  import$extract()
+  import$transform()
 
   file <- tempfile(fileext = "xlsx")
-  save_extracted_data(import, file)
+  dettl_save(import, file, "extract")
 
   expect_equal(readxl::excel_sheets(file), c("people", "jobs"))
   people <- readxl::read_excel(file, sheet = "people")
@@ -95,4 +98,40 @@ test_that("saving data with multiple sheets is supported", {
   jobs <- readxl::read_excel(file, sheet = "jobs")
   expect_equal(colnames(jobs), c("person", "job"))
   expect_equal(nrow(jobs), 3)
+})
+
+test_that("saving data can save extract and transform at same time", {
+  path <- prepare_test_import("example_default_load",
+                              add_data = TRUE, add_job_table = TRUE)
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
+  import$extract()
+  import$transform()
+
+  file <- tempfile(fileext = "xlsx")
+  dettl_save(import, file, c("extract", "transform"))
+
+  expect_equal(readxl::excel_sheets(file),
+               c("extracted_people", "extracted_jobs",
+                 "transformed_people", "transformed_jobs"))
+
+   extr_people <- readxl::read_excel(file, sheet = "extracted_people")
+  expect_equal(colnames(extr_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(extr_people), 3)
+  extr_jobs <- readxl::read_excel(file, sheet = "extracted_jobs")
+  expect_equal(colnames(extr_jobs), c("person", "job"))
+  expect_equal(nrow(extr_jobs), 3)
+
+  trans_people <- readxl::read_excel(file, sheet = "transformed_people")
+  expect_equal(colnames(trans_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(trans_people), 2)
+  trans_jobs <- readxl::read_excel(file, sheet = "transformed_jobs")
+  expect_equal(colnames(trans_jobs), c("person", "job"))
+  expect_equal(nrow(trans_jobs), 2)
 })

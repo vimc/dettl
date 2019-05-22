@@ -30,8 +30,6 @@ run_load <- function(con, load, transformed_data, test_queries, path,
   verify_first_run(con, log_table, log_data)
   before <- test_queries(con)
   DBI::dbBegin(con)
-  transaction_active <- TRUE
-  on.exit(if (transaction_active) {DBI::dbRollback(con)})
   load(transformed_data, con)
   after <- test_queries(con)
   test_path <- file.path(path, test_file)
@@ -46,10 +44,8 @@ run_load <- function(con, load, transformed_data, test_queries, path,
       write_log(con, log_table, log_data)
       DBI::dbCommit(con)
     }
-    transaction_active <- FALSE
   } else {
     DBI::dbRollback(con)
-    transaction_active <- FALSE
     stop("Failed to load data - not all tests passed.")
   }
   invisible(TRUE)

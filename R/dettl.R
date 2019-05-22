@@ -40,17 +40,25 @@ DataImport <- R6::R6Class(
     },
 
     extract = function() {
+      message(sprintf("Running extract %s", self$path))
       private$extracted_data <- run_extract(private$con, private$extract_,
                                             self$path, private$extract_test_)
+      invisible(private$extracted_data)
     },
 
     transform = function() {
+      message(sprintf("Running transform %s", self$path))
       private$transformed_data <- run_transform(private$con, private$transform_,
                                                 self$path, private$extracted_data,
-                                           private$transform_test_)
+                                                private$transform_test_)
+      invisible(private$transformed_data)
     },
 
-    load = function(dry_run, comment) {
+    load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+      message(sprintf("Running load %s", self$path))
+      if (!force && !dry_run && !git_repo_is_clean(self$path)) {
+        stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
+      }
       run_load(private$con, private$load_, private$transformed_data,
                private$test_queries, self$path, private$load_test_, dry_run,
                private$log_table, comment)

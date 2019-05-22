@@ -42,6 +42,16 @@ test_that("assert_file_exists", {
   expect_silent(assert_file_exists(path))
 })
 
+test_that("assert_file_exists: error in case", {
+  mockery::stub(assert_file_exists, "file_exists",
+                structure(c(TRUE, FALSE, FALSE),
+                          incorrect_case = c(FALSE, TRUE, FALSE),
+                          correct_case = c("FOO" = "foo")))
+  expect_error(assert_file_exists(c("bar", "FOO", "gaz")),
+               "File does not exist: 'FOO' (should be 'foo'), 'gaz'",
+               fixed = TRUE)
+})
+
 test_that("assert_named", {
   expect_error(assert_named(1), "must be named")
   expect_error(assert_named(setNames(1:2, c("a", "a")), TRUE),

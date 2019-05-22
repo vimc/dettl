@@ -75,3 +75,31 @@ test_that("can add data to Postgres database returning primary key", {
   ids <- insert_into_returning(con, "people", data)
   expect_equal(ids, list(5))
 })
+
+test_that("data is converted to data frame for inserting into SQLite db", {
+  path <- prepare_test_import()
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  data <- list(
+    name = c("Alice"),
+    age = c(34),
+    height = c(176)
+  )
+
+  ids <- insert_into_returning(con, "people", data, "id")
+  expect_equal(ids, list(1))
+})
+
+test_that("data is converted to data frame for inserting into Postgres db", {
+  con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(con))
+
+  data <- list(
+    name = c("Alice"),
+    age = c(34),
+    height = c(176)
+  )
+
+  ids <- insert_into_returning(con, "people", data, "id")
+  expect_equal(ids, list(1))
+})
