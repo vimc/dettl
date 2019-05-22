@@ -55,6 +55,14 @@ DataImport <- R6::R6Class(
       lockBinding("path", self)
     },
 
+    format = function(brief = FALSE) {
+      data_import_format(self, brief, class(self)[[1L]])
+    },
+
+    help = function() {
+      utils::help(class(self)[[1L]], package = "dettl")
+    },
+
     rollback = function() {
     },
 
