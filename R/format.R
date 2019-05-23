@@ -2,7 +2,7 @@ data_import_format <- function(object, brief, name) {
   if (brief) {
     return("Data import object")
   }
-  nms <- setdiff(ls(object), c("format", "clone", "initialize"))
+  nms <- setdiff(ls(object), c("format", "initialize"))
   fns <- vlapply(nms, function(x) is.function(object[[x]]))
 
   calls <- vcapply(nms[fns], function(x) capture_args(object[[x]], x),
