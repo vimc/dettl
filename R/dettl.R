@@ -1,5 +1,13 @@
 ##' Manage data import.
 ##'
+##' This object should not be initialised directly. Use \code{\link{dettl}} to
+##' create the object.
+##'
+##' Import can be run by working with import object returned by
+##' \code{\link{dettl}} or by running top-level functions. Run the import by
+##' working with this object if you want to step through the import process
+##' stage by stage and inspect the data after each stage.
+##'
 ##' @template DataImport
 ##'
 ##' @title Data Import
