@@ -245,7 +245,38 @@ After this stage has been implemented the import can be run end-to-end.
 
 ## Running the import {#run}
 
-The import can be run by first creating a new import object using the name of the directory containing the import you want to run. Again note that the `import_path` here is the path to import directory.
+The import can be run in one of two ways. You can either run the import up to a specified stage with one function call or if you require more control you can initialise an import object and run each stage step by step.
+
+### Run functions
+
+To use the run functions to run an import up to a specified stage you need to know the path to the import and the name of the database you want to use for the import. You can leave the `db_name` field blank to use the first database configured in the `dettl_config.yml` file. The extract function returns the extracted data.
+
+```{r include = FALSE}
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+```
+
+```{r}
+extracted_data <- dettl::dettl_run_extract(import_path, db_name = "test")
+```
+
+The transform function runs the extract stage and then the transform stage and returns the transformed data.
+
+```{r}
+transformed_data <- dettl::dettl_run_transform(import_path, db_name = "test")
+```
+
+You can run the import end to end using `dettl_run_load`. This will make changes to the database unless run in `dry_run` mode.
+
+```{r}
+dettl::dettl_run_load(import_path, db_name = "test")
+```
+
+### Working with import object
+
+To run the import using the object first create a new import object using the name of the directory containing the import you want to run. Again note that the `import_path` here is the path to import directory.
 
 ```{r include = FALSE}
 path <- dettl:::prepare_test_import(
@@ -268,7 +299,7 @@ import$load()
 
 This will fail if any of the stages fail. 
 
-Alternatively you can run the import up to just a specific point to view the output if desired - which should be useful for debugging any import problems e.g.
+You can run the import up to just a specific point to view the output if desired - which should be useful for debugging any import problems e.g.
 
 ```{r include = FALSE}
 ## Get a clean DB for running import a second time
@@ -290,7 +321,7 @@ extracted_data <- import$get_extracted_data()
 transformed_data <- import$get_transformed_data()
 ```
 
-The load stage can then be run separately
+You can then run the load stage once you are satisfied the transformed_data looks coorect.
 
 ```{r}
 import$load()
@@ -301,6 +332,8 @@ We can then inspect the database to see that the data has indeed been loaded
 con <- import$get_connection()
 DBI::dbGetQuery(con, "SELECT * FROM people")
 ```
+
+### Dry run
 
 The import can be run in `dry_run` which will be useful for development. 
 

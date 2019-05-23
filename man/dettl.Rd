@@ -7,7 +7,7 @@
 dettl(path, db_name = NULL)
 }
 \arguments{
-\item{path}{Path to directory containing functions for import process.}
+\item{path}{Path to directory containing functions for import.}
 
 \item{db_name}{The name of the db to connect to. Connection info must be
 configured via the \code{dettl_config.yml}. If name is left blank this will
