@@ -2,7 +2,7 @@
 #'
 #' @param path Path to import directory containing db connection configuration.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`.
+#' configured via the \code{dettl_config.yml}.
 #'
 #' @export
 #' @examples

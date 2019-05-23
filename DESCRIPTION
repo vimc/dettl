@@ -10,7 +10,6 @@ Description: Data extract, transform, test and load tool for sanitising your wor
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Imports:
     bit64,

@@ -6,41 +6,50 @@
 \description{
 Manage data import.
 }
+\details{
+This object should not be initialised directly. Use \code{\link{dettl}} to
+create the object.
+
+Import can be run by working with import object returned by
+\code{\link{dettl}} or by running top-level functions. Run the import by
+working with this object if you want to step through the import process
+stage by stage and inspect the data after each stage.
+}
 \section{Methods}{
 
 
 \describe{
 \item{\code{extract}}{
-Run the extract stage of the data import
-\cr\emph{Usage:}\preformatted{extract()}
+  Run the extract stage of the data import
+  \cr\emph{Usage:}\preformatted{extract()}
 }
 \item{\code{transform}}{
-Run the transform stage of the data import
-\cr\emph{Usage:}\preformatted{transform()}
+  Run the transform stage of the data import
+  \cr\emph{Usage:}\preformatted{transform()}
 }
 \item{\code{load}}{
-Run the load stage of the data import
-\cr\emph{Usage:}\preformatted{load(comment = NULL, dry_run = FALSE, force = FALSE)}
+  Run the load stage of the data import
+  \cr\emph{Usage:}\preformatted{load(comment = NULL, dry_run = FALSE, force = FALSE)}
 
-\emph{Arguments:}
-\itemize{
-\item{\code{comment}:   Optional comment which will be persisted in the log of the import run in the database.
-}\preformatted{\item{\code{dry_run}:   Whether to run in dry run mode. If TRUE then any database changes will be rolled back. Defaults to FALSE.
-}
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{comment}:   Optional comment which will be persisted in the log of the import run in the database.
+    }
 
-\item{\code{force}:   If TRUE then checks that repo is up to date with git remote will be skipped. Defautls to FALSE.
-}
-}
+    \item{\code{dry_run}:   Whether to run in dry run mode. If TRUE then any database changes will be rolled back. Defaults to FALSE.
+    }
 
-}
+    \item{\code{force}:   If TRUE then checks that repo is up to date with git remote will be skipped. Defautls to FALSE.
+    }
+  }
 }
 \item{\code{get_extracted_data}}{
-Get the extracted data created by the extract step
-\cr\emph{Usage:}\preformatted{get_extracted_data()}
+  Get the extracted data created by the extract step
+  \cr\emph{Usage:}\preformatted{get_extracted_data()}
 }
 \item{\code{get_transformed_data}}{
-Get the transformed data created by the transform step
-\cr\emph{Usage:}\preformatted{get_transformed_data()}
+  Get the transformed data created by the transform step
+  \cr\emph{Usage:}\preformatted{get_transformed_data()}
 }
 }
 }
@@ -55,4 +64,5 @@ import <- dettl::dettl(import_path, db_name = "test")
 import$extract()
 import$transform()
 import$load()
+
 }

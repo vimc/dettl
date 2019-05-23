@@ -23,6 +23,7 @@
 ##' import$extract()
 ##' import$transform()
 ##' import$load()
+##'
 NULL
 
 DataImport <- R6::R6Class(
