@@ -1,0 +1,29 @@
+extract:
+  short: >-
+    Run the extract stage of the data import
+
+transform:
+  short: >-
+    Run the transform stage of the data import
+
+load:
+  short: >-
+    Run the load stage of the data import
+  params:
+    comment: >-
+      Optional comment which will be persisted in the log of the import run
+      in the database.
+    dry_run: >-
+      Whether to run in dry run mode. If TRUE then any database changes will
+      be rolled back. Defaults to FALSE.
+    force: >-
+      If TRUE then checks that repo is up to date with git remote will be
+      skipped. Defautls to FALSE.
+
+get_extracted_data:
+  short: >-
+    Get the extracted data created by the extract step
+
+get_transformed_data:
+  short: >-
+    Get the transformed data created by the transform step

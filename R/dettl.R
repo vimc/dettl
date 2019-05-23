@@ -1,3 +1,30 @@
+##' Manage data import.
+##'
+##' This object should not be initialised directly. Use \code{\link{dettl}} to
+##' create the object.
+##'
+##' Import can be run by working with import object returned by
+##' \code{\link{dettl}} or by running top-level functions. Run the import by
+##' working with this object if you want to step through the import process
+##' stage by stage and inspect the data after each stage.
+##'
+##' @template DataImport
+##'
+##' @title Data Import
+##' @name DataImport
+##'
+##' @examples
+##' path <- dettl:::prepare_test_import(
+##'   system.file("examples", "person_information", package = "dettl"),
+##'   system.file("examples", "dettl_config.yml", package = "dettl"))
+##' import_path <- file.path(path, "person_information")
+##'
+##' import <- dettl::dettl(import_path, db_name = "test")
+##' import$extract()
+##' import$transform()
+##' import$load()
+##'
+NULL
 
 DataImport <- R6::R6Class(
   "DataImport",
@@ -34,6 +61,14 @@ DataImport <- R6::R6Class(
       private$test_queries <- test_queries
       private$log_table <- db_get_log_table(db_name, path)
       lockBinding("path", self)
+    },
+
+    format = function(brief = FALSE) {
+      data_import_format(self, brief, class(self)[[1L]])
+    },
+
+    help = function() {
+      utils::help(class(self)[[1L]], package = "dettl")
     },
 
     rollback = function() {

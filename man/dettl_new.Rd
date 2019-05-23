@@ -9,7 +9,7 @@ dettl_new(name)
 \arguments{
 \item{name}{The name of the project directory to be created. Should be human
 readable and meaningful. Any non a-z,0-9,_ characters will be stripped
-and replaced with _s. Directory name will be preprended with created date.}
+and replaced with _s. Directory name will be prepended with created date.}
 }
 \description{
 Create new directory and templated code for new dettl process.

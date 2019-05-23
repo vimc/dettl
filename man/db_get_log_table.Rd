@@ -10,7 +10,7 @@ db_get_log_table(type, path)
 \item{type}{The db to get the log table for, must match a db configured in
 db config.}
 
-\item{path}{Path to directory contianing yaml config.}
+\item{path}{Path to directory containing yaml config.}
 }
 \description{
 Get the log table name from configuration for a particular db

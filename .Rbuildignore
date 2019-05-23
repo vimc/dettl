@@ -6,3 +6,4 @@
 ^images$
 ^docs$
 ^\.vault$
+^man-roxygen$
