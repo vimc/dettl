@@ -14,6 +14,6 @@ The git user.email.
 }
 \description{
 From a path to a git controlled dir get the user.email. This will be the
-global user.email or local if it has been overriden.
+global user.email or local if it has been overridden.
 }
 \keyword{internal}

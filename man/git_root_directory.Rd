@@ -15,6 +15,6 @@ be located.
 }
 \description{
 From a subdirectory within a git project locate the root directory.
-This is the directory contianing the .git files.
+This is the directory containing the .git files.
 }
 \keyword{internal}

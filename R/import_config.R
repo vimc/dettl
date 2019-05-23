@@ -143,7 +143,7 @@ load_sources <- function(sources, path) {
   env
 }
 
-#' Expand any wilcards in source file paths.
+#' Expand any wildcards in source file paths.
 #'
 #' Expands any wildcards in the sources, prints a message if file with
 #' name cannot be found.

@@ -14,6 +14,6 @@ The git user.name.
 }
 \description{
 From a path to a git controlled dir get the user.name. This will be the
-global user.name or local if it has been overriden.
+global user.name or local if it has been overridden.
 }
 \keyword{internal}

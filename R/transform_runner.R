@@ -1,7 +1,7 @@
 #' Run transform step.
 #'
 #' Step is responsible for taking extracted data, running the configured
-#' transform function on the data, checking the returned data adhers to the
+#' transform function on the data, checking the returned data adheres to the
 #' db schema and running any configured user defined tests.
 #'
 #' @param con The active DB connection.

@@ -27,7 +27,7 @@ ETL is a pattern for general copying of data from one or more sources to another
 
 **Extract** - Step is responsible for selecting and accessing any required data from relevant sources (local files or DB). The data is read into memory and can be verified by running a set of tests after step has completed.
 
-**Transform** - Step is responsible for transforming the extracted data into a form ready for loading into the destination database. Expect this is where the bulk of the work will be done. The transformed data can be verifed by running a set of tests after the step has completed.
+**Transform** - Step is responsible for transforming the extracted data into a form ready for loading into the destination database. Expect this is where the bulk of the work will be done. The transformed data can be verified by running a set of tests after the step has completed.
 
 **Load** - Step is responsible for loading the transformed data into the destination database. A set of post-load tests can be defined which will be run after the data is loaded into the database. If any of the tests fail the DB update will roll back, otherwise changes are committed.
 
@@ -241,7 +241,7 @@ testthat::test_that("No of rows in people increases by 2", {
 })
 ```
 
-After this stage has been implemeneted the import can be run end-to-end.
+After this stage has been implemented the import can be run end-to-end.
 
 ## Running the import {#run}
 
@@ -338,7 +338,7 @@ load:
 
 Using a default load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
 
-The default load can also load data resepecting primary key constraints configured via `dettl.yml`. For example if we want to load data where we have `transformed_data` taking the form
+The default load can also load data respecting primary key constraints configured via `dettl.yml`. For example if we want to load data where we have `transformed_data` taking the form
 
 ```{r echo = FALSE}
 people <- data.frame(c(1,2),

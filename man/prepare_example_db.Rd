@@ -12,13 +12,13 @@ prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE,
 
 \item{add_data}{If TRUE data is bootstrapped to people table}
 
-\item{add_job_table}{If TRUE also boostrap job table related to people table}
+\item{add_job_table}{If TRUE also bootstrap job table related to people table}
 
-\item{add_log_table}{If TRUE also boostrap log table using sql in inst dir}
+\item{add_log_table}{If TRUE also bootstrap log table using sql in inst dir}
 }
 \description{
 Create a SQLite database for testing called test.sqlite in specified
-directory. This boostraps a simple table called people with data optionally
+directory. This bootstraps a simple table called people with data optionally
 added. This should only be called from a test, vignette or roxygen example.
 }
 \details{

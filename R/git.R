@@ -62,7 +62,7 @@ git_run <- function(args, root = NULL, check = FALSE) {
 #' Locate the git project root directory
 #'
 #' From a subdirectory within a git project locate the root directory.
-#' This is the directory contianing the .git files.
+#' This is the directory containing the .git files.
 #'
 #' @param dir The directory to locate the git project root from.
 #' @return The git project root normalized, or throws an error if this can't
@@ -83,7 +83,7 @@ git_root_directory <- function(dir) {
 #' Get the git user.name from git dir
 #'
 #' From a path to a git controlled dir get the user.name. This will be the
-#' global user.name or local if it has been overriden.
+#' global user.name or local if it has been overridden.
 #'
 #' @param path Path to the directory to get the git user.name for.
 #' @return The git user.name.
@@ -96,7 +96,7 @@ git_user <- function(path) {
 #' Get the git user.email from git dir
 #'
 #' From a path to a git controlled dir get the user.email. This will be the
-#' global user.email or local if it has been overriden.
+#' global user.email or local if it has been overridden.
 #'
 #' @param path Path to the directory to get the git user.email for.
 #' @return The git user.email.

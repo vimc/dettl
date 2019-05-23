@@ -5,7 +5,7 @@
 #' enabled.
 #'
 #' @param type The db to connect to, must match a db configured in db config.
-#' @param path Path to directory contianing yaml config.
+#' @param path Path to directory containing yaml config.
 #'
 #' @keywords internal
 #'
@@ -23,7 +23,7 @@ db_connect <- function(type, path) {
 #'
 #' @param type The db to get the log table for, must match a db configured in
 #' db config.
-#' @param path Path to directory contianing yaml config.
+#' @param path Path to directory containing yaml config.
 #'
 #' @keywords internal
 #'

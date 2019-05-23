@@ -9,7 +9,7 @@ db_connect(type, path)
 \arguments{
 \item{type}{The db to connect to, must match a db configured in db config.}
 
-\item{path}{Path to directory contianing yaml config.}
+\item{path}{Path to directory containing yaml config.}
 }
 \description{
 Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses

@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_config.R
 \name{expand_wildcards}
 \alias{expand_wildcards}
-\title{Expand any wilcards in source file paths.}
+\title{Expand any wildcards in source file paths.}
 \usage{
 expand_wildcards(sources, path)
 }

@@ -29,3 +29,4 @@ Suggests:
     testthat,
     vaultr (>= 0.2.2)
 VignetteBuilder: knitr
+Language: en-GB
