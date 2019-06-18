@@ -61,11 +61,27 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
 
   if (add_fk_data) {
-    DBI::dbExecute(con,
-                   "CREATE TABLE region (
-                   name TEXT PRIMARY KEY,
-                   parent TEXT,
-                   FOREIGN KEY (parent) REFERENCES region(name)
+    add_fk_data(con)
+  }
+
+  DBI::dbDisconnect(con)
+  path
+}
+
+#' Add tables with foreign key constraints for testing
+#'
+#' Create some tables with foreign key constraints and add some simple data
+#' to them for testing.
+#'
+#' @param con Connection to DB to add tables with foreign key constraints
+#'
+#' @keywords internal
+add_fk_data <- function(con) {
+  DBI::dbExecute(con,
+    "CREATE TABLE region (
+      name TEXT PRIMARY KEY,
+      parent TEXT,
+      FOREIGN KEY (parent) REFERENCES region(name)
     )")
     region1 <- data.frame(list(
       name = "UK"
@@ -79,7 +95,7 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 
     DBI::dbExecute(con,
       "CREATE TABLE street (
-      name TEXT PRIMARY KEY
+        name TEXT PRIMARY KEY
       )")
     street1 <- data.frame(list(
       name = "Commercial Road"
@@ -92,20 +108,16 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 
     DBI::dbExecute(con,
       "CREATE TABLE address (
-      street TEXT,
-      region TEXT,
-      FOREIGN KEY (street) REFERENCES street(name),
-      FOREIGN KEY (region) REFERENCES region(name)
+        street TEXT,
+        region TEXT,
+        FOREIGN KEY (street) REFERENCES street(name),
+        FOREIGN KEY (region) REFERENCES region(name)
       )")
     address <- data.frame(list(
       street = "The Street",
       region = "London"
     ), stringsAsFactors = FALSE)
     DBI::dbWriteTable(con, "address", address, append = TRUE)
-  }
-
-  DBI::dbDisconnect(con)
-  path
 }
 
 #' Prepare example import inside a git repo

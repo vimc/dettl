@@ -21,47 +21,7 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) 
   )
 
   if (add_fk_data) {
-    DBI::dbExecute(con,
-      "CREATE TABLE region (
-        name TEXT PRIMARY KEY,
-        parent TEXT,
-        FOREIGN KEY (parent) REFERENCES region(name)
-      )")
-    region1 <- data.frame(list(
-      name = "UK"
-    ))
-    region2 <- data.frame(list(
-      name = "London",
-      parent = "UK"
-    ))
-    DBI::dbWriteTable(con, "region", region1, append = TRUE)
-    DBI::dbWriteTable(con, "region", region2, append = TRUE)
-
-    DBI::dbExecute(con,
-      "CREATE TABLE street (
-        name TEXT PRIMARY KEY
-      )")
-    street1 <- data.frame(list(
-      name = "Commercial Road"
-    ))
-    street2 <- data.frame(list(
-      name = "The Street"
-    ))
-    DBI::dbWriteTable(con, "street", street1, append = TRUE)
-    DBI::dbWriteTable(con, "street", street2, append = TRUE)
-
-    DBI::dbExecute(con,
-      "CREATE TABLE address (
-        street TEXT,
-        region TEXT,
-        FOREIGN KEY (street) REFERENCES street(name),
-        FOREIGN KEY (region) REFERENCES region(name)
-      )")
-    address <- data.frame(list(
-      street = "The Street",
-      region = "London"
-    ), stringsAsFactors = FALSE)
-    DBI::dbWriteTable(con, "address", address, append = TRUE)
+    add_fk_data(con)
   }
 
   ## Make sure we have a fresh "dettl_import_log" table if one existed already
