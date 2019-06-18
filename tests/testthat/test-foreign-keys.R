@@ -133,3 +133,12 @@ test_that("only one key can be referenced from each table", {
   expect_error(parse_constraints(data),
     "Primary key for table reftable1 should always be the same. Got primary keys id, id2.")
 })
+
+test_that("unsupported sql dialect returns useful error", {
+  mock_sql_dialect <- mockery::mock("Unsupported-dialect")
+
+  with_mock("dettl:::sql_dialect" = mock_sql_dialect, {
+    expect_error(get_fk_constraints("Unsupported-con"),
+      "Only sqlite and postgresql dialects are supported got Unsupported-dialect.")
+  })
+})
