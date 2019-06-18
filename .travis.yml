@@ -8,6 +8,8 @@ r_packages:
 addons:
   postgres: "9.4"
 before_script:
+  - psql --version
+  - psql -c 'SELECT version();' -U postgres
   - Rscript -e 'vaultr::vault_test_server_install()'
   - psql -c 'create database dettl_test_db;' -U postgres
   - R CMD INSTALL .
