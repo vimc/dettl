@@ -5,8 +5,8 @@ sudo: false
 cache: packages
 r_packages:
   - covr
-services:
-  - postgresql
+addons:
+  postgres: "9.4"
 before_script:
   - Rscript -e 'vaultr::vault_test_server_install()'
   - psql -c 'create database dettl_test_db;' -U postgres
