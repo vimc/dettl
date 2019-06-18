@@ -14,13 +14,11 @@ setup_config <- function(db_driver = "RSQLite::SQLite",
   path
 }
 
-setup_dettl_config <- function(load = "func: load",
-                               rewrite_keys = "") {
+setup_dettl_config <- function(load = "func: load") {
   path <- setup_dettl("example_load_template", "dettl_config.yml")
   filename <- file.path(path, "example_load_template", "dettl.yml")
   cfg <- readLines(filename)
   cfg <- gsub("<load>", load, cfg, fixed = TRUE)
-  cfg <- gsub("<rewrite_keys>", rewrite_keys, cfg, fixed = TRUE)
   cfg <- unlist(strsplit(cfg, "\n"))
   writeLines(cfg, filename)
   file.path(path, "example_load_template")

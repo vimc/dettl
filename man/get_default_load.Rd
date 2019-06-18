@@ -4,17 +4,14 @@
 \alias{get_default_load}
 \title{Get default load function.}
 \usage{
-get_default_load(rewrite_keys)
-}
-\arguments{
-\item{rewrite_keys}{A ForeignKeyConstraints object}
+get_default_load()
 }
 \value{
 The default load function.
 }
 \description{
-Builds the default load function using the configured foreign key
-constraints.
+Builds the default load function using foreign key constraints read from
+the database.
 }
 \details{
 The default load function loops over the transformed data and appends each

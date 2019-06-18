@@ -14,7 +14,7 @@ dettl <- function(path, db_name = NULL) {
   dettl_config <- read_config(path)
 
   if (dettl_config$load$default) {
-    load_func <- get_default_load(dettl_config$rewrite_keys)
+    load_func <- get_default_load()
   } else {
     load_func <- dettl_config$load$func
   }

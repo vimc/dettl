@@ -72,8 +72,6 @@ test_that("read config adds missing fields from defaults", {
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "simple_example")
-
-  expect_false("rewrite_keys" %in% names(cfg))
 })
 
 test_that("read config fails if required configuration is not available", {
@@ -99,29 +97,8 @@ test_that("wildcards in sources are expanded", {
                "No files found matching file pattern no_match.R")
 })
 
-test_that("read config uses default load when rewrite_keys are configured", {
-  cfg <- read_config("example_default_load")
-
-  expect_true("rewrite_keys" %in% names(cfg))
-  expect_is(cfg$rewrite_keys, "ForeignKeyConstraints")
-  expect_true("load" %in% names(cfg))
-  expect_length(cfg$load, 3)
-  expect_false("func" %in% names(cfg$load))
-  expect_true(cfg$load$default)
-  expect_true("test" %in% names(cfg$load))
-  expect_true("verification_queries" %in% names(cfg$load))
-  expect_is(cfg$load$verification_queries, "function")
-  expect_equal(cfg$load$test, "R/test_load.R")
-})
-
 test_that("default load can be specified in config", {
-  rewrite_keys <-
-    "rewrite_keys:
-    people:
-      primary: id
-      foreign:
-        jobs: person"
-  dir <- setup_dettl_config("default: true", rewrite_keys)
+  dir <- setup_dettl_config("default: true")
   cfg <- read_config(dir)
   expect_true(cfg$load$default)
 
@@ -131,7 +108,7 @@ test_that("default load can be specified in config", {
 
   dir <- setup_dettl_config("
   default: TRUE
-  func: load", rewrite_keys)
+  func: load")
   expect_error(read_config(dir),
                "Load stage must specify a load function OR use the default load function. Got default TRUE and NULL func FALSE.")
 })
