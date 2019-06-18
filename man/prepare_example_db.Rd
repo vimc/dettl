@@ -5,7 +5,7 @@
 \title{Prepare example db}
 \usage{
 prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE,
-  add_log_table = TRUE)
+  add_log_table = TRUE, add_fk_data = FALSE)
 }
 \arguments{
 \item{dir}{Directory to create the db in}

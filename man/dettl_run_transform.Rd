@@ -10,7 +10,7 @@ dettl_run_transform(path, db_name = NULL)
 \item{path}{Path to the import directory.}
 
 \item{db_name}{The name of the db to connect to. Connection info must be
-configured via the \code{dettl_config.yml}. If name is left blank this will default
+configured via the `dettl_config.yml`. If name is left blank this will default
 to using the first db configured.}
 }
 \value{
