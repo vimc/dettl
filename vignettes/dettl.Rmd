@@ -371,7 +371,7 @@ load:
 
 Using a default load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
 
-The default load can also load data respecting primary key constraints configured via `dettl.yml`. For example if we want to load data where we have `transformed_data` taking the form
+The default load will load data respecting primary key constraints which are read automatically from the database. For example if we want to load data where we have `transformed_data` taking the form
 
 ```{r echo = FALSE}
 people <- data.frame(c(1,2),
@@ -388,16 +388,5 @@ knitr::kable(people, caption = "people")
 knitr::kable(jobs, caption = "jobs")
 ```
 
-where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. In the transformed data these ids are just temporary values used to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. 
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
 
-We need to configure in the `dettl.yml` which fields in which tables are primary keys and where they are used as foreign keys. For the example data above this is done as follows
-
-```yaml
-rewrite_keys:
-  people:
-    primary: id
-    foreign:
-      jobs: person
-```
-
-This tells `dettl` that the primary key `id` of the table `people` is used as a foreign key in the `jobs` table as field `person`. This means when the import is run, the `people` table will be appended to and the new primary keys for the added rows retrieved. These ids will then be updated from the old ones to the new ones in every usage as a foreign key meaning when the `jobs` table is appended to the ids will refer to the correct `people`.
