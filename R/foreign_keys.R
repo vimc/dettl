@@ -6,16 +6,16 @@
 #' @keywords internal
 get_fk_constraints <- function(con) {
   dialect <- sql_dialect(con)
-  constraints <- switch(
+  get_fks <- switch(
     dialect,
-    "sqlite" = get_sqlite_fk(con),
-    "postgresql" = get_postgres_fk(con, dialect),
+    "sqlite" = get_sqlite_fk,
+    "postgresql" = get_postgres_fk,
     {
       stop(sprintf("Only sqlite and postgresql dialects are supported got %s.",
                    dialect))
     }
   )
-  parse_constraints(constraints)
+  parse_constraints(get_fks(con))
 }
 
 #' Get FK constraints for SQLite connection
@@ -47,12 +47,11 @@ get_sqlite_fk <- function(con) {
 #' Get FK constraints for postgres connection
 #'
 #' @param con Postgres connection to get constraints for.
-#' @param dialect Dialect name for locating sql query to get constraints.
 #'
 #' @return A data frame representing foreign key constraints.
 #' @keywords internal
-get_postgres_fk <- function(con, dialect) {
-  path <- system.file("sql", dialect, "get_fk.sql", package = "dettl")
+get_postgres_fk <- function(con) {
+  path <- system.file("sql", "postgresql", "get_fk.sql", package = "dettl")
   query <- read_lines(path)
   DBI::dbGetQuery(con, query)
 }

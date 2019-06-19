@@ -40,7 +40,7 @@ test_that("postgres foreign key constraints can be read", {
   con <- prepare_example_postgres_db(add_fk_data = TRUE)
   on.exit(DBI::dbDisconnect(con))
 
-  constraints <- get_postgres_fk(con, "postgresql")
+  constraints <- get_postgres_fk(con)
 
   expect_true("constraint_table" %in% colnames(constraints))
   expect_true("constraint_column" %in% colnames(constraints))
@@ -141,4 +141,13 @@ test_that("unsupported sql dialect returns useful error", {
     expect_error(get_fk_constraints("Unsupported-con"),
       "Only sqlite and postgresql dialects are supported got Unsupported-dialect.")
   })
+})
+
+test_that("empty list returned when no constraints", {
+  path <- prepare_test_import(add_fk_data = FALSE)
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  constraints <- get_fk_constraints(con)
+
+  expect_equal(constraints, list())
 })

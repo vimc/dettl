@@ -38,7 +38,7 @@ test_that("foreign key constraints can be initialised and accessed", {
 })
 
 test_that("empty key constraints returns appropriate messages", {
-  mock_get_fk_constraints <- mockery::mock(NULL)
+  mock_get_fk_constraints <- mockery::mock(list())
   with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
     keys <- ForeignKeyConstraints$new("con")
   })
