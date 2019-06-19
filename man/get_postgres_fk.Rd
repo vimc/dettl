@@ -4,12 +4,10 @@
 \alias{get_postgres_fk}
 \title{Get FK constraints for postgres connection}
 \usage{
-get_postgres_fk(con, dialect)
+get_postgres_fk(con)
 }
 \arguments{
 \item{con}{Postgres connection to get constraints for.}
-
-\item{dialect}{Dialect name for locating sql query to get constraints.}
 }
 \value{
 A data frame representing foreign key constraints.
