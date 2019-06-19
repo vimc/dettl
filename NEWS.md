@@ -1,3 +1,3 @@
 ## 0.0.3
 
-Read foreign key constraints automatically from the database
+VIMC-2859 - Read foreign key constraints automatically from the database
