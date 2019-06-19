@@ -43,7 +43,7 @@ get_sqlite_fk <- function(con) {
   constraints <- lapply(queries, function(query) {
     DBI::dbGetQuery(con, query)
   })
-  as.data.frame(do.call(rbind, constraints))
+  do.call(rbind, constraints)
 }
 
 #' Get FK constraints for postgres connection
