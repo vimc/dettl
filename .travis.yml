@@ -5,12 +5,8 @@ sudo: false
 cache: packages
 r_packages:
   - covr
-addons:
-  postgresql: "10"
-  apt:
-    packages:
-    - postgresql-10
-    - postgresql-client-10
+services:
+  postgres: "9.6"
 before_script:
   - psql --version
   - psql -c 'SELECT version();' -U postgres
