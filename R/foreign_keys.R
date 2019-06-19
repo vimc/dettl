@@ -31,17 +31,20 @@ get_sqlite_fk <- function(con) {
                             stringsAsFactors = FALSE)
   colnames(constraints) <- c("constraint_table", "constraint_column",
                              "referenced_table", "referenced_column")
-  for(table in tables) {
-    foreign_keys <- DBI::dbGetQuery(con, sprintf(
+  queries <- lapply(tables, function(table) {
+    sprintf(
       "SELECT pragma.'table' as referenced_table,
-      pragma.'from' as constraint_column,
-      pragma.'to' as referenced_column,
-      '%s' as constraint_table
-      FROM  pragma_foreign_key_list('%s') as pragma",
-      table, table))
-    constraints <- rbind(constraints, foreign_keys)
-  }
-  constraints
+        pragma.'from' as constraint_column,
+        pragma.'to' as referenced_column,
+        '%s' as constraint_table
+        FROM  pragma_foreign_key_list('%s') as pragma",
+      table, table)
+  })
+
+  constraints <- lapply(queries, function(query) {
+    DBI::dbGetQuery(con, query)
+  })
+  as.data.frame(do.call(rbind, constraints))
 }
 
 #' Get FK constraints for postgres connection
