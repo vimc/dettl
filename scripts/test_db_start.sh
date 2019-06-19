@@ -4,4 +4,4 @@ docker run --rm -d \
     -p 5432:5432 \
     --name dettl-pg \
     -e POSTGRES_DB=dettl_test_db \
-    postgres:9.4
+    postgres:9.2

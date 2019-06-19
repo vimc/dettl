@@ -25,14 +25,13 @@ get_fk_constraints <- function(con) {
 #' @return A data frame representing foreign key constraints.
 #' @keywords internal
 get_sqlite_fk <- function(con) {
-  tables <- DBI::dbGetQuery(con,
-    "SELECT tbl_name FROM sqlite_master WHERE type = 'table'")
+  tables <- DBI::dbListTables(con)
 
   constraints <- data.frame(matrix(ncol = 4, nrow = 0),
                             stringsAsFactors = FALSE)
   colnames(constraints) <- c("constraint_table", "constraint_column",
                              "referenced_table", "referenced_column")
-  for(table in tables$tbl_name) {
+  for(table in tables) {
     foreign_keys <- DBI::dbGetQuery(con, sprintf(
       "SELECT pragma.'table' as referenced_table,
       pragma.'from' as constraint_column,
