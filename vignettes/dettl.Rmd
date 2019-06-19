@@ -152,8 +152,8 @@ After completing the implementation of the extract stage you can run just that s
 
 ```{r include = FALSE}
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl"))
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml"))
 import_path <- file.path(path, "person_information")
 ```
 
@@ -253,8 +253,8 @@ To use the run functions to run an import up to a specified stage you need to kn
 
 ```{r include = FALSE}
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl"))
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml"))
 import_path <- file.path(path, "person_information")
 ```
 
@@ -280,8 +280,8 @@ To run the import using the object first create a new import object using the na
 
 ```{r include = FALSE}
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl"))
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml"))
 import_path <- file.path(path, "person_information")
 ```
 
@@ -304,8 +304,8 @@ You can run the import up to just a specific point to view the output if desired
 ```{r include = FALSE}
 ## Get a clean DB for running import a second time
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl"))
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml"))
 import_path <- file.path(path, "person_information")
 import <- dettl::dettl(import_path, db_name = "test")
 ```
@@ -340,8 +340,8 @@ The import can be run in `dry_run` which will be useful for development.
 ```{r include = FALSE}
 ## Get a clean DB for running dry run import
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl"))
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml"))
 import_path <- file.path(path, "person_information")
 import <- dettl::dettl(import_path, db_name = "test")
 ```

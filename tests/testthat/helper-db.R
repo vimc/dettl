@@ -29,7 +29,7 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) 
     "DROP TABLE IF EXISTS dettl_import_log")
   if (create_log) {
     query_text <- read_lines(
-      system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
+      dettl_file("sql", "postgresql", "create_log_table.sql"))
     DBI::dbExecute(con, query_text)
   }
   con

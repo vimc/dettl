@@ -55,8 +55,8 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
 
   if (add_log_table) {
-    query_text <- read_lines(system.file(
-      "sql", "postgresql", "create_log_table.sql", package = "dettl"))
+    query_text <- read_lines(
+      dettl_file("sql", "postgresql", "create_log_table.sql"))
     DBI::dbExecute(con, query_text)
   }
 

@@ -249,3 +249,7 @@ zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
   }
   normalizePath(dest)
 }
+
+dettl_file <- function(...) {
+  system.file(..., package = "dettl", mustWork = TRUE)
+}

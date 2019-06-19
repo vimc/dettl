@@ -28,8 +28,8 @@ dry_run mode.
 }
 \examples{
 path <- dettl:::prepare_test_import(
-  system.file("examples", "person_information", package = "dettl"),
-  system.file("examples", "dettl_config.yml", package = "dettl")
+  dettl:::dettl_file("examples", "person_information"),
+  dettl:::dettl_file("examples", "dettl_config.yml")
 )
 dettl::dettl_run_load(file.path(path, "person_information/"), "test",
   comment = "Example import")

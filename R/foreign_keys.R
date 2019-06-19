@@ -53,7 +53,7 @@ get_sqlite_fk <- function(con) {
 #' @return A data frame representing foreign key constraints.
 #' @keywords internal
 get_postgres_fk <- function(con) {
-  path <- system.file("sql", "postgresql", "get_fk.sql", package = "dettl")
+  path <- dettl_file("sql", "postgresql", "get_fk.sql")
   query <- read_lines(path)
   DBI::dbGetQuery(con, query)
 }
