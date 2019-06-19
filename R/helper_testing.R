@@ -34,11 +34,11 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     )"
   )
   if (add_data) {
-    person <- data.frame(list(
+    person <- data.frame(
       name = "Daisy",
       age = 34,
-      height = 189
-    ), stringsAsFactors = FALSE)
+      height = 189,
+      stringsAsFactors = FALSE)
 
     DBI::dbWriteTable(con, "people", person, append = TRUE)
   }
@@ -83,13 +83,13 @@ add_fk_data <- function(con) {
       parent TEXT,
       FOREIGN KEY (parent) REFERENCES region(name)
     )")
-    region1 <- data.frame(list(
+    region1 <- data.frame(
       name = "UK"
-    ))
-    region2 <- data.frame(list(
+    )
+    region2 <- data.frame(
       name = "London",
       parent = "UK"
-    ))
+    )
     DBI::dbWriteTable(con, "region", region1, append = TRUE)
     DBI::dbWriteTable(con, "region", region2, append = TRUE)
 
@@ -97,12 +97,12 @@ add_fk_data <- function(con) {
       "CREATE TABLE street (
         name TEXT PRIMARY KEY
       )")
-    street1 <- data.frame(list(
+    street1 <- data.frame(
       name = "Commercial Road"
-    ))
-    street2 <- data.frame(list(
+    )
+    street2 <- data.frame(
       name = "The Street"
-    ))
+    )
     DBI::dbWriteTable(con, "street", street1, append = TRUE)
     DBI::dbWriteTable(con, "street", street2, append = TRUE)
 
@@ -113,10 +113,10 @@ add_fk_data <- function(con) {
         FOREIGN KEY (street) REFERENCES street(name),
         FOREIGN KEY (region) REFERENCES region(name)
       )")
-    address <- data.frame(list(
+    address <- data.frame(
       street = "The Street",
-      region = "London"
-    ), stringsAsFactors = FALSE)
+      region = "London",
+      stringsAsFactors = FALSE)
     DBI::dbWriteTable(con, "address", address, append = TRUE)
 }
 
