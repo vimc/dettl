@@ -16,57 +16,37 @@ test_that("foreign key constraints can be initialised and accessed", {
       )
     )
   )
-  keys <- ForeignKeyConstraints$new(constraints)
+  mock_get_fk_constraints <- mockery::mock(constraints)
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+    keys <- ForeignKeyConstraints$new("con")
+  })
 
   expect_true(keys$used_as_foreign_key("table"))
   expect_false(keys$used_as_foreign_key("table3"))
 
   expect_equal(keys$get_primary_key("table"), "id")
   expect_error(keys$get_primary_key("table3"),
-    "Tried to get primary key for table table3 not in configuration.")
+    "Tried to get primary key for table 'table3', table is missing from constraints.")
 
   expect_equal(keys$get_foreign_key_usages("table"), list(
     "constrained_table" = "example_field",
     "constrained_table2" = "example_field2"
   ))
   expect_error(keys$get_foreign_key_usages("table3"),
-    "Tried to get foreign key usages for primary key of table table3. Missing from configuration.")
+    "Tried to get foreign key usages for primary key of table 'table3', table is missing from constraints.")
 
 })
 
-test_that("misconfigured key constraints returns useful message", {
-  constraints <- NULL
-  expect_error(ForeignKeyConstraints$new(constraints),
-    "Rewrite keys must be a named list with length > 0. Check configuration.")
+test_that("empty key constraints returns appropriate messages", {
+  mock_get_fk_constraints <- mockery::mock(NULL)
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+    keys <- ForeignKeyConstraints$new("con")
+  })
+  expect_false(keys$used_as_foreign_key("test"))
 
-  constraints <- list()
-  expect_error(ForeignKeyConstraints$new(constraints),
-    "Rewrite keys must be a named list with length > 0. Check configuration.")
+  expect_error(keys$get_primary_key("test"),
+    "Tried to get primary key for table 'test', table is missing from constraints.")
 
-  constraints <- list(
-    "table" = list()
-  )
-  expect_error(ForeignKeyConstraints$new(constraints),
-    "Rewrite keys must specify a primary key and foreign keys for each table. Check configuration for table table.")
-
-  constraints <- list(
-    "table" = list(
-      "primary" = "id",
-      "foreign" = list(
-      )
-    )
-  )
-  expect_error(ForeignKeyConstraints$new(constraints),
-    "Foreign keys must be a named list with length > 0 for each table. Check configuration for table table.")
-
-  constraints <- list(
-    "table" = list(
-      "primary" = "id",
-      "foreign" = list(
-        "constrained_table" = c(1,2)
-      )
-    )
-  )
-  expect_error(ForeignKeyConstraints$new(constraints),
-    "Foreign keys must be a character. Check configuration for referenced table table and child table constrained_table.")
+  expect_error(keys$get_foreign_key_usages("test"),
+    "Tried to get foreign key usages for primary key of table 'test', table is missing from constraints.")
 })

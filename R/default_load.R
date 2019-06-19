@@ -16,7 +16,7 @@
 #' @keywords internal
 get_default_load <- function() {
   function(transformed_data, con) {
-    rewrite_keys <- ForeignKeyConstraints$new(get_fk_constraints(con))
+    rewrite_keys <- ForeignKeyConstraints$new(con)
     for (name in names(transformed_data)) {
       if (rewrite_keys$used_as_foreign_key(name)) {
         primary_key <- rewrite_keys$get_primary_key(name)
