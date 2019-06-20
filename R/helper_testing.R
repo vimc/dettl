@@ -129,11 +129,20 @@ add_fk_data <- function(con) {
 #'
 #' @param example_dir The example directory to copy to temp.
 #' @param dettl_config Path to the dettl config file.
+#' @param create_db If TRUE then test SQLite db will be created
 #' @param add_data If TRUE data is bootstrapped to people table in test DB.
 #' @param add_job_table If TRUE also bootstrap job table related to people table.
 #' @param add_log_table If TRUE then also bootstrap log table.
+#' @param add_fk_data If TRUE then bootstrap three tables with foreign key
+#' constraints for testing automatic reading of foreign key constraints from db.
 #'
-#' @keywords internal
+#' @export
+#'
+#' @examples
+#' dettl::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl")
+#' )
 prepare_test_import <- function(example_dir = "example",
                                 dettl_config = "dettl_config.yml",
                                 create_db = TRUE,

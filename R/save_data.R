@@ -10,9 +10,9 @@
 #' @export
 #'
 #' @examples
-#' path <- dettl:::prepare_test_import(
-#'   dettl:::dettl_file("examples", "person_information"),
-#'   dettl:::dettl_file("examples", "dettl_config.yml")
+#' path <- dettl::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
 #' import <- dettl::dettl(file.path(path, "person_information"), "test")
 #' import$extract()

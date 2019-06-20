@@ -14,11 +14,16 @@ prepare_test_import(example_dir = "example",
 
 \item{dettl_config}{Path to the dettl config file.}
 
+\item{create_db}{If TRUE then test SQLite db will be created}
+
 \item{add_data}{If TRUE data is bootstrapped to people table in test DB.}
 
 \item{add_job_table}{If TRUE also bootstrap job table related to people table.}
 
 \item{add_log_table}{If TRUE then also bootstrap log table.}
+
+\item{add_fk_data}{If TRUE then bootstrap three tables with foreign key
+constraints for testing automatic reading of foreign key constraints from db.}
 }
 \description{
 Copies an example import to a new temp directory, sets up git for the
@@ -27,4 +32,9 @@ directory and creates a test SQLite DB in the temp directory as test.sqlite.
 \details{
 This should only be called from a test, vignette or roxygen example.
 }
-\keyword{internal}
+\examples{
+dettl::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl")
+)
+}

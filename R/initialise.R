@@ -6,9 +6,9 @@
 #'
 #' @export
 #' @examples
-#' path <- dettl:::prepare_test_import(
-#'   dettl:::dettl_file("examples", "person_information"),
-#'   dettl:::dettl_file("examples", "dettl_config.yml"),
+#' path <- dettl::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl"),
 #'   add_log_table = FALSE
 #' )
 #' dettl::dettl_db_create_log_table(file.path(path, "person_information"), "test")
