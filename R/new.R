@@ -19,7 +19,7 @@ dettl_new <- function(name) {
   }
   file_copy(
     list.files(
-      system.file("template", package = "dettl"),
+      dettl_file("template"),
       include.dirs = TRUE,
       full.names = TRUE
     ),

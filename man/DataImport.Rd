@@ -55,7 +55,7 @@ stage by stage and inspect the data after each stage.
 }
 
 \examples{
-path <- dettl:::prepare_test_import(
+path <- dettl::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")

@@ -38,22 +38,6 @@ test_that("child tables can be updated", {
 })
 
 test_that("default load returns a function", {
-  constraints <- list(
-    "table" = list(
-      "primary" = "id",
-      "foreign" = list(
-        "constrained_table" = "example_field",
-        "constrained_table2" = "example_field2"
-      )
-    ),
-    "table2" = list(
-      "primary" = "id",
-      "foreign" = list(
-        "constrained_table3" = "example_field3"
-      )
-    )
-  )
-  keys <- ForeignKeyConstraints$new(constraints)
-  func <- get_default_load(keys)
+  func <- get_default_load()
   expect_type(func, "closure")
 })

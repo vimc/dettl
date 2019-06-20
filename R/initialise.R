@@ -6,7 +6,7 @@
 #'
 #' @export
 #' @examples
-#' path <- dettl:::prepare_test_import(
+#' path <- dettl::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl"),
 #'   add_log_table = FALSE
@@ -26,7 +26,7 @@ dettl_db_create_log_table <- function(path, db_name) {
       db_name, class(con)
     ))
   }
-  path <- system.file("sql", dialect, "create_log_table.sql", package = "dettl")
+  path <- dettl_file("sql", dialect, "create_log_table.sql")
   query <- read_lines(path)
   message(sprintf("Creating log table in DB %s.", db_name))
   DBI::dbExecute(con, query)

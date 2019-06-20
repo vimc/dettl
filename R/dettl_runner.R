@@ -14,7 +14,7 @@ dettl <- function(path, db_name = NULL) {
   dettl_config <- read_config(path)
 
   if (dettl_config$load$default) {
-    load_func <- get_default_load(dettl_config$rewrite_keys)
+    load_func <- get_default_load()
   } else {
     load_func <- dettl_config$load$func
   }
@@ -42,7 +42,7 @@ dettl <- function(path, db_name = NULL) {
 #' @export
 #'
 #' @examples
-#' path <- dettl:::prepare_test_import(
+#' path <- dettl::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
@@ -63,7 +63,7 @@ dettl_run_extract <- function(path, db_name = NULL) {
 #' @export
 #'
 #' @examples
-#' path <- dettl:::prepare_test_import(
+#' path <- dettl::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
@@ -92,7 +92,7 @@ dettl_run_transform <- function(path, db_name = NULL) {
 #' @export
 #'
 #' @examples
-#' path <- dettl:::prepare_test_import(
+#' path <- dettl::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )

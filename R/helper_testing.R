@@ -17,7 +17,7 @@
 #'
 #' @keywords internal
 prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
-                               add_log_table = TRUE) {
+                               add_log_table = TRUE, add_fk_data = FALSE) {
   path <- file.path(dir, "test.sqlite")
   if (file.exists(path)) {
     ## Ensure we always start with a fresh DB
@@ -34,11 +34,11 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     )"
   )
   if (add_data) {
-    person <- data.frame(list(
+    person <- data.frame(
       name = "Daisy",
       age = 34,
-      height = 189
-    ), stringsAsFactors = FALSE)
+      height = 189,
+      stringsAsFactors = FALSE)
 
     DBI::dbWriteTable(con, "people", person, append = TRUE)
   }
@@ -55,13 +55,69 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
 
   if (add_log_table) {
-    query_text <- read_lines(system.file(
-      "sql", "postgresql", "create_log_table.sql", package = "dettl"))
+    query_text <- read_lines(
+      dettl_file("sql", "postgresql", "create_log_table.sql"))
     DBI::dbExecute(con, query_text)
+  }
+
+  if (add_fk_data) {
+    add_fk_data(con)
   }
 
   DBI::dbDisconnect(con)
   path
+}
+
+#' Add tables with foreign key constraints for testing
+#'
+#' Create some tables with foreign key constraints and add some simple data
+#' to them for testing.
+#'
+#' @param con Connection to DB to add tables with foreign key constraints
+#'
+#' @keywords internal
+add_fk_data <- function(con) {
+  DBI::dbExecute(con,
+    "CREATE TABLE region (
+      name TEXT PRIMARY KEY,
+      parent TEXT,
+      FOREIGN KEY (parent) REFERENCES region(name)
+    )")
+    region1 <- data.frame(
+      name = "UK"
+    )
+    region2 <- data.frame(
+      name = "London",
+      parent = "UK"
+    )
+    DBI::dbWriteTable(con, "region", region1, append = TRUE)
+    DBI::dbWriteTable(con, "region", region2, append = TRUE)
+
+    DBI::dbExecute(con,
+      "CREATE TABLE street (
+        name TEXT PRIMARY KEY
+      )")
+    street1 <- data.frame(
+      name = "Commercial Road"
+    )
+    street2 <- data.frame(
+      name = "The Street"
+    )
+    DBI::dbWriteTable(con, "street", street1, append = TRUE)
+    DBI::dbWriteTable(con, "street", street2, append = TRUE)
+
+    DBI::dbExecute(con,
+      "CREATE TABLE address (
+        street TEXT,
+        region TEXT,
+        FOREIGN KEY (street) REFERENCES street(name),
+        FOREIGN KEY (region) REFERENCES region(name)
+      )")
+    address <- data.frame(
+      street = "The Street",
+      region = "London",
+      stringsAsFactors = FALSE)
+    DBI::dbWriteTable(con, "address", address, append = TRUE)
 }
 
 #' Prepare example import inside a git repo
@@ -73,19 +129,30 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 #'
 #' @param example_dir The example directory to copy to temp.
 #' @param dettl_config Path to the dettl config file.
+#' @param create_db If TRUE then test SQLite db will be created
 #' @param add_data If TRUE data is bootstrapped to people table in test DB.
 #' @param add_job_table If TRUE also bootstrap job table related to people table.
 #' @param add_log_table If TRUE then also bootstrap log table.
+#' @param add_fk_data If TRUE then bootstrap three tables with foreign key
+#' constraints for testing automatic reading of foreign key constraints from db.
 #'
-#' @keywords internal
+#' @export
+#'
+#' @examples
+#' dettl::prepare_test_import(
+#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "dettl_config.yml", package = "dettl")
+#' )
 prepare_test_import <- function(example_dir = "example",
                                 dettl_config = "dettl_config.yml",
                                 create_db = TRUE,
                                 add_data = FALSE, add_job_table = FALSE,
-                                add_log_table = TRUE) {
+                                add_log_table = TRUE,
+                                add_fk_data = FALSE) {
   path <- build_git_demo(example_dir, dettl_config)
   if (create_db) {
-    prepare_example_db(path, add_data, add_job_table, add_log_table)
+    prepare_example_db(path, add_data, add_job_table, add_log_table,
+                       add_fk_data)
   }
   path
 }

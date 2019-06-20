@@ -15,9 +15,3 @@ load:
   default: TRUE
   verification_queries: test_queries
   test: R/test_load.R
-
-rewrite_keys:
-  people:
-    primary: id
-    foreign:
-      jobs: person

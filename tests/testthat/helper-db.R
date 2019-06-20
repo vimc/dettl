@@ -1,12 +1,15 @@
 ## Create a simple "people" table in the psotgres DB for testing.
-prepare_example_postgres_db <- function(create_log = TRUE) {
+prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) {
   dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
   dettl_test_postgres_connection(dbname, user, host)
   con <- get_postgres_connection(dbname, user, host)
   ## Make sure we have a fresh "people" table if one existed already
-  DBI::dbExecute(con, "DROP TABLE IF EXISTS people")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS people CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS region CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS street CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS address CASCADE")
 
   DBI::dbExecute(con,
     "CREATE TABLE people (
@@ -17,12 +20,16 @@ prepare_example_postgres_db <- function(create_log = TRUE) {
     )"
   )
 
+  if (add_fk_data) {
+    add_fk_data(con)
+  }
+
   ## Make sure we have a fresh "dettl_import_log" table if one existed already
   drop_log <- DBI::dbExecute(con,
     "DROP TABLE IF EXISTS dettl_import_log")
   if (create_log) {
     query_text <- read_lines(
-      system.file("sql", "postgresql", "create_log_table.sql", package = "dettl"))
+      dettl_file("sql", "postgresql", "create_log_table.sql"))
     DBI::dbExecute(con, query_text)
   }
   con

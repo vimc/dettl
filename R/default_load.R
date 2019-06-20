@@ -1,7 +1,7 @@
 #' Get default load function.
 #'
-#' Builds the default load function using the configured foreign key
-#' constraints.
+#' Builds the default load function using foreign key constraints read from
+#' the database.
 #'
 #' The default load function loops over the transformed data and appends each
 #' data frame to the matching table in the database. If the appended table
@@ -10,13 +10,13 @@
 #' tables in which this is used as a foreign key and update the previous values
 #' to use the returned actual values for the primary key.
 #'
-#' @param rewrite_keys A ForeignKeyConstraints object
 #'
 #' @return The default load function.
 #'
 #' @keywords internal
-get_default_load <- function(rewrite_keys) {
+get_default_load <- function() {
   function(transformed_data, con) {
+    rewrite_keys <- ForeignKeyConstraints$new(con)
     for (name in names(transformed_data)) {
       if (rewrite_keys$used_as_foreign_key(name)) {
         primary_key <- rewrite_keys$get_primary_key(name)
