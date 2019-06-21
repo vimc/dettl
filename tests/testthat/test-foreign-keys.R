@@ -122,7 +122,7 @@ test_that("table can have more than 1 column constrained on same field", {
   expect_length(constraints$reftable1$foreign$table1, 2)
 })
 
-test_that("only one key can be referenced from each table", {
+test_that("multiple keys can be referenced from each table", {
   data <- data.frame(
     constraint_table = c("table1", "table2"),
     constraint_column = c("col1", "col2"),
@@ -130,8 +130,13 @@ test_that("only one key can be referenced from each table", {
     referenced_column = c("id", "id2"),
     stringsAsFactors = FALSE
   )
-  expect_error(parse_constraints(data),
-    "Primary key for table reftable1 should always be the same. Got primary keys id, id2.")
+  constraints <- parse_constraints(data)
+
+  expect_equal(names(constraints), "reftable1")
+  expect_equal(constraints$reftable1$primary, c("id", "id2"))
+  expect_equal(names(constraints$reftable1$foreign), c("table1", "table2"))
+  expect_equal(constraints$reftable1$foreign$table1, "col1")
+  expect_equal(constraints$reftable1$foreign$table2, "col2")
 })
 
 test_that("unsupported sql dialect returns useful error", {
