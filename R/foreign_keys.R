@@ -66,7 +66,7 @@ get_postgres_fk <- function(con) {
 #' @keywords internal
 parse_constraints <- function(constraints_table) {
   constraints <- list()
-  for(referenced_table in unique(constraints_table$referenced_table)) {
+  for (referenced_table in unique(constraints_table$referenced_table)) {
     data <- constraints_table[constraints_table$referenced_table == referenced_table, ]
     constraints[[referenced_table]] <- handle_single_table(referenced_table, data)
   }
@@ -74,13 +74,20 @@ parse_constraints <- function(constraints_table) {
 }
 
 handle_single_table <- function(table_name, data) {
-  referenced_column <- unique(data$referenced_column)
-  constraints <- list("primary" = referenced_column)
-  foreign_keys <- list()
-  for (fk_table in data$constraint_table) {
-    fk_data <- data[data$constraint_table == fk_table, ]
-    foreign_keys[[fk_table]] <- fk_data$constraint_column
+  referenced_columns <- unique(data$referenced_column)
+  foreign <- vector("list", length(referenced_columns))
+  names(foreign) <- referenced_columns
+  index <- 1
+  for (referenced_column in referenced_columns) {
+    ref_data <- data[data$referenced_column == referenced_column, ]
+    foreign_keys <- list()
+    for (fk_table in ref_data$constraint_table) {
+      fk_data <- ref_data[ref_data$constraint_table == fk_table, ]
+      foreign_keys[[fk_table]] <- fk_data$constraint_column
+    }
+    foreign[[referenced_column]] <- foreign_keys
+    index <- index + 1
   }
-  constraints$foreign <- foreign_keys
-  constraints
+
+  list("foreign" = foreign)
 }

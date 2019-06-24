@@ -19,12 +19,12 @@ get_default_load <- function() {
     rewrite_keys <- ForeignKeyConstraints$new(con)
     for (name in names(transformed_data)) {
       if (rewrite_keys$used_as_foreign_key(name)) {
-        primary_key <- rewrite_keys$get_primary_key(name)
-        old_key_values <- transformed_data[[name]][, primary_key]
+        constrained_keys <- rewrite_keys$get_constrained_keys(name)
+        old_key_values <- transformed_data[[name]][, constrained_keys]
         insert_data <- strip_primary_key_column(transformed_data[[name]],
-                                                primary_key)
-        ids <- insert_into_returning(con, name, insert_data, key = primary_key)
-        table_key_pair <- rewrite_keys$get_foreign_key_usages(name)
+                                                constrained_keys)
+        ids <- insert_into_returning(con, name, insert_data, key = constrained_keys)
+        table_key_pair <- rewrite_keys$get_foreign_key_usages(name, constrained_keys)
         transformed_data <- update_child_tables(
           transformed_data, table_key_pair, old_key_values, ids)
       } else {

@@ -6,16 +6,28 @@ test_that("postgres constraints can be retireved", {
 
   constraints <- get_fk_constraints(con)
 
-  expect_equal(names(constraints), c("region", "street"))
-  expect_equal(constraints$street$primary, "name")
-  expect_equal(names(constraints$street$foreign), "address")
-  expect_equal(constraints$street$foreign$address, "street")
+  # street:
+  #   foreign:
+  #     name:
+  #       address: street
+  #
+  # region:
+  #   foreign:
+  #     name:
+  #       address: region
+  #       region: parent
 
-  expect_equal(constraints$region$primary, "name")
-  expect_true(
-    all(names(constraints$region$foreign) %in% c("address", "region")))
-  expect_equal(constraints$region$foreign$address, "region")
-  expect_equal(constraints$region$foreign$region, "parent")
+  expect_equal(names(constraints), c("region", "street"))
+  expect_equal(names(constraints$street), "foreign")
+  expect_equal(names(constraints$street$foreign), "name")
+  expect_equal(names(constraints$street$foreign$name), "address")
+  expect_equal(constraints$street$foreign$name$address, "street")
+
+  expect_equal(names(constraints$region), "foreign")
+  expect_equal(names(constraints$region$foreign), "name")
+  expect_true(all(names(constraints$region$foreign$name) %in% c("address", "region")))
+  expect_equal(constraints$region$foreign$name$address, "region")
+  expect_equal(constraints$region$foreign$name$region, "parent")
 })
 
 test_that("sqlite constraints can be retireved", {
@@ -25,15 +37,16 @@ test_that("sqlite constraints can be retireved", {
   constraints <- get_fk_constraints(con)
 
   expect_equal(names(constraints), c("region", "street"))
-  expect_equal(constraints$street$primary, "name")
-  expect_equal(names(constraints$street$foreign), "address")
-  expect_equal(constraints$street$foreign$address, "street")
+  expect_equal(names(constraints$street), "foreign")
+  expect_equal(names(constraints$street$foreign), "name")
+  expect_equal(names(constraints$street$foreign$name), "address")
+  expect_equal(constraints$street$foreign$name$address, "street")
 
-  expect_equal(constraints$region$primary, "name")
-  expect_true(
-    all(names(constraints$region$foreign) %in% c("address", "region")))
-  expect_equal(constraints$region$foreign$address, "region")
-  expect_equal(constraints$region$foreign$region, "parent")
+  expect_equal(names(constraints$region), "foreign")
+  expect_equal(names(constraints$region$foreign), "name")
+  expect_true(all(names(constraints$region$foreign$name) %in% c("address", "region")))
+  expect_equal(constraints$region$foreign$name$address, "region")
+  expect_equal(constraints$region$foreign$name$region, "parent")
 })
 
 test_that("postgres foreign key constraints can be read", {
@@ -84,22 +97,25 @@ test_that("constraints can be parsed", {
 
   constraint_list <- list(
     "reftable1" = list(
-      primary = "id",
       foreign = list(
-        "table1" = "col1",
-        "table2" = "col2"
+        "id" = list(
+          "table1" = "col1",
+          "table2" = "col2"
+        )
       )
     ),
     "reftable2" = list(
-      primary = "name",
       foreign = list(
-        "table2" = "col3"
+        "name" = list(
+          "table2" = "col3"
+        )
       )
     ),
     "reftable3" = list(
-      primary = "id",
       foreign = list(
-        "table3" = "col4"
+        "id" = list(
+          "table3" = "col4"
+        )
       )
     )
   )
@@ -116,10 +132,16 @@ test_that("table can have more than 1 column constrained on same field", {
   )
   constraints <- parse_constraints(data)
 
-  expect_equal(names(constraints), "reftable1")
-  expect_equal(constraints$reftable1$primary, "id")
-  expect_equal(names(constraints$reftable1$foreign), "table1")
-  expect_length(constraints$reftable1$foreign$table1, 2)
+  constraint_list <- list(
+    "reftable1" = list(
+      foreign = list(
+        "id" = list(
+          "table1" = c("col1", "col2")
+        )
+      )
+    )
+  )
+  expect_equal(constraints, constraint_list)
 })
 
 test_that("multiple keys can be referenced from each table", {
@@ -133,10 +155,11 @@ test_that("multiple keys can be referenced from each table", {
   constraints <- parse_constraints(data)
 
   expect_equal(names(constraints), "reftable1")
-  expect_equal(constraints$reftable1$primary, c("id", "id2"))
-  expect_equal(names(constraints$reftable1$foreign), c("table1", "table2"))
-  expect_equal(constraints$reftable1$foreign$table1, "col1")
-  expect_equal(constraints$reftable1$foreign$table2, "col2")
+  expect_equal(names(constraints$reftable1$foreign), c("id", "id2"))
+  expect_equal(names(constraints$reftable1$foreign$id), "table1")
+  expect_equal(names(constraints$reftable1$foreign$id2), "table2")
+  expect_equal(constraints$reftable1$foreign$id$table1, "col1")
+  expect_equal(constraints$reftable1$foreign$id2$table2, "col2")
 })
 
 test_that("unsupported sql dialect returns useful error", {

@@ -11,26 +11,27 @@ ForeignKeyConstraints <- R6::R6Class(
     },
 
     used_as_foreign_key = function(name) {
-      name %in% names(private$constraints)
+      !is.null(private$constraints[[name]]$foreign)
     },
 
-    get_primary_key = function(name) {
+    get_constrained_keys = function(name) {
       if (self$used_as_foreign_key(name)) {
-        primary_key <- private$constraints[[name]]$primary
+        constrained_keys <- names(private$constraints[[name]]$foreign)
       } else {
         stop(sprintf(
-          "Tried to get primary key for table '%s', table is missing from constraints.", name))
+          "Tried to get constrained keys for table '%s', table is missing from constraints.", name))
       }
-      primary_key
+      constrained_keys
     },
 
-    get_foreign_key_usages = function(name) {
+    get_foreign_key_usages = function(name, constraint_column) {
       if (self$used_as_foreign_key(name)) {
-        foreign_key_constraints <- private$constraints[[name]]$foreign
+        foreign_key_constraints <-
+          private$constraints[[name]]$foreign[[constraint_column]]
       } else {
         stop(sprintf(
-          "Tried to get foreign key usages for primary key of table '%s', table is missing from constraints.",
-          name
+          "Tried to get foreign key usages for constrained table '%s' and column '%s', table and column are missing from constraints.",
+          name, constraint_column
         ))
       }
       foreign_key_constraints
