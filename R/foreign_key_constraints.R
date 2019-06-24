@@ -14,12 +14,12 @@ ForeignKeyConstraints <- R6::R6Class(
       !is.null(private$constraints[[name]]$foreign)
     },
 
-    get_constrained_keys = function(name) {
+    get_referenced_keys = function(name) {
       if (self$used_as_foreign_key(name)) {
         constrained_keys <- names(private$constraints[[name]]$foreign)
       } else {
         stop(sprintf(
-          "Tried to get constrained keys for table '%s', table is missing from constraints.", name))
+          "Tried to get referenced keys for table '%s', table is missing from constraints.", name))
       }
       constrained_keys
     },
@@ -30,7 +30,7 @@ ForeignKeyConstraints <- R6::R6Class(
           private$constraints[[name]]$foreign[[constraint_column]]
       } else {
         stop(sprintf(
-          "Tried to get foreign key usages for constrained table '%s' and column '%s', table and column are missing from constraints.",
+          "Tried to get foreign key usages for referenced table '%s' and column '%s', table and column are missing from constraints.",
           name, constraint_column
         ))
       }
