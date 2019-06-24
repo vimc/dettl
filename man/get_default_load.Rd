@@ -16,9 +16,10 @@ the database.
 \details{
 The default load function loops over the transformed data and appends each
 data frame to the matching table in the database. If the appended table
-contains a primary key then when the data is inserted into the database this
-returns the value of the primary key for the new rows. Then loop over all
-tables in which this is used as a foreign key and update the previous values
-to use the returned actual values for the primary key.
+contains a key referenced by one of the foreign key constraints then when
+the data is inserted into the database this returns the value of the key for
+the new rows. Then loop over all tables in which this is used as a foreign
+key and update the previous values to use the returned actual values for the
+referenced key.
 }
 \keyword{internal}

@@ -41,3 +41,4 @@ test_that("default load returns a function", {
   func <- get_default_load()
   expect_type(func, "closure")
 })
+
