@@ -75,10 +75,6 @@ parse_constraints <- function(constraints_table) {
 
 handle_single_table <- function(table_name, data) {
   referenced_column <- unique(data$referenced_column)
-  if (length(referenced_column) != 1) {
-    stop(sprintf("Primary key for table %s should always be the same. Got primary keys %s.",
-                 table_name, paste(referenced_column, collapse = ", ")))
-  }
   constraints <- list("primary" = referenced_column)
   foreign_keys <- list()
   for (fk_table in data$constraint_table) {
