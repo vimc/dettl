@@ -26,11 +26,10 @@ testthat::test_that("verification fails if any rows are missing from db", {
   path <- prepare_test_import()
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
-  transformed_data <- list("people" = data.frame(
+  transformed_data <- list("people" = data_frame(
     c("Alice", "Bob", "Clive"),
     c(25, 43, 76),
-    c(175, 187, 163),
-    stringsAsFactors = FALSE
+    c(175, 187, 163)
   ))
   colnames(transformed_data$people) <- c("name", "age", "missing_column")
   expect_error(
@@ -44,11 +43,10 @@ testthat::test_that("verification passes if data adheres to schema", {
   path <- prepare_test_import()
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
-  transformed_data <- list("people" = data.frame(
+  transformed_data <- list("people" = data_frame(
     c("Alice", "Bob", "Clive"),
     c(25, 43, 76),
-    c(175, 187, 163),
-    stringsAsFactors = FALSE
+    c(175, 187, 163)
   ))
   colnames(transformed_data$people) <- c("name", "age", "height")
   expect_silent(verify_data(con, transformed_data))

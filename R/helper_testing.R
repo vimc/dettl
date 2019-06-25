@@ -34,11 +34,10 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     )"
   )
   if (add_data) {
-    person <- data.frame(
+    person <- data_frame(
       name = "Daisy",
       age = 34,
-      height = 189,
-      stringsAsFactors = FALSE)
+      height = 189)
 
     DBI::dbWriteTable(con, "people", person, append = TRUE)
   }
@@ -113,10 +112,9 @@ add_fk_data <- function(con) {
         FOREIGN KEY (street) REFERENCES street(name),
         FOREIGN KEY (region) REFERENCES region(name)
       )")
-    address <- data.frame(
+    address <- data_frame(
       street = "The Street",
-      region = "London",
-      stringsAsFactors = FALSE)
+      region = "London")
     DBI::dbWriteTable(con, "address", address, append = TRUE)
 }
 

@@ -20,10 +20,9 @@ test_that("default load can be run", {
     "SELECT p.id, p.name, j.job
      FROM people p
      LEFT JOIN jobs j on p.id = j.person")
-  expected_data <- data.frame(c(1,2,3),
+  expected_data <- data_frame(c(1,2,3),
                               c("Daisy", "Alice", "Bob"),
-                              c(NA, "developer", "researcher"),
-                              stringsAsFactors = FALSE)
+                              c(NA, "developer", "researcher"))
   colnames(expected_data) <- c("id", "name", "job")
   expect_equal(data, expected_data)
 })

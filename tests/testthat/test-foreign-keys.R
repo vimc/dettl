@@ -86,12 +86,11 @@ test_that("sqlite foreign key constraints can be read", {
 })
 
 test_that("constraints can be parsed", {
-  data <- data.frame(
+  data <- data_frame(
     constraint_table = c("table1", "table2", "table2", "table3"),
     constraint_column = c("col1", "col2", "col3", "col4"),
     referenced_table = c("reftable1", "reftable1", "reftable2", "reftable3"),
-    referenced_column = c("id", "id", "name", "id"),
-    stringsAsFactors = FALSE
+    referenced_column = c("id", "id", "name", "id")
   )
   constraints <- parse_constraints(data)
 
@@ -123,12 +122,11 @@ test_that("constraints can be parsed", {
 })
 
 test_that("table can have more than 1 column constrained on same field", {
-  data <- data.frame(
+  data <- data_frame(
     constraint_table = c("table1", "table1"),
     constraint_column = c("col1", "col2"),
     referenced_table = c("reftable1", "reftable1"),
-    referenced_column = c("id", "id"),
-    stringsAsFactors = FALSE
+    referenced_column = c("id", "id")
   )
   constraints <- parse_constraints(data)
 
@@ -145,12 +143,11 @@ test_that("table can have more than 1 column constrained on same field", {
 })
 
 test_that("multiple keys can be referenced from each table", {
-  data <- data.frame(
+  data <- data_frame(
     constraint_table = c("table1", "table2"),
     constraint_column = c("col1", "col2"),
     referenced_table = c("reftable1", "reftable1"),
-    referenced_column = c("id", "id2"),
-    stringsAsFactors = FALSE
+    referenced_column = c("id", "id2")
   )
   constraints <- parse_constraints(data)
 

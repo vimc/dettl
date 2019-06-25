@@ -25,11 +25,10 @@ get_fk_constraints <- function(con) {
 get_sqlite_fk <- function(con) {
   tables <- DBI::dbListTables(con)
 
-  constraints <- data.frame(constraint_table = character(0),
+  constraints <- data_frame(constraint_table = character(0),
                             constraint_column = character(0),
                             referenced_table = character(0),
-                            referenced_column = character(0),
-                            stringsAsFactors = FALSE)
+                            referenced_column = character(0))
   queries <- lapply(tables, function(table) {
     sprintf(
       "SELECT pragma.'table' as referenced_table,
