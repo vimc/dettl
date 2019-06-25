@@ -14,6 +14,10 @@ ForeignKeyConstraints <- R6::R6Class(
       !is.null(private$constraints[[name]]$foreign)
     },
 
+    is_serial = function(name, column) {
+      column %in% private$constraints[[name]]$serial
+    },
+
     get_referenced_keys = function(name) {
       if (self$used_as_foreign_key(name)) {
         constrained_keys <- names(private$constraints[[name]]$foreign)

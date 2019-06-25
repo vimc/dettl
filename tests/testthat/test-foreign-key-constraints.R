@@ -8,14 +8,16 @@ test_that("foreign key constraints can be initialised and accessed", {
           "constrained_table" = "example_field",
           "constrained_table2" = "example_field2"
         )
-      )
+      ),
+      "serial" = "nid"
     ),
     "table2" = list(
       "foreign" = list(
         "id" = list(
           "constrained_table3" = "example_field3"
         )
-      )
+      ),
+      "serial" = c("id", "nid")
     )
   )
   mock_get_fk_constraints <- mockery::mock(constraints)
@@ -37,6 +39,10 @@ test_that("foreign key constraints can be initialised and accessed", {
   expect_error(keys$get_foreign_key_usages("table3", "id"),
     "Tried to get foreign key usages for referenced table 'table3' and column 'id', table and column are missing from constraints.")
 
+  expect_false(keys$is_serial("table", "id"))
+  expect_true(keys$is_serial("table", "nid"))
+  expect_true(keys$is_serial("table2", "id"))
+  expect_true(keys$is_serial("table2", "nid"))
 })
 
 test_that("empty key constraints returns appropriate messages", {
@@ -51,4 +57,6 @@ test_that("empty key constraints returns appropriate messages", {
 
   expect_error(keys$get_foreign_key_usages("test", "test2"),
     "Tried to get foreign key usages for referenced table 'test' and column 'test2', table and column are missing from constraints.")
+
+  expect_false(keys$is_serial("table", "id"))
 })
