@@ -20,13 +20,20 @@ get_default_load <- function() {
     for (name in names(transformed_data)) {
       if (rewrite_keys$used_as_foreign_key(name)) {
         referenced_keys <- rewrite_keys$get_referenced_keys(name)
-        old_key_values <- transformed_data[[name]][, referenced_keys]
-        insert_data <- strip_referenced_key_column(transformed_data[[name]],
+        insert_data <- strip_referenced_key_columns(transformed_data[[name]],
                                                     referenced_keys)
-        ids <- insert_into_returning(con, name, insert_data, key = referenced_keys)
-        table_key_pair <- rewrite_keys$get_foreign_key_usages(name, referenced_keys)
-        transformed_data <- update_child_tables(
-          transformed_data, table_key_pair, old_key_values, ids)
+
+        ## We add the data returning the first referenced key.
+        ## As all referenced keys are either primary keys or unique keys we can
+        ## then go and use the new returned values for the first referenced key
+        ## to get the new values for any additional referenced keys.
+        return <- insert_into_returning(con, name, insert_data, return = referenced_keys)
+        for (col in names(return)) {
+          table_key_pair <- rewrite_keys$get_foreign_key_usages(name, col)
+          old_key_values <- transformed_data[[name]][, col]
+          transformed_data <- update_child_tables(
+            transformed_data, table_key_pair, old_key_values, return[[col]])
+        }
       } else {
         DBI::dbWriteTable(con, name, transformed_data[[name]], append = TRUE)
       }
@@ -34,9 +41,9 @@ get_default_load <- function() {
   }
 }
 
-strip_referenced_key_column <- function(data, referenced_key) {
-  column_names <- names(data) != referenced_key
-  data[, column_names]
+strip_referenced_key_columns <- function(data, referenced_keys) {
+  columns <- which(!(names(data) %in% referenced_keys))
+  data[, columns]
 }
 
 #' Update child tables using inserted foreign keys

@@ -3,7 +3,6 @@ context("default-load")
 test_that("child tables can be updated", {
 
   ## Create test data
-  data_frame <- function(...) { data.frame(..., stringsAsFactors = FALSE) }
   col1 <- c(2, 3, 5)
   col2 <- c("one", "two", "three")
   parent_table <- data_frame(col1, col2)
@@ -40,5 +39,37 @@ test_that("child tables can be updated", {
 test_that("default load returns a function", {
   func <- get_default_load()
   expect_type(func, "closure")
+})
+
+test_that("default load supports 2 referenced fields within same table", {
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db(add_multi_ref_fks = TRUE)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## There are multiple referenced keys
+  rewrite_keys <- ForeignKeyConstraints$new(con)
+  referenced_keys <- rewrite_keys$get_referenced_keys("referenced_table")
+
+  ## Create test data
+  referenced_table <- data_frame(id = c(1,2), nid = c(1,2))
+  id_constraint <- data_frame(name = c("idRef1", "idRef2"), ref = c(1,2))
+  nid_constraint <- data_frame(name = c("nidRef1", "nidRef2"), ref = c(2,1))
+
+  tables <- list(
+    referenced_table = referenced_table,
+    id_constraint = id_constraint,
+    nid_constraint = nid_constraint
+  )
+
+  ## Do load and check uploaded data
+  default_load <- get_default_load()
+  default_load(tables, con)
+
+  ref_table <- DBI::dbGetQuery(con, "SELECT * FROM referenced_table")
+  id_table <- DBI::dbGetQuery(con, "SELECT * FROM id_constraint")
+  nid_table <- DBI::dbGetQuery(con, "SELECT * FROM nid_constraint")
+  expect_equal(ref_table, referenced_table)
+  expect_equal(id_table, id_constraint)
+  expect_equal(nid_table, nid_constraint)
 })
 
