@@ -42,6 +42,10 @@ test_that("default load returns a function", {
 })
 
 test_that("default load supports 2 referenced fields within same table", {
+  ## Note that we test this with 2 autoincrement fields in Postgres but
+  ## this kind of configuration is not possible within SQLite as only an
+  ## int primary key can autoincrement in sqlite.
+  ## See https://www.sqlite.org/autoinc.html
   path <- prepare_test_import(create_db = FALSE)
   con <- prepare_example_postgres_db(add_multi_ref_fks = TRUE)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
