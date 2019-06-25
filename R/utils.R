@@ -253,3 +253,5 @@ zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
 dettl_file <- function(...) {
   system.file(..., package = "dettl", mustWork = TRUE)
 }
+
+data_frame <- function(...) { data.frame(..., stringsAsFactors = FALSE) }
