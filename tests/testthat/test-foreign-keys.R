@@ -7,16 +7,19 @@ test_that("postgres constraints can be retireved", {
   constraints <- get_fk_constraints(con)
 
   expect_equal(names(constraints), c("region", "street"))
-  expect_equal(names(constraints$street), "foreign")
+  expect_true(all(names(constraints$street) %in% c("foreign", "serial")))
   expect_equal(names(constraints$street$foreign), "name")
   expect_equal(names(constraints$street$foreign$name), "address")
   expect_equal(constraints$street$foreign$name$address, "street")
+  expect_equal(constraints$street$serial, NULL)
 
-  expect_equal(names(constraints$region), "foreign")
+  expect_true(all(names(constraints$region) %in% c("foreign", "serial")))
   expect_equal(names(constraints$region$foreign), "id")
   expect_true(all(names(constraints$region$foreign$id) %in% c("address", "region")))
   expect_equal(constraints$region$foreign$id$address, "region")
   expect_equal(constraints$region$foreign$id$region, "parent")
+  expect_equal(constraints$region$serial, "id")
+
 })
 
 test_that("sqlite constraints can be retireved", {
@@ -26,16 +29,18 @@ test_that("sqlite constraints can be retireved", {
   constraints <- get_fk_constraints(con)
 
   expect_equal(names(constraints), c("region", "street"))
-  expect_equal(names(constraints$street), "foreign")
+  expect_true(all(names(constraints$street) %in% c("foreign", "serial")))
   expect_equal(names(constraints$street$foreign), "name")
   expect_equal(names(constraints$street$foreign$name), "address")
   expect_equal(constraints$street$foreign$name$address, "street")
+  expect_equal(constraints$street$serial, NULL)
 
-  expect_equal(names(constraints$region), "foreign")
+  expect_true(all(names(constraints$region) %in% c("foreign", "serial")))
   expect_equal(names(constraints$region$foreign), "id")
   expect_true(all(names(constraints$region$foreign$id) %in% c("address", "region")))
   expect_equal(constraints$region$foreign$id$address, "region")
   expect_equal(constraints$region$foreign$id$region, "parent")
+  expect_equal(constraints$region$serial, "id")
 })
 
 test_that("postgres foreign key constraints can be read", {
@@ -150,6 +155,30 @@ test_that("multiple keys can be referenced from each table", {
   expect_equal(names(constraints$reftable1$foreign$id2), "table2")
   expect_equal(constraints$reftable1$foreign$id$table1, "col1")
   expect_equal(constraints$reftable1$foreign$id2$table2, "col2")
+})
+
+test_that("information about serial columns is parsed", {
+  data <- data_frame(
+    constraint_table = c("table1", "table2"),
+    constraint_column = c("col1", "col2"),
+    referenced_table = c("reftable1", "reftable1"),
+    referenced_column = c("id", "id2"),
+    ref_is_serial = c(TRUE, FALSE)
+  )
+  constraints <- parse_constraints(data)
+
+  expect_equal(constraints$reftable1$serial, "id")
+
+  data <- data_frame(
+    constraint_table = c("table1", "table2"),
+    constraint_column = c("col1", "col2"),
+    referenced_table = c("reftable1", "reftable1"),
+    referenced_column = c("id", "id2"),
+    ref_is_serial = c(TRUE, TRUE)
+  )
+  constraints <- parse_constraints(data)
+
+  expect_equal(constraints$reftable1$serial, c("id", "id2"))
 })
 
 test_that("unsupported sql dialect returns useful error", {

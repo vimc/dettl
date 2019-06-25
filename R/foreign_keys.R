@@ -84,12 +84,15 @@ parse_constraints <- function(constraints_table) {
   constraints <- list()
   for (referenced_table in unique(constraints_table$referenced_table)) {
     data <- constraints_table[constraints_table$referenced_table == referenced_table, ]
-    constraints[[referenced_table]] <- handle_single_table(referenced_table, data)
+    constraints[[referenced_table]]$foreign <-
+      handle_single_table_fks(referenced_table, data)
+    constraints[[referenced_table]]$serial <-
+      handle_single_table_serials(referenced_table, data)
   }
   constraints
 }
 
-handle_single_table <- function(table_name, data) {
+handle_single_table_fks <- function(table_name, data) {
   referenced_columns <- unique(data$referenced_column)
   foreign <- vector("list", length(referenced_columns))
   names(foreign) <- referenced_columns
@@ -104,6 +107,13 @@ handle_single_table <- function(table_name, data) {
     foreign[[referenced_column]] <- foreign_keys
     index <- index + 1
   }
+  foreign
+}
 
-  list("foreign" = foreign)
+handle_single_table_serials <- function(table_name, data) {
+  serials <- unique(data[data$ref_is_serial, "referenced_column"])
+  if (length(serials) == 0) {
+    serials <- NULL
+  }
+  serials
 }
