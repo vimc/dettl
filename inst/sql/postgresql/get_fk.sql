@@ -13,7 +13,13 @@ select
   col.attname                 AS constraint_column,
   referenced_tbl.relname      AS referenced_table,
   referenced_field.attname    AS referenced_column,
-  pg_get_constraintdef(c.oid) AS definition
+  pg_get_constraintdef(c.oid) AS definition,
+  CASE
+    WHEN pg_get_serial_sequence(referenced_tbl.relname, referenced_field.attname) IS NULL THEN
+      false
+    ELSE
+      true
+  END as ref_is_serial
 FROM pg_constraint c
 LEFT JOIN unnested_conkey con ON c.oid = con.oid
 LEFT JOIN pg_class tbl ON tbl.oid = c.conrelid

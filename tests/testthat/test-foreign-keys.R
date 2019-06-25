@@ -6,17 +6,6 @@ test_that("postgres constraints can be retireved", {
 
   constraints <- get_fk_constraints(con)
 
-  # street:
-  #   foreign:
-  #     name:
-  #       address: street
-  #
-  # region:
-  #   foreign:
-  #     name:
-  #       address: region
-  #       region: parent
-
   expect_equal(names(constraints), c("region", "street"))
   expect_equal(names(constraints$street), "foreign")
   expect_equal(names(constraints$street$foreign), "name")
@@ -24,10 +13,10 @@ test_that("postgres constraints can be retireved", {
   expect_equal(constraints$street$foreign$name$address, "street")
 
   expect_equal(names(constraints$region), "foreign")
-  expect_equal(names(constraints$region$foreign), "name")
-  expect_true(all(names(constraints$region$foreign$name) %in% c("address", "region")))
-  expect_equal(constraints$region$foreign$name$address, "region")
-  expect_equal(constraints$region$foreign$name$region, "parent")
+  expect_equal(names(constraints$region$foreign), "id")
+  expect_true(all(names(constraints$region$foreign$id) %in% c("address", "region")))
+  expect_equal(constraints$region$foreign$id$address, "region")
+  expect_equal(constraints$region$foreign$id$region, "parent")
 })
 
 test_that("sqlite constraints can be retireved", {
@@ -43,10 +32,10 @@ test_that("sqlite constraints can be retireved", {
   expect_equal(constraints$street$foreign$name$address, "street")
 
   expect_equal(names(constraints$region), "foreign")
-  expect_equal(names(constraints$region$foreign), "name")
-  expect_true(all(names(constraints$region$foreign$name) %in% c("address", "region")))
-  expect_equal(constraints$region$foreign$name$address, "region")
-  expect_equal(constraints$region$foreign$name$region, "parent")
+  expect_equal(names(constraints$region$foreign), "id")
+  expect_true(all(names(constraints$region$foreign$id) %in% c("address", "region")))
+  expect_equal(constraints$region$foreign$id$address, "region")
+  expect_equal(constraints$region$foreign$id$region, "parent")
 })
 
 test_that("postgres foreign key constraints can be read", {
@@ -60,11 +49,13 @@ test_that("postgres foreign key constraints can be read", {
   expect_true("referenced_table" %in% colnames(constraints))
   expect_true("referenced_column" %in% colnames(constraints))
   expect_true("constraint_type" %in% colnames(constraints))
+  expect_true("ref_is_serial" %in% colnames(constraints))
   expect_equal(nrow(constraints), 3)
   expect_true(all(constraints$constraint_table %in% c("address", "address", "region")))
   expect_true(all(constraints$constraint_column %in% c("region", "street", "parent")))
   expect_true(all(constraints$referenced_table %in% c("region", "street", "region")))
-  expect_true(all(constraints$referenced_column == "name"))
+  expect_true(all(constraints$referenced_column %in% c("id", "name")))
+  expect_equal(constraints$ref_is_serial, c(TRUE, FALSE, TRUE))
 })
 
 
@@ -78,11 +69,13 @@ test_that("sqlite foreign key constraints can be read", {
   expect_true("constraint_column" %in% colnames(constraints))
   expect_true("referenced_table" %in% colnames(constraints))
   expect_true("referenced_column" %in% colnames(constraints))
+  expect_true("ref_is_serial" %in% colnames(constraints))
   expect_equal(nrow(constraints), 3)
   expect_true(all(constraints$constraint_table %in% c("address", "address", "region")))
   expect_true(all(constraints$constraint_column %in% c("region", "street", "parent")))
   expect_true(all(constraints$referenced_table %in% c("region", "street", "region")))
-  expect_true(all(constraints$referenced_column == "name"))
+  expect_true(all(constraints$referenced_column %in% c("id", "name")))
+  expect_equal(constraints$ref_is_serial, c(TRUE, FALSE, TRUE))
 })
 
 test_that("constraints can be parsed", {
