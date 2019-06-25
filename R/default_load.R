@@ -22,12 +22,8 @@ get_default_load <- function() {
         referenced_keys <- rewrite_keys$get_referenced_keys(name)
         insert_data <- strip_referenced_key_columns(transformed_data[[name]],
                                                     referenced_keys)
-
-        ## We add the data returning the first referenced key.
-        ## As all referenced keys are either primary keys or unique keys we can
-        ## then go and use the new returned values for the first referenced key
-        ## to get the new values for any additional referenced keys.
-        return <- insert_into_returning(con, name, insert_data, return = referenced_keys)
+        return <- insert_into_returning(con, name, insert_data,
+                                        return = referenced_keys)
         for (col in names(return)) {
           table_key_pair <- rewrite_keys$get_foreign_key_usages(name, col)
           old_key_values <- transformed_data[[name]][, col]
