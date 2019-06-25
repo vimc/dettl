@@ -41,8 +41,10 @@ test_that("foreign key constraints can be initialised and accessed", {
 
   expect_false(keys$is_serial("table", "id"))
   expect_true(keys$is_serial("table", "nid"))
+  expect_equal(keys$is_serial("table", c("id", "nid")), c(FALSE, TRUE))
   expect_true(keys$is_serial("table2", "id"))
   expect_true(keys$is_serial("table2", "nid"))
+  expect_equal(keys$is_serial("table2", c("id", "nid")), c(TRUE, TRUE))
 })
 
 test_that("empty key constraints returns appropriate messages", {
