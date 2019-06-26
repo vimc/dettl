@@ -134,3 +134,58 @@ test_that("postgres default load works as expected", {
     ".+"))
 })
 
+test_that("sqlite default load works as expected", {
+  path <- prepare_test_import(add_fk_data = TRUE)
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  ## Create test data
+  region <- data_frame(id = c(5,6), name = c("France", "Paris"))
+  street <- data_frame(name = "Test Avenue")
+  address <- data_frame(street = "Test Avenue", region = 5)
+
+  tables <- list(
+    region = region,
+    street = street,
+    address = address
+  )
+
+  ## Do load and check uploaded data
+  default_load <- get_default_load()
+  default_load(tables, con)
+
+  ## Create expected data
+  db_region <- data_frame(id = c(1,2,3,4),
+                          name = c("UK", "London", "France", "Paris"),
+                          parent = c(NA, 1, NA, NA))
+  db_street <- data_frame(name = c("Commercial Road", "The Street",
+                                   "Test Avenue"))
+  db_address <- data_frame(street = c("The Street", "Test Avenue"),
+                           region = c(2, 3))
+
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+  street_table <- DBI::dbGetQuery(con, "SELECT * FROM street")
+  address_table <- DBI::dbGetQuery(con, "SELECT * FROM address")
+  expect_equal(region_table, db_region)
+  expect_equal(street_table, db_street)
+  expect_equal(address_table, db_address)
+
+  ## Trying to upload with same serial PK again works
+  tables <- list(region = region)
+  default_load(tables, con)
+
+  db_region <- data_frame(
+    id = c(1,2,3,4,5,6),
+    name = c("UK", "London", "France", "Paris", "France", "Paris"),
+    parent = c(NA, 1, NA, NA, NA, NA))
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+  expect_equal(region_table, db_region)
+
+  ## Trying to upload with same non-serial PK again fails
+  tables <- list(street = street)
+  expect_error(default_load(tables, con), paste0(
+    "Failed trying to append data:\\n",
+    ".+\\n",
+    "to table 'street':\\n",
+    ".+"))
+})
+
