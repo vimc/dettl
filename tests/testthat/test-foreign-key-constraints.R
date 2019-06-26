@@ -39,6 +39,9 @@ test_that("foreign key constraints can be initialised and accessed", {
   expect_error(keys$get_foreign_key_usages("table3", "id"),
     "Tried to get foreign key usages for referenced table 'table3' and column 'id', table and column are missing from constraints.")
 
+  expect_true(keys$has_serial("table"))
+  expect_true(keys$has_serial("table2"))
+  expect_false(keys$has_serial("table3"))
   expect_false(keys$is_serial("table", "id"))
   expect_true(keys$is_serial("table", "nid"))
   expect_equal(keys$is_serial("table", c("id", "nid")), c(FALSE, TRUE))

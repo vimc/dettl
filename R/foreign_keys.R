@@ -44,22 +44,21 @@ get_sqlite_fk <- function(con) {
   })
   constraints <- do.call(rbind, constraints)
 
-  constraints <- apply(constraints, 1, function(row) {
+  is_serial <- lapply(seq_len(nrow(constraints)), function(row) {
     is_serial_query <- sprintf(
       "SELECT (type = 'INTEGER' AND pk)
               OR name = 'rowid'
               OR name = 'oid'
               OR name = '_rowid_' as ref_is_serial
       FROM pragma_table_info('%s')
-      WHERE name = '%s'", row['referenced_table'], row['referenced_column']
+      WHERE name = '%s'",
+      constraints[row, "referenced_table"],
+      constraints[row, "referenced_column"]
     )
-    append(
-      as.list(row),
-      list(ref_is_serial = as.logical(DBI::dbGetQuery(con, is_serial_query))))
+    as.logical(DBI::dbGetQuery(con, is_serial_query))
   })
-  data_frame_rbind <- function(...) rbind.data.frame(...,
-                                                     stringsAsFactors = FALSE)
-  do.call(data_frame_rbind, constraints)
+  constraints$ref_is_serial <- unlist(is_serial)
+  constraints
 }
 
 #' Get FK constraints for postgres connection
