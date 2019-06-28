@@ -4,14 +4,14 @@
 \alias{sqlite_insert_empty_row}
 \title{Insert an empty row and returned desired columns.}
 \usage{
-sqlite_insert_empty_row(con, table, return)
+sqlite_insert_empty_row(con, table, ret)
 }
 \arguments{
 \item{con}{Connection to the DB.}
 
 \item{table}{The table to add row to.}
 
-\item{return}{Vector of column names to be returned.}
+\item{ret}{Vector of column names to be returned.}
 }
 \value{
 Data frame with the newly inserted values for the specified column.

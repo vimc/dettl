@@ -4,7 +4,7 @@
 \alias{insert_into_returning}
 \title{Insert values into table returning the primary key}
 \usage{
-insert_into_returning(con, table, d, key = NULL, return = NULL)
+insert_into_returning(con, table, d, key = NULL, ret = NULL)
 }
 \arguments{
 \item{con}{Connection to db to insert values into.}
@@ -17,7 +17,7 @@ insert_into_returning(con, table, d, key = NULL, return = NULL)
 add a new row with unique key constraints use this to check for existing
 entries with same information.}
 
-\item{return}{The field to return, defaults to using "id"}
+\item{ret}{The fields to return, defaults to using "id"}
 }
 \value{
 List of returned ids from inserted values.

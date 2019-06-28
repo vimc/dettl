@@ -4,7 +4,7 @@
 \alias{sqlite_execute_query}
 \title{Execute sql insert query returning added columns desired columns.}
 \usage{
-sqlite_execute_query(con, sql, table, return, x = NULL)
+sqlite_execute_query(con, sql, table, ret, x = NULL)
 }
 \arguments{
 \item{con}{Connection to the DB.}
@@ -13,7 +13,7 @@ sqlite_execute_query(con, sql, table, return, x = NULL)
 
 \item{table}{The table to insert data into.}
 
-\item{return}{Vector of column names to be returned.}
+\item{ret}{Vector of column names to be returned.}
 
 \item{x}{Params for the sql query.}
 }

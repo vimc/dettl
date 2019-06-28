@@ -21,9 +21,9 @@ insert_into_returning.SQLiteConnection <- function(con, table, d, key = NULL,
                                                    ret = NULL) {
   ret <- ret %||% (if (length(key) >= 1L) key else "id")
   insert1 <- function(i) {
-    x <- as.list(d[i, , drop = FALSE])
+    x <- d[i, , drop = FALSE]
     x <- x[!vlapply(x, is.na)]
-    if (length((names(x))) > 0) {
+    if (ncol(x) > 0) {
       result <- sqlite_insert_row(con, table, x, key, ret)
     } else {
       result <- sqlite_insert_empty_row(con, table, ret)
@@ -42,15 +42,15 @@ sqlite_insert_row <- function(con, table, x, key, ret) {
            sprintf("  (%s)", paste0("$", seq_along(x), collapse = ", "))
   )
   sql <- paste(sql, collapse = "\n")
-  if (is.null(key)) {
+  if (is.null(key) || !(any(key %in% names(x)))) {
     result <- sqlite_execute_query(con, sql, table, ret, x)
   } else {
     ## Try and retrieve first:
-    sql_get <- c(sprintf("SELECT %s FROM %s WHERE",
-                         paste(ret, collapse = ", "), table),
-                 paste(sprintf("%s = $%d", key, seq_along(key)),
-                       collapse = " AND "))
-    result <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"), unname(x[key]))
+    sql_get <- c(
+      sprintf("SELECT %s FROM %s WHERE", paste(ret, collapse = ", "), table),
+      paste(sprintf("%s = $%d", key, seq_along(key)), collapse = " AND "))
+    result <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
+                              unname(x[key]))
     if (nrow(result) == 0L) {
       result <- sqlite_execute_query(con, sql, table, ret, x)
     }
@@ -102,9 +102,9 @@ insert_into_returning.PqConnection <- function(con, table, d, key = NULL,
                                                ret = NULL) {
   ret <- ret %||% (if (length(key) >= 1L) key else "id")
   insert1 <- function(i) {
-    x <- as.list(d[i, , drop = FALSE])
+    x <- d[i, , drop = FALSE]
     x <- x[!vlapply(x, is.na)]
-    if (length((names(x))) > 0) {
+    if (ncol(x) > 0) {
       result <- postgres_insert(con, table, x, key, ret)
     } else {
       result <- postgres_insert_empty_row(con, table, ret)
@@ -123,16 +123,15 @@ postgres_insert <- function(con, table, x, key, ret) {
            sprintf("  (%s)", paste0("$", seq_along(x), collapse = ", ")),
            sprintf("RETURNING %s", paste(ret, collapse = ", ")))
   sql <- paste(sql, collapse = "\n")
-  if (is.null(key)) {
+  if (is.null(key) || !(any(key %in% names(x)))) {
     result <- DBI::dbGetQuery(con, sql, unname(x))
   } else {
     ## Try and retrieve first:
-    sql_get <- c(sprintf("SELECT %s FROM %s WHERE",
-                         paste(ret, collapse = ", "), table),
-                 paste(sprintf("%s = $%d", key, seq_along(key)),
-                       collapse = " AND "))
+    sql_get <- c(
+      sprintf("SELECT %s FROM %s WHERE", paste(ret, collapse = ", "), table),
+      paste(sprintf("%s = $%d", key, seq_along(key)), collapse = " AND "))
     result <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
-                           unname(x[key]))
+                              unname(x[key]))
     if (nrow(result) == 0L) {
       result <-  DBI::dbGetQuery(con, sql, unname(x))
     }
