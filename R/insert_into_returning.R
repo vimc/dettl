@@ -31,9 +31,6 @@ insert_into_returning.SQLiteConnection <- function(con, table, d, key = NULL,
     ret
   }
 
-  if (!is.data.frame(d)) {
-    d <- as.data.frame(d, stringsAsFactors = FALSE)
-  }
   rows <- lapply(seq_len(nrow(d)), insert1)
   do.call(rbind.data.frame, rows)
 }
@@ -115,9 +112,6 @@ insert_into_returning.PqConnection <- function(con, table, d, key = NULL,
     ret <- convert_bit64_columns(ret)
   }
 
-  if (!is.data.frame(d)) {
-    d <- as.data.frame(d, stringsAsFactors = FALSE)
-  }
   rows <- lapply(seq_len(nrow(d)), insert1)
   do.call(rbind.data.frame, rows)
 }
