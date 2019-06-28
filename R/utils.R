@@ -254,4 +254,6 @@ dettl_file <- function(...) {
   system.file(..., package = "dettl", mustWork = TRUE)
 }
 
-data_frame <- function(...) { data.frame(..., stringsAsFactors = FALSE) }
+data_frame <- function(...) {
+  data.frame(..., stringsAsFactors = FALSE)
+}
