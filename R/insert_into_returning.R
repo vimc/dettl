@@ -8,34 +8,34 @@
 #' @param key Keys to check for already existing in the database. If trying to
 #' add a new row with unique key constraints use this to check for existing
 #' entries with same information.
-#' @param return The field to return, defaults to using "id"
+#' @param ret The fields to return, defaults to using "id"
 #'
 #' @return List of returned ids from inserted values.
 #'
 #' @keywords internal
-insert_into_returning <- function(con, table, d, key = NULL, return = NULL) {
+insert_into_returning <- function(con, table, d, key = NULL, ret = NULL) {
   UseMethod("insert_into_returning")
 }
 
 insert_into_returning.SQLiteConnection <- function(con, table, d, key = NULL,
-                                               return = NULL) {
-  return <- return %||% (if (length(key) >= 1L) key else "id")
+                                                   ret = NULL) {
+  ret <- ret %||% (if (length(key) >= 1L) key else "id")
   insert1 <- function(i) {
     x <- as.list(d[i, , drop = FALSE])
     x <- x[!vlapply(x, is.na)]
     if (length((names(x))) > 0) {
-      ret <- sqlite_insert_row(con, table, x, key, return)
+      result <- sqlite_insert_row(con, table, x, key, ret)
     } else {
-      ret <- sqlite_insert_empty_row(con, table, return)
+      result <- sqlite_insert_empty_row(con, table, ret)
     }
-    ret
+    result
   }
 
   rows <- lapply(seq_len(nrow(d)), insert1)
   do.call(rbind.data.frame, rows)
 }
 
-sqlite_insert_row <- function(con, table, x, key, return) {
+sqlite_insert_row <- function(con, table, x, key, ret) {
   sql <- c(sprintf("INSERT INTO %s", table),
            sprintf("  (%s)", paste(names(x), collapse = ", ")),
            "VALUES",
@@ -43,33 +43,33 @@ sqlite_insert_row <- function(con, table, x, key, return) {
   )
   sql <- paste(sql, collapse = "\n")
   if (is.null(key)) {
-    ret <- sqlite_execute_query(con, sql, table, return, x)
+    result <- sqlite_execute_query(con, sql, table, ret, x)
   } else {
     ## Try and retrieve first:
     sql_get <- c(sprintf("SELECT %s FROM %s WHERE",
-                         paste(return, collapse = ", "), table),
+                         paste(ret, collapse = ", "), table),
                  paste(sprintf("%s = $%d", key, seq_along(key)),
                        collapse = " AND "))
-    ret <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"), unname(x[key]))
-    if (nrow(ret) == 0L) {
-      ret <- sqlite_execute_query(con, sql, table, return, x)
+    result <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"), unname(x[key]))
+    if (nrow(result) == 0L) {
+      result <- sqlite_execute_query(con, sql, table, ret, x)
     }
   }
-  ret
+  result
 }
 
 #' Insert an empty row and returned desired columns.
 #'
 #' @param con Connection to the DB.
 #' @param table The table to add row to.
-#' @param return Vector of column names to be returned.
+#' @param ret Vector of column names to be returned.
 #'
 #' @return Data frame with the newly inserted values for the specified column.
 #'
 #' @keywords internal
-sqlite_insert_empty_row <- function(con, table, return) {
+sqlite_insert_empty_row <- function(con, table, ret) {
   sql <- sprintf("INSERT INTO %s DEFAULT VALUES", table)
-  sqlite_execute_query(con, sql, table, return)
+  sqlite_execute_query(con, sql, table, ret)
 }
 
 #' Execute sql insert query returning added columns desired columns.
@@ -78,12 +78,12 @@ sqlite_insert_empty_row <- function(con, table, return) {
 #' @param sql The sql insert query.
 #' @param table The table to insert data into.
 #' @param x Params for the sql query.
-#' @param return Vector of column names to be returned.
+#' @param ret Vector of column names to be returned.
 #'
 #' @return Data frame with the newly inserted values for the specified column.
 #'
 #' @keywords internal
-sqlite_execute_query <- function(con, sql, table, return, x = NULL) {
+sqlite_execute_query <- function(con, sql, table, ret, x = NULL) {
   ## TODO: What happens here if we insert but the table has no rowid?
   ## see https://www.sqlite.org/withoutrowid.html for ref
   if (is.null(x)) {
@@ -93,51 +93,51 @@ sqlite_execute_query <- function(con, sql, table, return, x = NULL) {
   }
   rowid_last_entry <- DBI::dbGetQuery(con, "SELECT last_insert_rowid()")[1, 1]
   get_columns_sql <- sprintf("SELECT %s FROM %s WHERE rowid = $1",
-                             paste(return, collapse = ", "),
+                             paste(ret, collapse = ", "),
                              table)
   DBI::dbGetQuery(con, get_columns_sql, rowid_last_entry)
 }
 
 insert_into_returning.PqConnection <- function(con, table, d, key = NULL,
-                                               return = NULL) {
-  return <- return %||% (if (length(key) >= 1L) key else "id")
+                                               ret = NULL) {
+  ret <- ret %||% (if (length(key) >= 1L) key else "id")
   insert1 <- function(i) {
     x <- as.list(d[i, , drop = FALSE])
     x <- x[!vlapply(x, is.na)]
     if (length((names(x))) > 0) {
-      ret <- postgres_insert(con, table, x, key, return)
+      result <- postgres_insert(con, table, x, key, ret)
     } else {
-      ret <- postgres_insert_empty_row(con, table, return)
+      result <- postgres_insert_empty_row(con, table, ret)
     }
-    ret <- convert_bit64_columns(ret)
+    result <- convert_bit64_columns(result)
   }
 
   rows <- lapply(seq_len(nrow(d)), insert1)
   do.call(rbind.data.frame, rows)
 }
 
-postgres_insert <- function(con, table, x, key, return) {
+postgres_insert <- function(con, table, x, key, ret) {
   sql <- c(sprintf("INSERT INTO %s", table),
            sprintf("  (%s)", paste(names(x), collapse = ", ")),
            "VALUES",
            sprintf("  (%s)", paste0("$", seq_along(x), collapse = ", ")),
-           sprintf("RETURNING %s", paste(return, collapse = ", ")))
+           sprintf("RETURNING %s", paste(ret, collapse = ", ")))
   sql <- paste(sql, collapse = "\n")
   if (is.null(key)) {
-    ret <- DBI::dbGetQuery(con, sql, unname(x))
+    result <- DBI::dbGetQuery(con, sql, unname(x))
   } else {
     ## Try and retrieve first:
     sql_get <- c(sprintf("SELECT %s FROM %s WHERE",
-                         paste(return, collapse = ", "), table),
+                         paste(ret, collapse = ", "), table),
                  paste(sprintf("%s = $%d", key, seq_along(key)),
                        collapse = " AND "))
-    ret <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
+    result <- DBI::dbGetQuery(con, paste(sql_get, collapse = "\n"),
                            unname(x[key]))
-    if (nrow(ret) == 0L) {
-      ret <-  DBI::dbGetQuery(con, sql, unname(x))
+    if (nrow(result) == 0L) {
+      result <-  DBI::dbGetQuery(con, sql, unname(x))
     }
   }
-  ret
+  result
 }
 
 
@@ -145,17 +145,17 @@ postgres_insert <- function(con, table, x, key, return) {
 #'
 #' @param con Connection to the DB.
 #' @param table The table to add row to.
-#' @param return Vector of column names to be returned.
+#' @param ret Vector of column names to be returned.
 #'
 #' @return Data frame with the newly inserted values for the specified column.
 #'
 #' @keywords internal
-postgres_insert_empty_row <- function(con, table, return) {
+postgres_insert_empty_row <- function(con, table, ret) {
   ## In this case we want to insert row and only populate autoincrement rows
   ## Insert an empty row
   sql <- sprintf("INSERT INTO %s DEFAULT VALUES RETURNING %s",
                  table,
-                 paste(return, collapse = ", "))
+                 paste(ret, collapse = ", "))
   DBI::dbGetQuery(con, sql)
 }
 

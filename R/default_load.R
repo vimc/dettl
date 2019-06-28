@@ -28,13 +28,13 @@ get_default_load <- function() {
         serial_keys <- referenced_keys[serials]
         insert_data <- strip_referenced_key_columns(transformed_data[[name]],
                                                     serial_keys)
-        return <- insert_into_returning(con, name, insert_data,
-                                        return = serial_keys)
-        for (col in names(return)) {
+        ret <- insert_into_returning(con, name, insert_data,
+                                     ret = serial_keys)
+        for (col in names(ret)) {
           table_key_pair <- rewrite_keys$get_foreign_key_usages(name, col)
           old_key_values <- transformed_data[[name]][, col]
           transformed_data <- update_child_tables(
-            transformed_data, table_key_pair, old_key_values, return[[col]], name)
+            transformed_data, table_key_pair, old_key_values, ret[[col]], name)
         }
       } else {
         withCallingHandlers(
