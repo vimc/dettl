@@ -40,14 +40,7 @@ get_default_load <- function() {
         withCallingHandlers(
           DBI::dbWriteTable(con, name, transformed_data[[name]], append = TRUE),
           error = function(e) {
-            readable_data <- paste(
-              utils::capture.output(print(transformed_data[[name]])),
-              collapse = "\n")
-            e$message <- paste0(sprintf("Failed trying to append data:\n%s\n",
-                                        readable_data),
-                                sprintf("to table '%s':\n", name),
-                                e$message)
-            stop(e)
+            stop(data_write_error(e$message, transformed_data[[name]]))
           }
         )
       }
