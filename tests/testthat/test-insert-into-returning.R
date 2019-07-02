@@ -35,6 +35,42 @@ test_that("can add data to SQLite database returning primary key", {
   expect_equal(ids, data_frame(id = 5))
 })
 
+test_that("data can be added to SQLite and check for existing rows by key", {
+  path <- prepare_test_import()
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  data <- data_frame(
+    name = c("Alice"),
+    age = c(34),
+    height = c(176)
+  )
+
+  ids <- insert_into_returning(con, "people", data, "name", "id")
+  expect_equal(ids, data_frame(id = 1))
+
+  ## Return id of existing row if trying to insert again with same name
+  ids <- insert_into_returning(con, "people", data, "name", "id")
+  expect_equal(ids, data_frame(id = 1))
+})
+
+test_that("data can be added to postgres and check for existing rows by key", {
+  con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(con))
+
+  data <- data_frame(
+    name = c("Alice"),
+    age = c(34),
+    height = c(176)
+  )
+
+  ids <- insert_into_returning(con, "people", data, "name", "id")
+  expect_equal(ids, data_frame(id = 1))
+
+  ## Return id of existing row if trying to insert again with same name
+  ids <- insert_into_returning(con, "people", data, "name", "id")
+  expect_equal(ids, data_frame(id = 1))
+})
+
 test_that("can add data to Postgres database returning primary key", {
   con <- prepare_example_postgres_db()
   on.exit(DBI::dbDisconnect(con))
