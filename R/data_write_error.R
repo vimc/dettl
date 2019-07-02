@@ -1,7 +1,8 @@
 data_write_error <- function(message, table_name, data,
                              call = sys.call(-1), ...) {
-  message <- paste0("Failed trying to write data:\n%s\n",
-                    paste(utils::capture.output(print(str(data))), sep = "\n"),
+  message <- paste0("Failed trying to write data:\n",
+                    paste(utils::capture.output(print(str(data))),
+                          collapse = "\n"),
                     sprintf("\nto table '%s':\n", table_name),
                     message)
 

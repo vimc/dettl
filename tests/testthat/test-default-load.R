@@ -127,11 +127,7 @@ test_that("postgres default load works as expected", {
 
   ## Trying to upload with same non-serial PK again fails
   tables <- list(street = street)
-  expect_error(default_load(tables, con), paste0(
-    "Failed trying to append data:\\n",
-    ".+\\n",
-    "to table 'street':\\n",
-    ".+"))
+  expect_error(default_load(tables, con), class = "dettl_data_write_error")
 })
 
 test_that("sqlite default load works as expected", {
@@ -182,10 +178,6 @@ test_that("sqlite default load works as expected", {
 
   ## Trying to upload with same non-serial PK again fails
   tables <- list(street = street)
-  expect_error(default_load(tables, con), paste0(
-    "Failed trying to append data:\\n",
-    ".+\\n",
-    "to table 'street':\\n",
-    ".+"))
+  expect_error(default_load(tables, con), class = "dettl_data_write_error")
 })
 

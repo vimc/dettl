@@ -40,7 +40,7 @@ get_default_load <- function() {
         withCallingHandlers(
           DBI::dbWriteTable(con, name, transformed_data[[name]], append = TRUE),
           error = function(e) {
-            stop(data_write_error(e$message, transformed_data[[name]]))
+            stop(data_write_error(e$message, name, transformed_data[[name]]))
           }
         )
       }
