@@ -34,10 +34,9 @@ test_that("dettl works as expected", {
   ## when data is extracted
   import$extract()
   extracted_data <- import$get_extracted_data()
-  expected_data <- data.frame(c("Alice", "Bob", "Clive"),
+  expected_data <- data_frame(c("Alice", "Bob", "Clive"),
                               c(25, 43, 76),
-                              c(175, 187, 163),
-                              stringsAsFactors = FALSE)
+                              c(175, 187, 163))
   colnames(expected_data) <- c("name", "age", "height")
 
   ## data has been read from files
@@ -90,10 +89,9 @@ test_that("run import runs a full import process", {
   import$transform()
   import$load()
   con <- import$get_connection()
-  expected_data <- data.frame(c("Alice", "Bob"),
+  expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
-                              c(175, 187),
-                              stringsAsFactors = FALSE)
+                              c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
   expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"), expected_data)
 })
@@ -157,10 +155,9 @@ test_that("a dry run of the import can be executed", {
   transformed_data <- import$get_transformed_data()
 
   ## transformed data is available
-  expected_data <- data.frame(c("Alice", "Bob"),
+  expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
-                              c(175, 187),
-                              stringsAsFactors = FALSE)
+                              c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
   expect_equal(length(transformed_data), 1)
   expect_equal(transformed_data$people, expected_data[c(1,2), ])
@@ -225,10 +222,9 @@ test_that("extract can be run from path", {
   extracted_data <- dettl_run_extract(file.path(path, "example/"),
                                       db_name = "test")
 
-  expected_data <- data.frame(c("Alice", "Bob", "Clive"),
+  expected_data <- data_frame(c("Alice", "Bob", "Clive"),
                               c(25, 43, 76),
-                              c(175, 187, 163),
-                              stringsAsFactors = FALSE)
+                              c(175, 187, 163))
   colnames(expected_data) <- c("name", "age", "height")
 
   expect_equal(length(extracted_data), 1)
@@ -247,10 +243,9 @@ test_that("transform can be run from path", {
   transformed_data <- dettl_run_transform(file.path(path, "example/"),
                                       db_name = "test")
 
-  expected_data <- data.frame(c("Alice", "Bob"),
+  expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
-                              c(175, 187),
-                              stringsAsFactors = FALSE)
+                              c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
 
   expect_equal(length(transformed_data), 1)
@@ -268,10 +263,9 @@ test_that("extract can be run from path", {
 
   dettl_run_load(file.path(path, "example/"), db_name = "test")
 
-  expected_data <- data.frame(c("Alice", "Bob"),
+  expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
-                              c(175, 187),
-                              stringsAsFactors = FALSE)
+                              c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
 
   con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))

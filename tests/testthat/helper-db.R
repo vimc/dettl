@@ -1,5 +1,6 @@
 ## Create a simple "people" table in the psotgres DB for testing.
-prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) {
+prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
+                                        add_multi_ref_fks = FALSE) {
   dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
@@ -10,6 +11,9 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) 
   DBI::dbExecute(con, "DROP TABLE IF EXISTS region CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS street CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS address CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS referenced_table CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS id_constraint CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS nid_constraint CASCADE")
 
   DBI::dbExecute(con,
     "CREATE TABLE people (
@@ -24,6 +28,10 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) 
     add_fk_data(con)
   }
 
+  if (add_multi_ref_fks) {
+    add_postgres_multiple_referenced_fks(con)
+  }
+
   ## Make sure we have a fresh "dettl_import_log" table if one existed already
   drop_log <- DBI::dbExecute(con,
     "DROP TABLE IF EXISTS dettl_import_log")
@@ -33,6 +41,31 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE) 
     DBI::dbExecute(con, query_text)
   }
   con
+}
+
+## Adds tables with two foreign key constraints. Both of which refer to
+## different columns within the same table. This is only usable for postgres.
+## SQLite cannot have two autoincrementing columns within one table.
+add_postgres_multiple_referenced_fks <- function(con) {
+  DBI::dbExecute(con,
+    "CREATE TABLE referenced_table (
+     id SERIAL PRIMARY KEY,
+     nid SERIAL UNIQUE
+     )")
+
+  DBI::dbExecute(con,
+    "CREATE TABLE id_constraint (
+     name TEXT PRIMARY KEY,
+     ref INTEGER,
+     FOREIGN KEY (ref) REFERENCES referenced_table(id)
+    )")
+
+  DBI::dbExecute(con,
+    "CREATE TABLE nid_constraint (
+     name TEXT PRIMARY KEY,
+     ref INTEGER,
+     FOREIGN KEY (ref) REFERENCES referenced_table(nid)
+     )")
 }
 
 dettl_test_postgres_connection <- function(dbname, user, host) {
@@ -68,4 +101,5 @@ trigger_dbi_warning()
 get_local_connection <- function() {
   dbi_db_connect(RSQLite::SQLite(), ":memory:")
 }
+
 

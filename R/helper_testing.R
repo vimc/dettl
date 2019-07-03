@@ -34,11 +34,10 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     )"
   )
   if (add_data) {
-    person <- data.frame(
+    person <- data_frame(
       name = "Daisy",
       age = 34,
-      height = 189,
-      stringsAsFactors = FALSE)
+      height = 189)
 
     DBI::dbWriteTable(con, "people", person, append = TRUE)
   }
@@ -77,47 +76,55 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
 #'
 #' @keywords internal
 add_fk_data <- function(con) {
+  dialect <- sql_dialect(con)
+  get_fks <- switch(
+    dialect,
+    "sqlite" = DBI::dbExecute(con,
+      "CREATE TABLE region (
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      parent INTEGER,
+      FOREIGN KEY (parent) REFERENCES region(id)
+    )"),
+    "postgresql" = DBI::dbExecute(con,
+        "CREATE TABLE region (
+         id SERIAL UNIQUE,
+         name TEXT,
+         parent INTEGER,
+         FOREIGN KEY (parent) REFERENCES region(id)
+      )"))
+  region1 <- data.frame(
+    name = "UK"
+  )
+  region2 <- data.frame(
+    name = "London",
+    parent = 1
+  )
+  DBI::dbWriteTable(con, "region", region1, append = TRUE)
+  DBI::dbWriteTable(con, "region", region2, append = TRUE)
   DBI::dbExecute(con,
-    "CREATE TABLE region (
-      name TEXT PRIMARY KEY,
-      parent TEXT,
-      FOREIGN KEY (parent) REFERENCES region(name)
+    "CREATE TABLE street (
+      name TEXT PRIMARY KEY
     )")
-    region1 <- data.frame(
-      name = "UK"
-    )
-    region2 <- data.frame(
-      name = "London",
-      parent = "UK"
-    )
-    DBI::dbWriteTable(con, "region", region1, append = TRUE)
-    DBI::dbWriteTable(con, "region", region2, append = TRUE)
-
-    DBI::dbExecute(con,
-      "CREATE TABLE street (
-        name TEXT PRIMARY KEY
-      )")
-    street1 <- data.frame(
-      name = "Commercial Road"
-    )
-    street2 <- data.frame(
-      name = "The Street"
-    )
-    DBI::dbWriteTable(con, "street", street1, append = TRUE)
-    DBI::dbWriteTable(con, "street", street2, append = TRUE)
-
-    DBI::dbExecute(con,
-      "CREATE TABLE address (
-        street TEXT,
-        region TEXT,
-        FOREIGN KEY (street) REFERENCES street(name),
-        FOREIGN KEY (region) REFERENCES region(name)
-      )")
-    address <- data.frame(
-      street = "The Street",
-      region = "London",
-      stringsAsFactors = FALSE)
-    DBI::dbWriteTable(con, "address", address, append = TRUE)
+  street1 <- data.frame(
+    name = "Commercial Road"
+  )
+  street2 <- data.frame(
+    name = "The Street"
+  )
+  DBI::dbWriteTable(con, "street", street1, append = TRUE)
+  DBI::dbWriteTable(con, "street", street2, append = TRUE)
+  DBI::dbExecute(con,
+    "CREATE TABLE address (
+      street TEXT,
+      region INTEGER,
+      FOREIGN KEY (street) REFERENCES street(name),
+      FOREIGN KEY (region) REFERENCES region(id)
+    )")
+  address <- data_frame(
+    street = "The Street",
+    region = 2)
+  DBI::dbWriteTable(con, "address", address, append = TRUE)
 }
 
 #' Prepare example import inside a git repo

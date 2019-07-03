@@ -117,7 +117,7 @@ verify_table <- function(con, table_name, table, identical_columns = FALSE,
     }
   }
   if (identical_columns) {
-    for(col_name in col_names) {
+    for (col_name in col_names) {
       if (!(col_name %in% colnames(table))) {
         stop(sprintf(
           "%s: Column '%s' in table '%s' in DB but is missing from local table.",

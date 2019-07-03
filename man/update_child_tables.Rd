@@ -4,18 +4,21 @@
 \alias{update_child_tables}
 \title{Update child tables using inserted foreign keys}
 \usage{
-update_child_tables(tables, table_key_pair, old_key_values, new_key_values)
+update_child_tables(tables, table_key_pair, old_key_values, new_key_values,
+  parent_table)
 }
 \arguments{
 \item{tables}{List of tables to be updated.}
 
 \item{table_key_pair}{List of child tables and the foreign key field.}
 
-\item{old_key_values}{Old values of primary key, how foreign key is currently
-identified in child table.}
+\item{old_key_values}{Old values of referenced key, how foreign key is
+currently identified in child table.}
 
-\item{new_key_values}{New values of primary key, what foreign key should be
-updated to.}
+\item{new_key_values}{New values of referenced key, what foreign key should
+be updated to.}
+
+\item{parent_table}{The name of the table just updated}
 }
 \value{
 The updated tables
