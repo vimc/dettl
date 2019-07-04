@@ -51,7 +51,7 @@ test_that("git branch can be retrieved", {
 
   ## Error thrown when HEAD is detatched
   writeLines("hello", file.path(path, "hello"))
-  gert::git_add(files = "./*", repo = path)
+  gert::git_add(files = ".", repo = path)
   author <- gert::git_signature_default(path)
   gert::git_commit(message = "second-import", repo = path, author = author)
 
