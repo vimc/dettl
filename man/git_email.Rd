@@ -4,7 +4,7 @@
 \alias{git_email}
 \title{Get the git user.email from git dir}
 \usage{
-git_email(path)
+git_email(path = ".")
 }
 \arguments{
 \item{path}{Path to the directory to get the git user.email for.}

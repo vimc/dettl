@@ -4,7 +4,7 @@
 \alias{git_user}
 \title{Get the git user.name from git dir}
 \usage{
-git_user(path)
+git_user(path = ".")
 }
 \arguments{
 \item{path}{Path to the directory to get the git user.name for.}
