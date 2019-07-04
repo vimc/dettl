@@ -44,6 +44,12 @@ test_that("git user and email can be retrieved", {
   expect_equal(email, "email@example.com")
 })
 
+test_that("git config with invalid field", {
+  path <- build_git_demo()
+  expect_error(git_config(path, "favourite_vegetable"),
+               "git config field not found")
+})
+
 test_that("git branch can be retrieved", {
   path <- build_git_demo()
   branch <- git_branch(path)

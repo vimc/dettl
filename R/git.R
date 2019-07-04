@@ -67,7 +67,7 @@ git_config <- function(path, field) {
     gitres[gitres$level != 'local', ])
 
   if (!any(gitres$name == field)) {
-    stop("no such field or whatever")
+    stop("git config field not found")
   }
 
   gitres$value[gitres$name == field][[1]]
