@@ -1,6 +1,6 @@
 Package: dettl
 Title: Data extract, transform, test and load
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     person(given = "Robert",
            family = "Ashton",
@@ -14,6 +14,7 @@ RoxygenNote: 6.1.1
 Imports:
     bit64,
     DBI,
+    gert,
     R6,
     yaml,
     withr,
