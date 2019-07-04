@@ -9,8 +9,30 @@
 #'
 #' @keywords internal
 git_repo_is_clean <- function(root = ".") {
-  nrow(gert::git_status(repo = root))==0
+  nrow(gert::git_status(repo = git_root_directory(root)))==0
 }
+
+#' Locate the git project root directory
+#'
+#' From a subdirectory within a git project locate the root directory.
+#' This is the directory containing the .git files.
+#'
+#' @param dir The directory to locate the git project root from.
+#' @return The git project root normalized, or throws an error if this can't
+#' be located.
+#'
+#' @keywords internal
+git_root_directory <- function(dir) {
+  root_dir <- find_file_descend(".git", dir)
+  if (is.null(root_dir)) {
+    stop(sprintf(
+      "Can't run import as can't locate git directory from path %s. %s", dir,
+      "Import must be under version control to be run."
+    ))
+  }
+  root_dir
+}
+
 
 #' Get the git user.name from git dir
 #'
@@ -39,7 +61,7 @@ git_email <- function(path = ".") {
 }
 
 git_config <- function(path = ".", field) {
-  gitres <- gert::git_config(repo = path)
+  gitres <- gert::git_config(repo = git_root_directory(path))
   gitres$value[gitres$name == field]
 }
 
@@ -53,7 +75,7 @@ git_config <- function(path = ".", field) {
 #'
 #' @keywords internal
 git_branch <- function(path) {
-  gert::git_info()$shorthand
+  gert::git_info(repo = git_root_directory(path))$shorthand
 }
 
 #' Get the full hash of the current git HEAD
@@ -65,5 +87,5 @@ git_branch <- function(path) {
 #'
 #' @keywords internal
 git_hash <- function(path) {
-  gert::git_info()$commit
+  gert::git_info(repo = git_root_directory(path))$commit
 }

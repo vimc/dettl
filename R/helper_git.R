@@ -12,7 +12,7 @@ build_git_demo <- function(example_dir = "example",
 
   writeLines(c("*.sqlite"), file.path(path, ".gitignore"))
 
-  gert::git_add(files = "*", repo = path)
+  gert::git_add(files = ".", repo = path)
   # Working around gert bug, will file PR to fix
   author <- gert::git_signature_default(path)
   gert::git_commit(message = "initial-import", repo = path, author = author)

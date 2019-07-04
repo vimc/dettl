@@ -1,7 +1,6 @@
 context("git")
 
 test_that("git parent directory can be located", {
-  skip()
   path <- build_git_demo()
   root <- git_root_directory(path)
   expect_equal(root, path)
@@ -12,7 +11,7 @@ test_that("git parent directory can be located", {
   path <- tempdir()
   expect_error(git_root_directory(path), sprintf(
     "Can't run import as can't locate git directory from path %s. %s", path,
-    "Import must be under version control to be run."))
+    "Import must be under version control to be run."), fixed = TRUE)
 
 })
 
@@ -53,11 +52,10 @@ test_that("git branch can be retrieved", {
   ## Error thrown when HEAD is detatched
   writeLines("hello", file.path(path, "hello"))
   gert::git_add(files = "./*", repo = path)
-  gert::git_commit(message = "second-import", repo = path)
+  author <- gert::git_signature_default(path)
+  gert::git_commit(message = "second-import", repo = path, author = author)
 
-  #gert::git_branch_checkout(branch = )
-  #git_run(c("checkout", "HEAD~1"), root = path, check = TRUE)
-
+  gert::git_branch_checkout(branch = "HEAD~1", repo = path)
   expect_error(git_branch(path), sprintf(
     "Can't get current branch from path %s. %s", path,
     "Check repo is up to date and HEAD is not detatched."))
