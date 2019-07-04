@@ -55,6 +55,7 @@ test_that("git branch can be retrieved", {
   author <- gert::git_signature_default(path)
   gert::git_commit(message = "second-import", repo = path, author = author)
 
+  # This should be "git checkout HEAD~1"
   gert::git_branch_checkout(branch = "HEAD~1", repo = path)
   expect_error(git_branch(path), sprintf(
     "Can't get current branch from path %s. %s", path,

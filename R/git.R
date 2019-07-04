@@ -9,7 +9,7 @@
 #'
 #' @keywords internal
 git_repo_is_clean <- function(root = ".") {
-  nrow(gert::git_status(repo = git_root_directory(root)))==0
+  nrow(gert::git_status(repo = git_root_directory(root))) == 0
 }
 
 #' Locate the git project root directory
@@ -60,9 +60,15 @@ git_email <- function(path = ".") {
   git_config(path, "user.email")
 }
 
-git_config <- function(path = ".", field) {
+git_config <- function(path, field) {
   gitres <- gert::git_config(repo = git_root_directory(path))
-  gitres$value[gitres$name == field]
+  lvls <- c("programdata", "global", "local")
+  stopifnot(all(gitres$level %in% lvls))
+  if (!any(gitres$name == field)) {
+    stop("no such field or whatever")
+  }
+  gitres <- gitres[order(match(gitres$level, lvls), decreasing = TRUE), ]
+  gitres$value[gitres$name == field][[1]]
 }
 
 #' Get the current git branch from path.
