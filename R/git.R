@@ -62,12 +62,14 @@ git_email <- function(path = ".") {
 
 git_config <- function(path, field) {
   gitres <- gert::git_config(repo = git_root_directory(path))
-  lvls <- c("programdata", "global", "local")
-  stopifnot(all(gitres$level %in% lvls))
+  gitres <- rbind(
+    gitres[gitres$level == 'local', ],
+    gitres[gitres$level != 'local', ])
+
   if (!any(gitres$name == field)) {
     stop("no such field or whatever")
   }
-  gitres <- gitres[order(match(gitres$level, lvls), decreasing = TRUE), ]
+
   gitres$value[gitres$name == field][[1]]
 }
 
