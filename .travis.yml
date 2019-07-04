@@ -5,6 +5,7 @@ sudo: false
 cache: packages
 r_packages:
   - covr
+  - gert
 services:
   - postgresql
 before_script:
