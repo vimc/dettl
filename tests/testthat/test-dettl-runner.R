@@ -71,7 +71,8 @@ test_that("import can be created using a default db", {
   path <- prepare_test_import()
   import <- dettl(file.path(path, "example/"))
   con <- import$get_connection()
-  expect_equal(con@dbname, file.path(path, "test.sqlite"))
+  fs_dbname <- gsub('\\\\', '/', con@dbname)
+  expect_equal(fs_dbname, file.path(path, "test.sqlite"))
 })
 
 test_that("run import runs a full import process", {
