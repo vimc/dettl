@@ -25,8 +25,7 @@ testthat::test_that("messages are printed to console when tests are run", {
   res <- evaluate_promise(run_load_call())
   expect_true(any(grepl(sprintf(
     "Running load tests %s/example_tests/connection_load_test.R", path),
-    fixed = TRUE,
-    res$messages)))
+    fixed = TRUE, res$messages)))
   expect_true(any(grepl("All tests passed, commiting changes to database.",
     res$messages, fixed = TRUE)))
 })
