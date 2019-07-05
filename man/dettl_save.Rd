@@ -25,10 +25,10 @@ path <- dettl::prepare_test_import(
 import <- dettl::dettl(file.path(path, "person_information"), "test")
 import$extract()
 import$transform()
-t <- temp_file()
+t <- tempfile()
 dettl::dettl_save(import, t, "extract")
-t2 <- temp_file()
+t2 <- tempfile()
 dettl::dettl_save(import, t2, "transform")
-t3 <- temp_file()
+t3 <- tempfile()
 dettl::dettl_save(import, t3, c("extract", "transform"))
 }
