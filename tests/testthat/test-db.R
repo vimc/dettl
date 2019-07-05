@@ -56,7 +56,7 @@ test_that("dettl DB args can be read from yaml config and the vault", {
 })
 
 test_that("no transient db", {
-  path <- tempfile()
+  path <- temp_file()
   dir.create(path, FALSE, TRUE)
   config <- list(db = list(
     test = list(

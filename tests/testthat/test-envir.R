@@ -1,7 +1,7 @@
 context("envir")
 
 testthat::test_that("envir variables can be read from cfg", {
-  path <- tempfile()
+  path <- temp_file()
   dir.create(path)
   filename <- file.path(path, "dettl_envir.yml")
   writeLines("TEST: 123", filename)

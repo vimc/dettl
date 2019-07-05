@@ -83,7 +83,11 @@ git_config <- function(path, field) {
 #'
 #' @keywords internal
 git_branch <- function(path) {
-  gert::git_info(repo = git_root_directory(path))$shorthand
+  info <- gert::git_info(repo = git_root_directory(path))
+  if (!(info$head %in% info$reflist)) {
+    stop(sprintf("Can't get current branch from path %s. Check repo is up to date and HEAD is not detached.",path))
+  }
+  info$shorthand
 }
 
 #' Get the full hash of the current git HEAD

@@ -68,7 +68,7 @@ dettl_config_read_yaml <- function(filename, path) {
                              sprintf("%s:vault_server", filename))
   }
 
-  info$path <- normalizePath(path, mustWork = TRUE)
+  info$path <- normalizePath(path, winslash = '/', mustWork = TRUE)
   class(info) <- "dettl_config"
   info
 }

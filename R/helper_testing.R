@@ -171,7 +171,7 @@ prepare_test_import <- function(example_dir = "example",
 #'
 #' @keywords internal
 setup_dettl <- function(dir, dettl_config) {
-  path <- tempfile()
+  path <- temp_file()
   dir.create(path)
   file.copy(dir, path, recursive = TRUE)
   file.copy(dettl_config, path)

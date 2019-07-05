@@ -8,7 +8,7 @@ test_that("git parent directory can be located", {
   root <- git_root_directory(file.path(path, "example", "R"))
   expect_equal(root, path)
 
-  path <- tempdir()
+  path <- temp_dir()
   expect_error(git_root_directory(path), sprintf(
     "Can't run import as can't locate git directory from path %s. %s", path,
     "Import must be under version control to be run."), fixed = TRUE)
@@ -27,6 +27,7 @@ test_that("git config with invalid field", {
   path <- build_git_demo()
   invalid_field <- "favourite_vegetable"
   expect_error(git_config(path, invalid_field),
+
     sprintf("'%s' not found in git config for path %s",
     invalid_field, path), fix = TRUE)
 })
@@ -36,20 +37,22 @@ test_that("git branch can be retrieved", {
   branch <- git_branch(path)
   expect_equal(branch, "master")
 
-# Not sure how to detach head with gert, so will
-# come back to this
+  # Error thrown when HEAD is detatched
+  writeLines("hello", file.path(path, "hello"))
+  gert::git_add(files = ".", repo = path)
+  author <- gert::git_signature_default(path)
+  gert::git_commit(message = "second-import", repo = path, author = author)
 
-  ## Error thrown when HEAD is detatched
-#  writeLines("hello", file.path(path, "hello"))
-#  gert::git_add(files = ".", repo = path)
-#  author <- gert::git_signature_default(path)
-#  gert::git_commit(message = "second-import", repo = path, author = author)
+  info <- gert::git_info(path)
+  info$head <- "HEAD"
 
-  # This should be "git checkout HEAD~1"
-#  gert::git_branch_checkout(branch = "HEAD~1", repo = path)
-#  expect_error(git_branch(path), sprintf(
-#    "Can't get current branch from path %s. %s", path,
-#    "Check repo is up to date and HEAD is not detatched."))
+  fake_git_info <- mockery::mock(info)
+
+  with_mock("gert::git_info" = fake_git_info, {
+    expect_error(
+      git_branch(path), sprintf(
+    "Can't get current branch from path %s. %s", path,
+    "Check repo is up to date and HEAD is not detached."), fix = TRUE)})
 })
 
 test_that("git hash can be retrieved", {

@@ -1,7 +1,7 @@
 context("initialise")
 
 test_that("table is initialised and success message returned", {
-  path <- prepare_example_db(tempdir(), add_log_table = FALSE)
+  path <- prepare_example_db(temp_dir(), add_log_table = FALSE)
   mock_db_connect <- mockery::mock(DBI::dbConnect(RSQLite::SQLite(), path),
                                    cycle = TRUE)
 
