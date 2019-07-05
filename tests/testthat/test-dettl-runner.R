@@ -133,7 +133,7 @@ test_that("load cannot be run until transform stage has been run", {
 
 test_that("trying to create import for db missing from config fails", {
 
-  expect_error(dettl("example/", db_name = "missing"),
+  expect_error(dettl(file.path("example/"), db_name = "missing"),
               "Cannot find config for database missing.")
 })
 
