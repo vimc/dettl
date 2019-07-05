@@ -190,11 +190,6 @@ test_that("check_length returns meaningful errors", {
                "Length of test_list must be less than 1.")
 })
 
-#test_that("sys_which", {
-#  expect_error(sys_which("non existent command"),
-#               "Did not find 'non existent command'")
-#})
-
 test_that("zip_dir", {
   t <- tempfile()
   dir.create(t, FALSE)
