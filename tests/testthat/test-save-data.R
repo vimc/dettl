@@ -17,7 +17,7 @@ test_that("extracted data can be saved", {
 
   import$extract()
   expect_message(dettl_save(import, file, "extract"),
-                 sprintf("Saved extract data to %s", file))
+                 sprintf("Saved extract data to %s", file), fix = TRUE)
 
   expect_equal(readxl::excel_sheets(file), "people")
   xl_data <- readxl::read_excel(file, sheet = "people")
