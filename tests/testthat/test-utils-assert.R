@@ -36,7 +36,7 @@ test_that("assert_is", {
 })
 
 test_that("assert_file_exists", {
-  path <- tempfile()
+  path <- temp_file()
   expect_error(assert_file_exists(path), "File does not exist")
   writeLines(character(0), path)
   expect_silent(assert_file_exists(path))

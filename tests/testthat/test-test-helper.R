@@ -1,7 +1,7 @@
 context("test-helper")
 
 test_that("test helper can set up db for testing", {
-  dir <- tempdir()
+  dir <- temp_dir()
   path <- prepare_example_db(dir)
 
   con <- dbi_db_connect(RSQLite::SQLite(), path)

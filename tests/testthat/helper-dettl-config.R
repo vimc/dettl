@@ -2,7 +2,7 @@ setup_config <- function(db_driver = "RSQLite::SQLite",
                          vault_server = "https://example.com",
                          db_pw = "VAULT:/secret/users/readonly:password",
                          log_table = "data_import_log") {
-  path <- tempfile()
+  path <- temp_file()
   dir.create(path)
   filename <- file.path(path, "dettl_config.yml")
   cfg <- readLines("template_dettl_config/dettl_config.yml")

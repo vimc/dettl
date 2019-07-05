@@ -4,7 +4,7 @@
 \alias{git_repo_is_clean}
 \title{Check if git repo is clean}
 \usage{
-git_repo_is_clean(import_path)
+git_repo_is_clean(root = ".")
 }
 \arguments{
 \item{import_path}{Path to the directory of the dettl import to check.}

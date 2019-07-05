@@ -32,7 +32,7 @@ read_config <- function(path) {
   check_fields(info, filename, required, "")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
-  info$name <- basename(normalizePath(path))
+  info$name <- basename(normalizePath(path, winslash = '/'))
   info$path <- path
   class(info) <- "dettl_import_config"
   info
@@ -154,7 +154,7 @@ load_sources <- function(sources, path) {
 expand_wildcards <- function(sources, path) {
   withr::with_dir(path, {
     sources <- unlist(lapply(sources, expand1), FALSE, FALSE)
-    sources <- normalizePath(sources, mustWork = TRUE)
+    sources <- normalizePath(sources, winslash = '/', mustWork = TRUE)
   })
   sources
 }

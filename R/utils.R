@@ -72,8 +72,8 @@ is_relative_path <- function(path) {
 
 ## Originally in cyphr:
 find_file_descend <- function(target, start = ".", limit = "/") {
-  root <- normalizePath(limit, mustWork = TRUE)
-  start <- normalizePath(start, mustWork = TRUE)
+  root <- normalizePath(limit, winslash = '/', mustWork = TRUE)
+  start <- normalizePath(start, winslash = '/', mustWork = TRUE)
 
   f <- function(path) {
     if (file.exists(file.path(path, target))) {
@@ -82,7 +82,7 @@ find_file_descend <- function(target, start = ".", limit = "/") {
     if (normalizePath(path, mustWork = TRUE) == root) {
       return(NULL)
     }
-    parent <- normalizePath(file.path(path, ".."))
+    parent <- normalizePath(file.path(path, ".."), winslash = '/')
     if (parent == path) {
       return(NULL)
     }
@@ -90,7 +90,7 @@ find_file_descend <- function(target, start = ".", limit = "/") {
   }
   ret <- f(start)
   if (!(is.null(ret))) {
-    ret <- normalizePath(ret, mustWork = TRUE)
+    ret <- normalizePath(ret, winslash = '/', mustWork = TRUE)
   }
   ret
 }
@@ -223,23 +223,6 @@ file_copy <- function(..., overwrite = TRUE) {
   ok
 }
 
-sys_which <- function(name) {
-  path <- Sys.which(name)
-  if (!nzchar(path)) {
-    stop(sprintf("Did not find '%s'", name), call. = FALSE)
-  }
-  unname(path)
-}
-
-system3 <- function(command, args) {
-  res <- suppressWarnings(system2(command, args, stdout = TRUE, stderr = TRUE))
-  code <- attr(res, "status") %||% 0
-  attr(res, "status") <- NULL
-  list(success = code == 0,
-       code = code,
-       output = res)
-}
-
 zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
   owd <- setwd(dirname(path))
   on.exit(setwd(owd))
@@ -247,7 +230,7 @@ zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
   if (code != 0) {
     stop("error running zip")
   }
-  normalizePath(dest)
+  normalizePath(dest, winslash = '/')
 }
 
 dettl_file <- function(...) {
@@ -256,4 +239,12 @@ dettl_file <- function(...) {
 
 data_frame <- function(...) {
   data.frame(..., stringsAsFactors = FALSE)
+}
+
+temp_dir <- function(...) {
+  gsub('\\\\', "/", tempdir(...))
+}
+
+temp_file <- function(...) {
+  gsub('\\\\',"/", tempfile(...))
 }

@@ -69,10 +69,10 @@ test_that("dettl works as expected", {
 
 test_that("import can be created using a default db", {
   path <- prepare_test_import()
-
   import <- dettl(file.path(path, "example/"))
   con <- import$get_connection()
-  expect_equal(con@dbname, file.path(path, "test.sqlite"))
+  fs_dbname <- gsub('\\\\', '/', con@dbname)
+  expect_equal(fs_dbname, file.path(path, "test.sqlite"))
 })
 
 test_that("run import runs a full import process", {
@@ -133,7 +133,7 @@ test_that("load cannot be run until transform stage has been run", {
 
 test_that("trying to create import for db missing from config fails", {
 
-  expect_error(dettl("example/", db_name = "missing"),
+  expect_error(dettl(file.path("example/"), db_name = "missing"),
               "Cannot find config for database missing.")
 })
 

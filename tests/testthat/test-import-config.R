@@ -85,7 +85,8 @@ test_that("wildcards in sources are expanded", {
   expect_equal(files, normalizePath(c("example/R/extract.R", "example/R/load.R",
                                       "example/R/test_extract.R", "example/R/test_load.R",
                                       "example/R/test_transform.R", "example/R/transform.R",
-                                      "example/R/verification_queries.R")))
+                                      "example/R/verification_queries.R"),
+                                    winslash = '/'))
 
   sources <- c("example/R/extract.R", "example/R/load.R",
                "example/R/transform.R")

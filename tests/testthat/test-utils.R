@@ -13,17 +13,17 @@ test_that("string symbol parse", {
 })
 
 test_that("Descend failure", {
-  path <- tempfile()
+  path <- temp_file()
   dir.create(path)
   on.exit(unlink(path, recursive = TRUE))
-  expect_null(find_file_descend(".dettl_foobar", tempdir(), path))
+  expect_null(find_file_descend(".dettl_foobar", temp_dir(), path))
   expect_null(find_file_descend(".dettl_foobar", "/", path))
   expect_null(find_file_descend(".dettl_foobar", "/", "/"))
 })
 
 test_that("copy failure", {
-  path1 <- tempfile()
-  path2 <- tempfile()
+  path1 <- temp_file()
+  path2 <- temp_file()
   writeLines("a", path1)
   writeLines("b", path2)
   on.exit(file.remove(path1, path2))
@@ -38,7 +38,7 @@ test_that("platform detection", {
 })
 
 test_that("canonical case: single file", {
-  root <- tempfile()
+  root <- temp_file()
   dir.create(root)
   path <- "a"
   PATH <- toupper(path)
@@ -74,7 +74,7 @@ test_that("canonical case: single file", {
 
 
 test_that("canonical case: relative path", {
-  root <- tempfile()
+  root <- temp_file()
   dir.create(root)
   path <- file.path("a", "b", "c")
   PATH <- toupper(path)
@@ -111,10 +111,10 @@ test_that("canonical case: relative path", {
 
 
 test_that("canonical case: absolute path", {
-  path <- file.path(tempfile(), "a", "b", "c")
+  path <- file.path(temp_file(), "a", "b", "c")
   dir.create(dirname(path), FALSE, TRUE)
   file.create(path)
-  path <- normalizePath(path, "/")
+  path <- normalizePath(path, winslash = "/")
   PATH <- toupper(path)
   if (is_windows()) {
     ## On windows, use upper case drive letters here:
@@ -190,17 +190,12 @@ test_that("check_length returns meaningful errors", {
                "Length of test_list must be less than 1.")
 })
 
-test_that("sys_which", {
-  expect_error(sys_which("non existent command"),
-               "Did not find 'non existent command'")
-})
-
 test_that("zip_dir", {
-  t <- tempfile()
+  t <- temp_file()
   dir.create(t, FALSE)
   zip <- zip_dir(t)
   expect_equal(zip, paste0(t, ".zip"))
 
   mockery::stub(zip_dir, "utils::zip", function(...) -1)
-  expect_error(zip_dir(tempfile()), "error running zip")
+  expect_error(zip_dir(temp_file()), "error running zip")
 })

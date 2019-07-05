@@ -11,13 +11,13 @@ test_that("extracted data can be saved", {
 
   import <- dettl(file.path(path, "example/"), "test")
 
-  file <- tempfile(fileext = ".xlsx")
+  file <- temp_file(fileext = ".xlsx")
   expect_error(dettl_save(import, file, "extract"),
                "Can't save extract data as stage has not been run.")
 
   import$extract()
   expect_message(dettl_save(import, file, "extract"),
-                 sprintf("Saved extract data to %s", file))
+                 sprintf("Saved extract data to %s", file), fix = TRUE)
 
   expect_equal(readxl::excel_sheets(file), "people")
   xl_data <- readxl::read_excel(file, sheet = "people")
@@ -36,7 +36,7 @@ test_that("transformed data can be saved", {
 
   import <- dettl(file.path(path, "example/"), "test")
 
-  file <- tempfile(fileext = ".xlsx")
+  file <- temp_file(fileext = ".xlsx")
   expect_error(dettl_save(import, file, "transform"),
     "Can't save transform data as stage has not been run.")
 
@@ -51,7 +51,7 @@ test_that("transformed data can be saved", {
 })
 
 test_that("trying to save data with non data import object fails", {
-  t <- tempfile()
+  t <- temp_file()
   expect_error(dettl_save("test", t, "transform"),
                "Can't save transform data for non-DataImport object.")
 })
@@ -68,7 +68,7 @@ test_that("save data can create new file", {
   import <- dettl(file.path(path, "example/"), "test")
   import$extract()
 
-  dir <- tempdir()
+  dir <- temp_dir()
   file <- file.path(dir, "test.xlsx")
   dettl_save(import, file, "extract")
   expect_true("test.xlsx" %in% list.files(dir))
@@ -88,7 +88,7 @@ test_that("saving data with multiple sheets is supported", {
   import$extract()
   import$transform()
 
-  file <- tempfile(fileext = "xlsx")
+  file <- temp_file(fileext = "xlsx")
   dettl_save(import, file, "extract")
 
   expect_equal(readxl::excel_sheets(file), c("people", "jobs"))
@@ -114,7 +114,7 @@ test_that("saving data can save extract and transform at same time", {
   import$extract()
   import$transform()
 
-  file <- tempfile(fileext = "xlsx")
+  file <- temp_file(fileext = "xlsx")
   dettl_save(import, file, c("extract", "transform"))
 
   expect_equal(readxl::excel_sheets(file),

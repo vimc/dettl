@@ -8,55 +8,8 @@
 #' @return True if repo is up to date. False otherwise.
 #'
 #' @keywords internal
-git_repo_is_clean <- function(import_path) {
-  root_dir <- git_root_directory(import_path)
-  git_status(root_dir)$clean
-}
-
-#' Check git status
-#'
-#' Check that git status using \code{git status --porcelian}. Optionally
-#' ignoring untracked files.
-#'
-#' @param root The git project root directory.
-#' @return Result from git including output and indication of success.
-#'
-#' @keywords internal
-git_status <- function(root = NULL) {
-  args <- c("status", "--porcelain")
-  res <- git_run(args, root = root, check = TRUE)
-  res$clean <- length(res$output) == 0L
-  res
-}
-
-#' Run a git system command
-#'
-#' Check that git status using \code{git status --porcelian}. Optionally
-#' ignoring untracked files.
-#'
-#' @param args The args to be passed to git
-#' @param root The git project root directory.
-#' @param check Whether exit code should be checked. If exist code not
-#' successful then throw an error.
-#' @return Result from git including output and indication of success.
-#'
-#' @keywords internal
-#'
-#' @examples
-#' dettl:::git_run(c("status", "--porcelain"))
-git_run <- function(args, root = NULL, check = FALSE) {
-  git <- sys_which("git")
-  if (!is.null(root)) {
-    args <- c("-C", root, args)
-  }
-  res <- system3(git, args)
-  if (check && !res$success) {
-    stop(sprintf(
-      "Error code %d running command:\n%s",
-      res$code, paste0("  > ", res$output, collapse = "\n")
-    ))
-  }
-  res
+git_repo_is_clean <- function(root = ".") {
+  nrow(gert::git_status(repo = git_root_directory(root))) == 0
 }
 
 #' Locate the git project root directory
@@ -80,6 +33,7 @@ git_root_directory <- function(dir) {
   root_dir
 }
 
+
 #' Get the git user.name from git dir
 #'
 #' From a path to a git controlled dir get the user.name. This will be the
@@ -89,7 +43,7 @@ git_root_directory <- function(dir) {
 #' @return The git user.name.
 #'
 #' @keywords internal
-git_user <- function(path) {
+git_user <- function(path = ".") {
   git_config(path, "user.name")
 }
 
@@ -102,14 +56,21 @@ git_user <- function(path) {
 #' @return The git user.email.
 #'
 #' @keywords internal
-git_email <- function(path) {
+git_email <- function(path = ".") {
   git_config(path, "user.email")
 }
 
 git_config <- function(path, field) {
-  args <- c("config", field)
-  res <- git_run(args, root = path, check = TRUE)
-  res$output
+  gitres <- gert::git_config(repo = git_root_directory(path))
+  gitres <- rbind(
+    gitres[gitres$level == 'local', ],
+    gitres[gitres$level != 'local', ])
+
+  if (!any(gitres$name == field)) {
+    stop(sprintf("'%s' not found in git config for path %s", field, path))
+  }
+
+  gitres$value[gitres$name == field][[1]]
 }
 
 #' Get the current git branch from path.
@@ -122,17 +83,12 @@ git_config <- function(path, field) {
 #'
 #' @keywords internal
 git_branch <- function(path) {
-  args <- c("symbolic-ref", "--short", "HEAD")
-  res <- git_run(args, root = path, check = FALSE)
-  if (!res$success) {
-    stop(sprintf(
-      "Can't get current branch from path %s. %s", path,
-      "Check repo is up to date and HEAD is not detatched."
-    ))
+  info <- gert::git_info(repo = git_root_directory(path))
+  if (!(info$head %in% info$reflist)) {
+    stop(sprintf("Can't get current branch from path %s. Check repo is up to date and HEAD is not detached.",path))
   }
-  res$output
+  info$shorthand
 }
-
 
 #' Get the full hash of the current git HEAD
 #'
@@ -143,7 +99,5 @@ git_branch <- function(path) {
 #'
 #' @keywords internal
 git_hash <- function(path) {
-  args <- c("rev-parse", "HEAD")
-  res <- git_run(args, root = path , check = TRUE)
-  res$output
+  gert::git_info(repo = git_root_directory(path))$commit
 }
