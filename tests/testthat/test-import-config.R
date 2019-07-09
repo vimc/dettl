@@ -98,7 +98,7 @@ test_that("wildcards in sources are expanded", {
                "No files found matching file pattern no_match.R")
 })
 
-test_that("default load can be specified in config", {
+test_that("automatic load can be specified in config", {
   dir <- setup_dettl_config("default: true")
   cfg <- read_config(dir)
   expect_true(cfg$load$default)

@@ -1,3 +1,7 @@
+## 0.0.5
+
+VIMC-3015 - Expose automatic load function for use in custom load functions
+
 ## 0.0.4
 
 VIMC-3004 - Use gert package instead of system calls to git

@@ -1,6 +1,6 @@
-#' Automatic/default load function.
+#' Automatic load function.
 #'
-#' The default load function loops over the transformed data and appends each
+#' The automatic load function loops over the transformed data and appends each
 #' data frame to the matching table in the database. If the appended table
 #' contains a key referenced by one of the foreign key constraints then when
 #' the data is inserted into the database this returns the value of the key for
@@ -25,8 +25,8 @@
 #'   age = c(25, 43),
 #'   height = c(175, 187),
 #'   stringsAsFactors = FALSE))
-#' default_load(data, con)
-default_load <- function(transformed_data, con) {
+#' dettl_auto_load(data, con)
+dettl_auto_load <- function(transformed_data, con) {
   rewrite_keys <- ForeignKeyConstraints$new(con)
   for (name in names(transformed_data)) {
     has_serial_foreign_keys <- rewrite_keys$used_as_foreign_key(name) &&
