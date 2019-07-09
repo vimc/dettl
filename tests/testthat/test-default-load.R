@@ -36,11 +36,6 @@ test_that("child tables can be updated", {
   expect_equal(updated_tables$child_table$col1_child, c(30, 20, 50))
 })
 
-test_that("default load returns a function", {
-  func <- get_default_load()
-  expect_type(func, "closure")
-})
-
 test_that("default load supports 2 referenced fields within same table", {
   ## Note that we test this with 2 autoincrement fields in Postgres but
   ## this kind of configuration is not possible within SQLite as only an
@@ -67,7 +62,6 @@ test_that("default load supports 2 referenced fields within same table", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
   default_load(tables, con)
 
   ref_table <- DBI::dbGetQuery(con, "SELECT * FROM referenced_table")
@@ -95,7 +89,6 @@ test_that("postgres default load works as expected", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
   default_load(tables, con)
 
   ## Create expected data
@@ -146,7 +139,6 @@ test_that("sqlite default load works as expected", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
   default_load(tables, con)
 
   ## Create expected data
