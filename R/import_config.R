@@ -39,12 +39,12 @@ read_config <- function(path) {
 }
 
 validate_load <- function(info) {
-  default <- !is.null(info$load$default) && info$load$default
-  if (xor(default, !is.null(info$load$func))) {
-    info$load$default <- default
+  auto <- !is.null(info$load$automatic) && info$load$automatic
+  if (xor(auto, !is.null(info$load$func))) {
+    info$load$automatic <- auto
   } else {
-    stop(sprintf("Load stage must specify a load function OR use the default load function. Got default %s and NULL func %s.",
-                 default, is.null(info$load$func)))
+    stop(sprintf("Load stage must specify a load function OR use the automatic load function. Got automatic %s and NULL func %s.",
+                 auto, is.null(info$load$func)))
   }
   info
 }
@@ -69,7 +69,7 @@ add_missing_function_fields <- function(info, fields) {
 }
 
 set_missing_values <- function(info, field_name) {
-  ## Func can be empty for load field when running default load
+  ## Func can be empty for load field when using automatic load
   if (field_name != "load") {
     if (is.null(info[[field_name]]$func)) {
       info[[field_name]]$func <- field_name
@@ -99,7 +99,7 @@ set_missing_values <- function(info, field_name) {
 #'
 read_function_fields <- function(fields, config, env) {
   for (field in fields) {
-    if (field != "load" || !config$load$default) {
+    if (field != "load" || !config$load$automatic) {
       assert_func_exists(config[[field]]$func, env)
       config[[field]]$func <- get0(config[[field]]$func,
                                    envir = env,

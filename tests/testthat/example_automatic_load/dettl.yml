@@ -12,6 +12,6 @@ transform:
   test: R/test_transform.R
 
 load:
-  default: TRUE
+  automatic: TRUE
   verification_queries: test_queries
   test: R/test_load.R

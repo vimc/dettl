@@ -364,7 +364,7 @@ options(testthat.default_reporter = default_reporter)
 
 ```yml
 load:
-  default: TRUE
+  automatic: TRUE
   verification_queries: test_queries
   test: R/test_load.R
 ```
