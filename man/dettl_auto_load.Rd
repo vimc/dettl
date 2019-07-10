@@ -21,6 +21,12 @@ the new rows. Then loop over all tables in which this is used as a foreign
 key and update the previous values to use the returned actual values for the
 referenced key.
 }
+\details{
+Expect that this should only be called from within a custom load function if
+we want to load data to the database in the automatic way but have some
+special edge cases which we need to add some custom handling for before
+or after running the automatic load.
+}
 \examples{
 path <- dettl::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
