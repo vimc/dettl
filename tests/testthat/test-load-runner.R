@@ -150,3 +150,55 @@ test_that("import can only be run once", {
   git branch:     master
   git hash:       \\w+", perl = TRUE)
 })
+
+test_that("transaction is cleaned up if import fails", {
+  load_func <- get_default_load()
+  path <- prepare_test_import("example_tests")
+  con <- db_connect("test", path)
+  transformed_data <- list(people = "Dave")
+  test_queries <- function(con) {}
+  test_dir <- file.path(path, "example_tests")
+  test_file <- "connection_load_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Error thrown from bad form of transformed_data
+  expect_error(
+    run_load(con, load_func, transformed_data, test_queries, path = test_dir,
+             test_file = test_file, dry_run = FALSE,
+             log_table = "dettl_import_log", comment = "Test comment")
+  )
+
+  ## Test that transaction is not currently active - check by trying to start
+  ## a new one and ensuring that no error is thrown.
+  expect_true(DBI::dbBegin(con))
+  on.exit(DBI::dbRollback(con), add = TRUE, after = FALSE)
+})
+
+test_that("postgres transaction is cleaned up if import throws error", {
+  con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(con))
+  path <- prepare_test_import("example_tests")
+
+  load_func <- get_default_load()
+  transformed_data <- list(people = "Dave")
+  test_queries <- function(con) {}
+  test_dir <- file.path(path, "example_tests")
+  test_file <- "connection_load_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Error thrown from bad form of transformed_data
+  expect_error(
+    run_load(con, load_func, transformed_data, test_queries, path = test_dir,
+             test_file = test_file, dry_run = FALSE,
+             log_table = "dettl_import_log", comment = "Test comment")
+  )
+
+  ## Test that transaction is not currently active - check by trying to start
+  ## a new one and ensuring that no error is thrown.
+  expect_true(DBI::dbBegin(con))
+  on.exit(DBI::dbRollback(con), add = TRUE, after = FALSE)
+})
