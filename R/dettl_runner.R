@@ -13,8 +13,8 @@ dettl <- function(path, db_name = NULL) {
   path <- normalizePath(path, winslash = '/', mustWork = TRUE)
   dettl_config <- read_config(path)
 
-  if (dettl_config$load$default) {
-    load_func <- get_default_load()
+  if (dettl_config$load$automatic) {
+    load_func <- dettl_auto_load
   } else {
     load_func <- dettl_config$load$func
   }

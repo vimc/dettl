@@ -1,7 +1,7 @@
-context("run-default-load")
+context("run-automatic-load")
 
-test_that("default load can be run", {
-  path <- prepare_test_import("example_default_load", add_data = TRUE,
+test_that("automaitc load can be run", {
+  path <- prepare_test_import("example_automatic_load", add_data = TRUE,
                               add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -10,7 +10,7 @@ test_that("default load can be run", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl(file.path(path, "example_default_load"), db_name = "test")
+  import <- dettl(file.path(path, "example_automatic_load"), db_name = "test")
   import$extract()
   import$transform()
   import$load()

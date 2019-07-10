@@ -199,7 +199,7 @@ The transformed data can be inspected to ensure it looks as expected.
 print(transformed_data)
 ```
 
-The final stage to implement is the load stage. Note that you can use a default implementation for the load stage. This will append the `transformed_data` to existing tables in the database respecting any foreign key constraints configured via the `dettl.yml`. See section below for details about [default load](#default_load). To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
+The final stage to implement is the load stage. Note that you can use an automatic load stage. This will append the `transformed_data` to existing tables in the database respecting any foreign key constraints configured via the `dettl.yml`. See section below for details about [automatic load](#dettl_auto_load). To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
 
 The important implementation for this stage is the testing. The load stage will be run in a transaction then the tests will be run. If any of the tests fail the transaction will be rolled back, otherwise it will be committed. You can write two types of test here, the first simplest is using the active connection to the database to query the loaded data and test the output. For example
 
@@ -358,20 +358,20 @@ This will rollback any changes which have been made to the database before the c
 options(testthat.default_reporter = default_reporter)
 ```
 
-## Default load stage {#default_load}
+## Automatic load stage {#dettl_auto_load}
 
-`dettl` has a default implementation for the load stage of the import. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the default load step requires defining that the default load should be used in the load block of `dettl.yml` e.g.
+`dettl` has an automatic implementation for the load stage of the import. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the automatic load step requires defining that the automatic load should be used in the load block of `dettl.yml` e.g.
 
 ```yml
 load:
-  default: TRUE
+  automatic: TRUE
   verification_queries: test_queries
   test: R/test_load.R
 ```
 
-Using a default load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
+Using an automatic load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
 
-The default load will load data respecting primary key constraints which are read automatically from the database. For example if we want to load data where we have `transformed_data` taking the form
+The automatic load will load data respecting primary key constraints which are read automatically from the database. For example if we want to load data where we have `transformed_data` taking the form
 
 ```{r echo = FALSE}
 people <- data.frame(c(1,2),
@@ -388,5 +388,5 @@ knitr::kable(people, caption = "people")
 knitr::kable(jobs, caption = "jobs")
 ```
 
-where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the default load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the automatic load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
 

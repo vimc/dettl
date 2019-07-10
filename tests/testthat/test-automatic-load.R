@@ -1,4 +1,4 @@
-context("default-load")
+context("automatic-load")
 
 test_that("child tables can be updated", {
 
@@ -36,12 +36,7 @@ test_that("child tables can be updated", {
   expect_equal(updated_tables$child_table$col1_child, c(30, 20, 50))
 })
 
-test_that("default load returns a function", {
-  func <- get_default_load()
-  expect_type(func, "closure")
-})
-
-test_that("default load supports 2 referenced fields within same table", {
+test_that("automatic load supports 2 referenced fields within same table", {
   ## Note that we test this with 2 autoincrement fields in Postgres but
   ## this kind of configuration is not possible within SQLite as only an
   ## int primary key can autoincrement in sqlite.
@@ -67,8 +62,7 @@ test_that("default load supports 2 referenced fields within same table", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
-  default_load(tables, con)
+  dettl_auto_load(tables, con)
 
   ref_table <- DBI::dbGetQuery(con, "SELECT * FROM referenced_table")
   id_table <- DBI::dbGetQuery(con, "SELECT * FROM id_constraint")
@@ -78,7 +72,7 @@ test_that("default load supports 2 referenced fields within same table", {
   expect_equal(nid_table, nid_constraint)
 })
 
-test_that("postgres default load works as expected", {
+test_that("postgres automatic load works as expected", {
   path <- prepare_test_import(create_db = FALSE)
   con <- prepare_example_postgres_db(add_fk_data = TRUE)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
@@ -95,8 +89,7 @@ test_that("postgres default load works as expected", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
-  default_load(tables, con)
+  dettl_auto_load(tables, con)
 
   ## Create expected data
   db_region <- data_frame(id = c(1,2,3,4),
@@ -116,7 +109,7 @@ test_that("postgres default load works as expected", {
 
   ## Trying to upload with same serial PK again works
   tables <- list(region = region)
-  default_load(tables, con)
+  dettl_auto_load(tables, con)
 
   db_region <- data_frame(
     id = c(1,2,3,4,5,6),
@@ -127,10 +120,10 @@ test_that("postgres default load works as expected", {
 
   ## Trying to upload with same non-serial PK again fails
   tables <- list(street = street)
-  expect_error(default_load(tables, con), class = "dettl_data_write_error")
+  expect_error(dettl_auto_load(tables, con), class = "dettl_data_write_error")
 })
 
-test_that("sqlite default load works as expected", {
+test_that("sqlite automatic load works as expected", {
   path <- prepare_test_import(add_fk_data = TRUE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
@@ -146,8 +139,7 @@ test_that("sqlite default load works as expected", {
   )
 
   ## Do load and check uploaded data
-  default_load <- get_default_load()
-  default_load(tables, con)
+  dettl_auto_load(tables, con)
 
   ## Create expected data
   db_region <- data_frame(id = c(1,2,3,4),
@@ -167,7 +159,7 @@ test_that("sqlite default load works as expected", {
 
   ## Trying to upload with same serial PK again works
   tables <- list(region = region)
-  default_load(tables, con)
+  dettl_auto_load(tables, con)
 
   db_region <- data_frame(
     id = c(1,2,3,4,5,6),
@@ -178,6 +170,6 @@ test_that("sqlite default load works as expected", {
 
   ## Trying to upload with same non-serial PK again fails
   tables <- list(street = street)
-  expect_error(default_load(tables, con), class = "dettl_data_write_error")
+  expect_error(dettl_auto_load(tables, con), class = "dettl_data_write_error")
 })
 

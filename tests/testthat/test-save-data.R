@@ -75,7 +75,7 @@ test_that("save data can create new file", {
 })
 
 test_that("saving data with multiple sheets is supported", {
-  path <- prepare_test_import("example_default_load",
+  path <- prepare_test_import("example_automatic_load",
                               add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -84,7 +84,7 @@ test_that("saving data with multiple sheets is supported", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
+  import <- dettl(file.path(path, "example_automatic_load/"), db_name = "test")
   import$extract()
   import$transform()
 
@@ -101,7 +101,7 @@ test_that("saving data with multiple sheets is supported", {
 })
 
 test_that("saving data can save extract and transform at same time", {
-  path <- prepare_test_import("example_default_load",
+  path <- prepare_test_import("example_automatic_load",
                               add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -110,7 +110,7 @@ test_that("saving data can save extract and transform at same time", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  import <- dettl(file.path(path, "example_default_load/"), db_name = "test")
+  import <- dettl(file.path(path, "example_automatic_load/"), db_name = "test")
   import$extract()
   import$transform()
 

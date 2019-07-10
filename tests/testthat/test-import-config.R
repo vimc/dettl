@@ -33,7 +33,7 @@ test_that("read config loads config from directory", {
   expect_true("name" %in% names(cfg))
   expect_equal(cfg$name, "example")
 
-  expect_false(cfg$load$default)
+  expect_false(cfg$load$automatic)
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "example")
@@ -98,18 +98,18 @@ test_that("wildcards in sources are expanded", {
                "No files found matching file pattern no_match.R")
 })
 
-test_that("default load can be specified in config", {
-  dir <- setup_dettl_config("default: true")
+test_that("automatic load can be specified in config", {
+  dir <- setup_dettl_config("automatic: true")
   cfg <- read_config(dir)
-  expect_true(cfg$load$default)
+  expect_true(cfg$load$automatic)
 
-  dir <- setup_dettl_config("default: FALSE")
+  dir <- setup_dettl_config("automatic: FALSE")
   expect_error(read_config(dir),
-               "Load stage must specify a load function OR use the default load function. Got default FALSE and NULL func TRUE.")
+               "Load stage must specify a load function OR use the automatic load function. Got automatic FALSE and NULL func TRUE.")
 
   dir <- setup_dettl_config("
-  default: TRUE
+  automatic: TRUE
   func: load")
   expect_error(read_config(dir),
-               "Load stage must specify a load function OR use the default load function. Got default TRUE and NULL func FALSE.")
+               "Load stage must specify a load function OR use the automatic load function. Got automatic TRUE and NULL func FALSE.")
 })
