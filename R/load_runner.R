@@ -28,8 +28,21 @@ run_load <- function(con, load, transformed_data, test_queries, path,
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
-  before <- test_queries(con)
   DBI::dbBegin(con)
+  withCallingHandlers(
+    do_load(con, load, transformed_data, path, test_file, test_queries,
+            log_table, log_data, dry_run),
+    error = function(e) {
+      DBI::dbRollback(con)
+      stop(e)
+    }
+  )
+  invisible(TRUE)
+}
+
+do_load <- function(con, load, transformed_data, path, test_file, test_queries,
+                    log_table, log_data, dry_run) {
+  before <- test_queries(con)
   load(transformed_data, con)
   after <- test_queries(con)
   test_path <- file.path(path, test_file)
@@ -45,8 +58,6 @@ run_load <- function(con, load, transformed_data, test_queries, path,
       DBI::dbCommit(con)
     }
   } else {
-    DBI::dbRollback(con)
     stop("Failed to load data - not all tests passed.")
   }
-  invisible(TRUE)
 }
