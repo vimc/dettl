@@ -152,7 +152,6 @@ test_that("import can only be run once", {
 })
 
 test_that("transaction is cleaned up if import fails", {
-  load_func <- get_default_load()
   path <- prepare_test_import("example_tests")
   con <- db_connect("test", path)
   transformed_data <- list(people = "Dave")
@@ -165,8 +164,8 @@ test_that("transaction is cleaned up if import fails", {
 
   ## Error thrown from bad form of transformed_data
   expect_error(
-    run_load(con, load_func, transformed_data, test_queries, path = test_dir,
-             test_file = test_file, dry_run = FALSE,
+    run_load(con, dettl_auto_load, transformed_data, test_queries,
+             path = test_dir, test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = "Test comment")
   )
 
@@ -181,7 +180,6 @@ test_that("postgres transaction is cleaned up if import throws error", {
   on.exit(DBI::dbDisconnect(con))
   path <- prepare_test_import("example_tests")
 
-  load_func <- get_default_load()
   transformed_data <- list(people = "Dave")
   test_queries <- function(con) {}
   test_dir <- file.path(path, "example_tests")
@@ -192,8 +190,8 @@ test_that("postgres transaction is cleaned up if import throws error", {
 
   ## Error thrown from bad form of transformed_data
   expect_error(
-    run_load(con, load_func, transformed_data, test_queries, path = test_dir,
-             test_file = test_file, dry_run = FALSE,
+    run_load(con, dettl_auto_load, transformed_data, test_queries,
+             path = test_dir, test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = "Test comment")
   )
 
