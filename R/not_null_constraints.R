@@ -14,6 +14,25 @@ NotNullConstraints <- R6::R6Class(
       nrow(private$not_nullable[
         private$not_nullable$table_name == table_name &
         private$not_nullable$column_name == column_name, ]) == 0
+    },
+
+    not_nulls = function(table_name) {
+      data <- private$not_nullable[
+        private$not_nullable$table_name == table_name, "column_name"]
+      if (length(data) == 0) {
+        data <- NULL
+      }
+      data
+    },
+
+    is_serial = function(table_name, column_name) {
+      is_serial <- private$not_nullable[
+        private$not_nullable$table_name == table_name &
+        private$not_nullable$column_name == column_name, "is_serial"]
+      if (length(is_serial) == 0) {
+        is_serial <- FALSE
+      }
+      is_serial
     }
   )
 )
@@ -36,7 +55,11 @@ get_not_nullable.SQLiteConnection <- function(con) {
   queries <- lapply(tables, function(table) {
     sprintf(
       "SELECT '%s' as table_name,
-       pragma.'name' as column_name
+       pragma.'name' as column_name,
+       (pragma.'type' = 'INTEGER' AND pragma.'pk')
+              OR pragma.'name' = 'rowid'
+              OR pragma.'name' = 'oid'
+              OR pragma.'name' = '_rowid_' as is_serial
        FROM pragma_table_info('%s') as pragma
        WHERE pragma.'notnull' = 1",
       table, table)
@@ -45,6 +68,8 @@ get_not_nullable.SQLiteConnection <- function(con) {
   constraints <- lapply(queries, function(query) {
     DBI::dbGetQuery(con, query)
   })
-  do.call(rbind, constraints)
+  constraints <- do.call(rbind, constraints)
+  constraints$is_serial <- as.logical(constraints$is_serial)
+  constraints
 }
 

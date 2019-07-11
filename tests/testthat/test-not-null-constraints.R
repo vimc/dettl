@@ -8,7 +8,8 @@ test_that("not null constraints can be retrieved from sqlite database", {
 
   expected_not_null <- data_frame(
     table_name = c("jobs", "people", "people", "people"),
-    column_name = c("id", "id", "name", "age")
+    column_name = c("id", "id", "name", "age"),
+    is_serial = c(TRUE, TRUE, FALSE, FALSE)
   )
   expect_equal(not_null, expected_not_null)
 
@@ -20,6 +21,16 @@ test_that("not null constraints can be retrieved from sqlite database", {
   expect_false(constraints$is_nullable("people", "age"))
   expect_true(constraints$is_nullable("jobs", "job"))
   expect_true(constraints$is_nullable("missing_table", "missing_col"))
+
+  ## Can get not null columns for a table
+  expect_equal(constraints$not_nulls("people"), c("id", "name", "age"))
+  expect_equal(constraints$not_nulls("jobs"), c("id"))
+  expect_equal(constraints$not_nulls("missing_table"), NULL)
+
+  ## We know which not-null fields are serials
+  expect_true(constraints$is_serial("people", "id"))
+  expect_false(constraints$is_serial("people", "name"))
+  expect_false(constraints$is_serial("missing_table", "id"))
 })
 
 
@@ -34,7 +45,8 @@ test_that("not null constraints can be retrieved from postgres database", {
   expected_not_null <- data_frame(
     table_name = c("dettl_import_log", "jobs", "people", "people",
                    "people"),
-    column_name = c("name", "id", "id", "name", "age")
+    column_name = c("name", "id", "id", "name", "age"),
+    is_serial = c(FALSE, TRUE, TRUE, FALSE, FALSE)
   )
   expect_equal(not_null, expected_not_null)
 
@@ -46,4 +58,14 @@ test_that("not null constraints can be retrieved from postgres database", {
   expect_false(constraints$is_nullable("people", "age"))
   expect_true(constraints$is_nullable("jobs", "job"))
   expect_true(constraints$is_nullable("missing_table", "missing_col"))
+
+  ## Can get not null columns for a table
+  expect_equal(constraints$not_nulls("people"), c("id", "name", "age"))
+  expect_equal(constraints$not_nulls("jobs"), c("id"))
+  expect_equal(constraints$not_nulls("missing_table"), NULL)
+
+  ## We know which not-null fields are serials
+  expect_true(constraints$is_serial("people", "id"))
+  expect_false(constraints$is_serial("people", "name"))
+  expect_false(constraints$is_serial("missing_table", "id"))
 })
