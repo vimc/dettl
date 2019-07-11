@@ -17,7 +17,8 @@
 #'
 #' @keywords internal
 prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
-                               add_log_table = TRUE, add_fk_data = FALSE) {
+                               add_log_table = TRUE, add_fk_data = FALSE,
+                               add_cyclic_fks = FALSE) {
   path <- file.path(dir, "test.sqlite")
   if (file.exists(path)) {
     ## Ensure we always start with a fresh DB
@@ -27,9 +28,9 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   sqlite_enable_fk(con)
   DBI::dbExecute(con,
     "CREATE TABLE people (
-      id     INTEGER PRIMARY KEY,
-      name   TEXT,
-      age    INTEGER,
+      id     INTEGER PRIMARY KEY NOT NULL,
+      name   TEXT NOT NULL,
+      age    INTEGER NOT NULL,
       height INTEGER
     )"
   )
@@ -43,14 +44,7 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
   }
 
   if (add_job_table) {
-    DBI::dbExecute(con,
-      "CREATE TABLE jobs (
-        id     INTEGER PRIMARY KEY,
-        job    TEXT,
-        person INTEGER,
-        FOREIGN KEY (person) REFERENCES people(id)
-      )"
-    )
+    add_job_table(con)
   }
 
   if (add_log_table) {
@@ -63,8 +57,35 @@ prepare_example_db <- function(dir, add_data = FALSE, add_job_table = FALSE,
     add_fk_data(con)
   }
 
+  if (add_cyclic_fks) {
+    add_cyclic_fk_tables(con)
+  }
+
   DBI::dbDisconnect(con)
   path
+}
+
+add_job_table <- function(con) {
+  dialect <- sql_dialect(con)
+  switch(
+    dialect,
+    "sqlite" = DBI::dbExecute(con,
+      "CREATE TABLE jobs (
+      id     INTEGER PRIMARY KEY NOT NULL,
+      job    TEXT,
+      person INTEGER,
+      FOREIGN KEY (person) REFERENCES people(id)
+      )"
+    ),
+    "postgresql" = DBI::dbExecute(con,
+      "CREATE TABLE jobs (
+      id     SERIAL UNIQUE NOT NULL,
+      job    TEXT,
+      person INTEGER,
+      FOREIGN KEY (person) REFERENCES people(id)
+      )"
+    )
+  )
 }
 
 #' Add tables with foreign key constraints for testing
@@ -127,6 +148,43 @@ add_fk_data <- function(con) {
   DBI::dbWriteTable(con, "address", address, append = TRUE)
 }
 
+add_cyclic_fk_tables <- function(con) {
+  dialect <- sql_dialect(con)
+  switch(
+    dialect,
+    "sqlite" = {
+      DBI::dbExecute(con,
+        "CREATE TABLE model (
+        id TEXT PRIMARY KEY,
+        current_version INTEGER,
+        FOREIGN KEY (current_version) REFERENCES model_version(id)
+      )")
+      DBI::dbExecute(con,
+        "CREATE TABLE model_version (
+        id INTEGER PRIMARY KEY,
+        model TEXT,
+        FOREIGN KEY (model) REFERENCES model(id)
+      )")
+      },
+    "postgresql" = {
+      DBI::dbExecute(con,
+        "CREATE TABLE model (
+        id TEXT PRIMARY KEY,
+        current_version INTEGER
+      )")
+      DBI::dbExecute(con,
+        "CREATE TABLE model_version (
+        id SERIAL UNIQUE,
+        model TEXT,
+        FOREIGN KEY (model) REFERENCES model(id)
+      )")
+      DBI::dbExecute(con,
+        "ALTER TABLE model ADD CONSTRAINT fk_model_version
+        FOREIGN KEY (current_version) REFERENCES model_version (id)")
+    }
+  )
+}
+
 #' Prepare example import inside a git repo
 #'
 #' Copies an example import to a new temp directory, sets up git for the
@@ -141,6 +199,8 @@ add_fk_data <- function(con) {
 #' @param add_job_table If TRUE also bootstrap job table related to people table.
 #' @param add_log_table If TRUE then also bootstrap log table.
 #' @param add_fk_data If TRUE then bootstrap three tables with foreign key
+#' @param add_cyclic_fks If TRUE then bootstrap two tables with cyclic foreign
+#' key constraints.
 #' constraints for testing automatic reading of foreign key constraints from db.
 #'
 #' @export
@@ -155,11 +215,12 @@ prepare_test_import <- function(example_dir = "example",
                                 create_db = TRUE,
                                 add_data = FALSE, add_job_table = FALSE,
                                 add_log_table = TRUE,
-                                add_fk_data = FALSE) {
+                                add_fk_data = FALSE,
+                                add_cyclic_fks = FALSE) {
   path <- build_git_demo(example_dir, dettl_config)
   if (create_db) {
     prepare_example_db(path, add_data, add_job_table, add_log_table,
-                       add_fk_data)
+                       add_fk_data, add_cyclic_fks)
   }
   path
 }

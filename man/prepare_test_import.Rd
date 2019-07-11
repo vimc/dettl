@@ -7,7 +7,7 @@
 prepare_test_import(example_dir = "example",
   dettl_config = "dettl_config.yml", create_db = TRUE,
   add_data = FALSE, add_job_table = FALSE, add_log_table = TRUE,
-  add_fk_data = FALSE)
+  add_fk_data = FALSE, add_cyclic_fks = FALSE)
 }
 \arguments{
 \item{example_dir}{The example directory to copy to temp.}
@@ -22,7 +22,10 @@ prepare_test_import(example_dir = "example",
 
 \item{add_log_table}{If TRUE then also bootstrap log table.}
 
-\item{add_fk_data}{If TRUE then bootstrap three tables with foreign key
+\item{add_fk_data}{If TRUE then bootstrap three tables with foreign key}
+
+\item{add_cyclic_fks}{If TRUE then bootstrap two tables with cyclic foreign
+key constraints.
 constraints for testing automatic reading of foreign key constraints from db.}
 }
 \description{

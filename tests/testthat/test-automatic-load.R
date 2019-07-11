@@ -173,3 +173,128 @@ test_that("sqlite automatic load works as expected", {
   expect_error(dettl_auto_load(tables, con), class = "dettl_data_write_error")
 })
 
+test_that("sqlite automatic load works with cyclic fks", {
+  path <- prepare_test_import(add_cyclic_fks = TRUE)
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  ## Create test data
+  model <- data_frame(id = c("one", "two"), current_version = c(NA, NA))
+  model_version <- data_frame(id = c(4, 5), model = c("one", "two"))
+
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+
+  dettl_auto_load(tables, con)
+
+  ## Create expected data
+  expected_model <- data_frame(id = c("one", "two"),
+                               current_version = c(NA_integer_, NA_integer_))
+  expected_model_version <- data_frame(id = c(1, 2),
+                                       model = c("one", "two"))
+
+  model_table <- DBI::dbGetQuery(con, "SELECT * FROM model")
+  model_version_table <- DBI::dbGetQuery(con, "SELECT * FROM model_version")
+  expect_equal(model_table, expected_model)
+  expect_equal(model_version_table, expected_model_version)
+
+  ## If instead using an empty column
+  model <- data_frame(id = c("three", "four"))
+  model_version <- data_frame(id = c(4, 5), model = c("three", "four"))
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+  dettl_auto_load(tables, con)
+
+  ## Create expected data
+  expected_model <- data_frame(id = c("one", "two", "three", "four"),
+                               current_version = rep(NA_integer_, 4))
+  expected_model_version <- data_frame(id = c(1, 2, 3, 4),
+                                       model = c("one", "two", "three", "four"))
+
+  model_table <- DBI::dbGetQuery(con, "SELECT * FROM model")
+  model_version_table <- DBI::dbGetQuery(con, "SELECT * FROM model_version")
+  expect_equal(model_table, expected_model)
+  expect_equal(model_version_table, expected_model_version)
+
+})
+
+test_that("postgres automatic load works with cyclic fks", {
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db(add_cyclic_fks = TRUE)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## Create test data
+  model <- data_frame(id = c("one", "two"),
+                      current_version = c(NA_integer_, NA_integer_))
+  model_version <- data_frame(id = c(4, 5), model = c("one", "two"))
+
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+
+  dettl_auto_load(tables, con)
+
+  ## Create expected data
+  expected_model <- data_frame(id = c("one", "two"),
+                               current_version = c(NA_integer_, NA_integer_))
+  expected_model_version <- data_frame(id = c(1, 2),
+                                       model = c("one", "two"))
+
+  model_table <- DBI::dbGetQuery(con, "SELECT * FROM model")
+  model_version_table <- DBI::dbGetQuery(con, "SELECT * FROM model_version")
+  expect_equal(model_table, expected_model)
+  expect_equal(model_version_table, expected_model_version)
+
+  ## If instead using an empty column
+  model <- data_frame(id = c("three", "four"))
+  model_version <- data_frame(id = c(4, 5), model = c("three", "four"))
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+  dettl_auto_load(tables, con)
+
+  ## Create expected data
+  expected_model <- data_frame(id = c("one", "two", "three", "four"),
+                               current_version = rep(NA_integer_, 4))
+  expected_model_version <- data_frame(id = c(1, 2, 3, 4),
+                                       model = c("one", "two", "three", "four"))
+
+  model_table <- DBI::dbGetQuery(con, "SELECT * FROM model")
+  model_version_table <- DBI::dbGetQuery(con, "SELECT * FROM model_version")
+  expect_equal(model_table, expected_model)
+  expect_equal(model_version_table, expected_model_version)
+
+})
+
+test_that("map values works as expected", {
+  data <- c(1, 3, 2, 2)
+  old <- c(1, 2, 3)
+  new <- c(4, 5, 6)
+
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
+  expect_equal(mapped_values, c(4, 6, 5, 5))
+
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
+  expect_equal(mapped_values, c(4, 6, 5, 5))
+
+  expect_error(map_values(data, c(1, 2), new, "table_name", "col_name"))
+
+  data <- c(4, NA, 2)
+  old <- c(2, 3, 4)
+  new <- c(3, 4, 5)
+
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
+  expect_equal(mapped_values, c(5, NA, 3))
+
+  data <- c(1, 2, 2, NA, 4, 4, 5)
+  old <- c(4, 5)
+  new <- c(6, 7)
+
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
+  expect_equal(mapped_values, c(1, 2, 2, NA, 6, 6, 7))
+})

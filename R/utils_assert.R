@@ -53,7 +53,7 @@ assert_file_exists <- function(x, check_case = TRUE, workdir = NULL,
 }
 
 assert_func_exists <- function(func_name, env) {
-  if(!exists(func_name, envir = env, mode = "function", inherits = FALSE)) {
+  if (!exists(func_name, envir = env, mode = "function", inherits = FALSE)) {
     stop(sprintf("Can't find function %s within environment.", func_name))
   }
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/db.R
 \name{verify_table}
 \alias{verify_table}
-\title{Verify the data adhered to the DB schema.}
+\title{Verify the data adheres to the DB schema.}
 \usage{
 verify_table(con, table_name, table, identical_columns = FALSE,
   context_info = "", solution_text = "")
