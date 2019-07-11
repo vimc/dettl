@@ -33,7 +33,6 @@
 #' dettl_auto_load(data, con)
 dettl_auto_load <- function(transformed_data, con) {
   rewrite_keys <- ForeignKeyConstraints$new(con)
-  not_null <- NotNullConstraints$new(con)
   for (name in names(transformed_data)) {
     has_serial_foreign_keys <- rewrite_keys$used_as_foreign_key(name) &&
                                rewrite_keys$has_serial(name)
