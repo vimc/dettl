@@ -199,6 +199,8 @@ add_cyclic_fk_tables <- function(con) {
 #' @param add_job_table If TRUE also bootstrap job table related to people table.
 #' @param add_log_table If TRUE then also bootstrap log table.
 #' @param add_fk_data If TRUE then bootstrap three tables with foreign key
+#' @param add_cyclic_fks If TRUE then bootstrap two tables with cyclic foreign
+#' key constraints.
 #' constraints for testing automatic reading of foreign key constraints from db.
 #'
 #' @export

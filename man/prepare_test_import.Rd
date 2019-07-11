@@ -22,7 +22,10 @@ prepare_test_import(example_dir = "example",
 
 \item{add_log_table}{If TRUE then also bootstrap log table.}
 
-\item{add_fk_data}{If TRUE then bootstrap three tables with foreign key
+\item{add_fk_data}{If TRUE then bootstrap three tables with foreign key}
+
+\item{add_cyclic_fks}{If TRUE then bootstrap two tables with cyclic foreign
+key constraints.
 constraints for testing automatic reading of foreign key constraints from db.}
 }
 \description{
