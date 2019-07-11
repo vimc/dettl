@@ -48,6 +48,49 @@ test_that("foreign key constraints can be initialised and accessed", {
   expect_true(keys$is_serial("table2", "id"))
   expect_true(keys$is_serial("table2", "nid"))
   expect_equal(keys$is_serial("table2", c("id", "nid")), c(TRUE, TRUE))
+
+  ## We can test if data to be uploaded contains constrained data
+  data <- list(
+    constrained_table3 = data_frame(
+      test = "one",
+      example_field3 = 2
+    ),
+    table_2 = data_frame(
+      test = "two",
+      example_field3 = 3
+    )
+  )
+  expect_false(keys$is_serial_constraint("table", "id", data))
+  expect_true(keys$is_serial_constraint("table2", "id", data))
+
+  data <- list(
+    table_1 = data_frame(
+      test = "one",
+      example_field3 = 2
+    ),
+    table_2 = data_frame(
+      test = "two",
+      example_field3 = 3
+    )
+  )
+  expect_false(keys$is_serial_constraint("table2", "id", data))
+
+  data <- list(
+    constrained_table3 = data_frame(
+      test = "one",
+      field = 2
+    ),
+    table_2 = data_frame(
+      test = "two",
+      example_field3 = 3
+    )
+  )
+  expect_false(keys$is_serial_constraint("table2", "id", data))
+
+  expect_error(keys$is_serial_constraint("missing", "na", data),
+               paste0("Tried to get foreign key usages for referenced table ",
+                      "'missing' and column 'na', table and column are missing",
+                      " from constraints"))
 })
 
 test_that("empty key constraints returns appropriate messages", {

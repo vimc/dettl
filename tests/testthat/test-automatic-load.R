@@ -298,3 +298,67 @@ test_that("map values works as expected", {
   mapped_values <- map_values(data, old, new, "table_name", "col_name")
   expect_equal(mapped_values, c(1, 2, 2, NA, 6, 6, 7))
 })
+
+# test_that("automatic load supports upload without specifying referenced keys", {
+#   path <- prepare_test_import(create_db = FALSE)
+#   con <- prepare_example_postgres_db(add_fk_data = TRUE)
+#   on.exit(DBI::dbDisconnect(con), add = TRUE)
+#
+#   ## When uploading data where serial PK is used as a referenced key in foreign
+#   ## key constraint but table with FK on is NOT being uploaded too
+#   region <- data_frame(name = c("France", "Paris"))
+#
+#   tables <- list(
+#     region = region
+#   )
+#
+#   ## Then data can be uploaded
+#   dettl_auto_load(tables, con)
+#
+#   expected_region <- data_frame(id = c(1, 2, 3, 4),
+#                                name = c("UK", "London", "France", "Paris"),
+#                                parent = c(NA, 1, NA, NA))
+#
+#   region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+#   expect_equal(region_table, expected_region)
+# })
+
+test_that("automatic load supports upload without specifying referenced keys", {
+  path <- prepare_test_import(add_fk_data = TRUE)
+  con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+
+  ## When uploading data where serial PK is used as a referenced key in foreign
+  ## key constraint but table with FK on is NOT being uploaded too
+  region <- data_frame(name = c("France", "Paris"))
+
+  tables <- list(
+    region = region
+  )
+
+  ## Then data can be uploaded
+  dettl_auto_load(tables, con)
+
+  expected_region <- data_frame(id = c(1, 2, 3, 4),
+                                name = c("UK", "London", "France", "Paris"),
+                                parent = c(NA, 1, NA, NA))
+
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+  expect_equal(region_table, expected_region)
+
+  ## When uploading data where serial PK is used as a referenced key in foreign
+  ## key constraints and table with FK on IS being uploaded too
+  region <- data_frame(name = c("Germany"))
+  address <- data_frame(street = "Street", region = 5)
+
+  tables <- list(
+    region = region,
+    address = address
+  )
+
+  ## then PK must be specified
+  expect_error(dettl_auto_load(tables, con),
+               paste0("Can't uploaded data, referenced key 'id' of table ",
+                      "'region' is missing but is referenced by foreign key ",
+                      "constraint used in data."))
+
+})
