@@ -276,25 +276,25 @@ test_that("map values works as expected", {
   old <- c(1, 2, 3)
   new <- c(4, 5, 6)
 
-  mapped_values <- map_values(data, old, new)
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
   expect_equal(mapped_values, c(4, 6, 5, 5))
 
-  mapped_values <- map_values(data, old, new)
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
   expect_equal(mapped_values, c(4, 6, 5, 5))
 
-  expect_error(map_values(data, c(1, 2), new))
+  expect_error(map_values(data, c(1, 2), new, "table_name", "col_name"))
 
   data <- c(4, NA, 2)
   old <- c(2, 3, 4)
   new <- c(3, 4, 5)
 
-  mapped_values <- map_values(data, old, new)
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
   expect_equal(mapped_values, c(5, NA, 3))
 
   data <- c(1, 2, 2, NA, 4, 4, 5)
   old <- c(4, 5)
   new <- c(6, 7)
 
-  mapped_values <- map_values(data, old, new)
+  mapped_values <- map_values(data, old, new, "table_name", "col_name")
   expect_equal(mapped_values, c(1, 2, 2, NA, 6, 6, 7))
 })

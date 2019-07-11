@@ -98,7 +98,8 @@ update_child_tables <- function(tables, table_key_pair, old_key_values,
       foreign_key <- table_key_pair[[table_name]]
       if (!is.null(table[[foreign_key]])) {
         table[[foreign_key]] <- unlist(
-          map_values(table[[foreign_key]], old_key_values, new_key_values),
+          map_values(table[[foreign_key]], old_key_values, new_key_values,
+                     table_name, foreign_key),
           FALSE, FALSE)
       }
     }
@@ -112,10 +113,14 @@ update_child_tables <- function(tables, table_key_pair, old_key_values,
 
 ## Update any old values within data to new ones
 ## Values must be unique in old and new
-map_values <- function(data, old, new) {
-  stopifnot(length(unique(old)) == length(old) &&
-            length(unique(new)) == length(new) &&
-            length(new) == length(old))
+map_values <- function(data, old, new, table_name, col_name) {
+  if (!(length(unique(old)) == length(old) &&
+      length(unique(new)) == length(new) &&
+      length(new) == length(old))) {
+    stop(sprintf(paste0("Cannot map values for table '%s', column '%s'.
+                         Check if referenced keys are unique."),
+                 table_name, col_name))
+  }
   indices <- vnapply(seq_along(data), function(x) {
     value <- data[x]
     index <- which(old == value)
