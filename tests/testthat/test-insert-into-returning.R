@@ -134,21 +134,21 @@ test_that("can add data to Postgres database returning multiple columns", {
 })
 
 test_that("empty row can be inserted into SQLite db", {
-  path <- prepare_test_import()
+  path <- prepare_test_import(add_job_table = TRUE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
   data <- as.data.frame(matrix(nrow = 2, ncol = 0))
 
-  ids <- insert_into_returning(con, "people", data, key = "id", "id")
+  ids <- insert_into_returning(con, "jobs", data, key = "id", "id")
   expect_equal(ids, data_frame("id" = c(1,2)))
 })
 
 test_that("empty row can be inserted into Postgres db", {
-  con <- prepare_example_postgres_db()
+  con <- prepare_example_postgres_db(add_job_table = TRUE)
   on.exit(DBI::dbDisconnect(con))
 
   data <- as.data.frame(matrix(nrow = 2, ncol = 0))
 
-  ids <- insert_into_returning(con, "people", data, key = "id", "id")
+  ids <- insert_into_returning(con, "jobs", data, key = "id", "id")
   expect_equal(ids, data_frame("id" = c(1,2)))
 })

@@ -7,8 +7,8 @@ test_that("not null constraints can be retrieved from sqlite database", {
   not_null <- get_not_nullable(con)
 
   expected_not_null <- data_frame(
-    table_name = c("jobs", "jobs", "people", "people", "people"),
-    column_name = c("id", "job", "id", "name", "age")
+    table_name = c("jobs", "people", "people", "people"),
+    column_name = c("id", "id", "name", "age")
   )
   expect_equal(not_null, expected_not_null)
 
@@ -18,7 +18,7 @@ test_that("not null constraints can be retrieved from sqlite database", {
   expect_false(constraints$is_nullable("people", "id"))
   expect_false(constraints$is_nullable("people", "name"))
   expect_false(constraints$is_nullable("people", "age"))
-  expect_false(constraints$is_nullable("jobs", "job"))
+  expect_true(constraints$is_nullable("jobs", "job"))
   expect_true(constraints$is_nullable("missing_table", "missing_col"))
 })
 
@@ -32,9 +32,9 @@ test_that("not null constraints can be retrieved from postgres database", {
 
   ## Postgres includes implicit not null constraint on primary keys
   expected_not_null <- data_frame(
-    table_name = c("dettl_import_log", "jobs", "jobs", "people", "people",
+    table_name = c("dettl_import_log", "jobs", "people", "people",
                    "people"),
-    column_name = c("name", "id", "job", "id", "name", "age")
+    column_name = c("name", "id", "id", "name", "age")
   )
   expect_equal(not_null, expected_not_null)
 
@@ -44,6 +44,6 @@ test_that("not null constraints can be retrieved from postgres database", {
   expect_false(constraints$is_nullable("people", "id"))
   expect_false(constraints$is_nullable("people", "name"))
   expect_false(constraints$is_nullable("people", "age"))
-  expect_false(constraints$is_nullable("jobs", "job"))
+  expect_true(constraints$is_nullable("jobs", "job"))
   expect_true(constraints$is_nullable("missing_table", "missing_col"))
 })

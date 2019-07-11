@@ -1,6 +1,8 @@
 ## Create a simple "people" table in the psotgres DB for testing.
 prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
-                                        add_multi_ref_fks = FALSE) {
+                                        add_job_table = FALSE,
+                                        add_multi_ref_fks = FALSE,
+                                        add_cyclic_fks = FALSE) {
   dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
@@ -8,21 +10,28 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
   con <- get_postgres_connection(dbname, user, host)
   ## Make sure we have a fresh "people" table if one existed already
   DBI::dbExecute(con, "DROP TABLE IF EXISTS people CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS jobs CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS region CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS street CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS address CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS referenced_table CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS id_constraint CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS nid_constraint CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS model CASCADE")
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS model_version CASCADE")
 
   DBI::dbExecute(con,
     "CREATE TABLE people (
       id     BIGSERIAL PRIMARY KEY,
-      name   TEXT,
-      age    INTEGER,
+      name   TEXT NOT NULL,
+      age    INTEGER NOT NULL,
       height INTEGER
     )"
   )
+
+  if (add_job_table) {
+    add_job_table(con)
+  }
 
   if (add_fk_data) {
     add_fk_data(con)
@@ -30,6 +39,10 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
 
   if (add_multi_ref_fks) {
     add_postgres_multiple_referenced_fks(con)
+  }
+
+  if (add_cyclic_fks) {
+    add_cyclic_fk_tables(con)
   }
 
   ## Make sure we have a fresh "dettl_import_log" table if one existed already
