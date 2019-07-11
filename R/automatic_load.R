@@ -47,10 +47,13 @@ dettl_auto_load <- function(transformed_data, con) {
       ret <- insert_into_returning(con, name, insert_data,
                                    ret = serial_keys)
       for (col in names(ret)) {
-        table_key_pair <- rewrite_keys$get_foreign_key_usages(name, col)
-        old_key_values <- transformed_data[[name]][, col]
-        transformed_data <- update_child_tables(
-          transformed_data, table_key_pair, old_key_values, ret[[col]], name)
+        ## Update the tables where this referenced key is used
+        if (rewrite_keys$is_serial_constraint(name, col, transformed_data)) {
+          table_key_pair <- rewrite_keys$get_foreign_key_usages(name, col)
+          old_key_values <- get_old_key_values(transformed_data, name, col)
+          transformed_data <- update_child_tables(
+            transformed_data, table_key_pair, old_key_values, ret[[col]], name)
+        }
       }
     } else {
       withCallingHandlers(
@@ -62,6 +65,16 @@ dettl_auto_load <- function(transformed_data, con) {
     }
   }
   invisible(TRUE)
+}
+
+get_old_key_values <- function(data, table_name, col_name) {
+  if (!(col_name %in% colnames(data[[table_name]]))) {
+    stop(sprintf(paste0(
+      "Can't uploaded data, referenced key '%s' of table '%s' is missing but ",
+      "is referenced by foreign key constraint used in data."),
+      col_name, table_name))
+  }
+  data[[table_name]][, col_name]
 }
 
 strip_referenced_key_columns <- function(data, referenced_keys) {

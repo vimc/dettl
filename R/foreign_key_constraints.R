@@ -43,6 +43,24 @@ ForeignKeyConstraints <- R6::R6Class(
         ))
       }
       foreign_key_constraints
+    },
+
+    is_serial_constraint = function(name, column, data) {
+      ## Is a referenced column in a table actually used as a referenced key
+      ## for this set of data we are uploading? If so then it needs to be
+      ## stripped before upload
+      is_serial <- self$is_serial(name, column)
+      foreign_key_usages <- self$get_foreign_key_usages(name, column)
+      is_used_as_constraint <- FALSE
+      for (usage_name in names(foreign_key_usages)) {
+        if (usage_name %in% names(data)) {
+          table <- data[[usage_name]]
+          if (foreign_key_usages[usage_name] %in% colnames(table)) {
+            is_used_as_constraint <- TRUE
+          }
+        }
+      }
+      is_serial && is_used_as_constraint
     }
   )
 )
