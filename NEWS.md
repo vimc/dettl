@@ -1,3 +1,8 @@
+## 0.0.6
+
+VIMC-3022 - Allow upload to not specify serial PKs when they are not referenced
+by any other data within the upload
+
 ## 0.0.5
 
 VIMC-3015 - Expose automatic load function for use in custom load functions
