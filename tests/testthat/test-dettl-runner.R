@@ -227,12 +227,20 @@ test_that("run import asks to confirm run if configured", {
   mock_NA_answer <- mockery::mock(NA, cycle = TRUE)
   mock_yes_answer <- mockery::mock(TRUE, cycle = TRUE)
 
+  ## Set up promise for checking returned messages
+  fn <- function(import) {
+    import$load()
+  }
+
   with_mock("dettl:::dettl_config" = mock_confim_config,
             "askYesNo" = mock_no_answer, {
     import <- dettl(file.path(path, "example/"), db_name = "test")
     import$extract()
     import$transform()
-    expect_error(import$load(), "Not uploading to database")
+    res <- evaluate_promise(fn(import))
+    expect_false(res$result)
+    mockery::expect_called(mock_no_answer, 1)
+    expect_equal(res$messages, "Not uploading to database.\n")
   })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -240,7 +248,10 @@ test_that("run import asks to confirm run if configured", {
     import <- dettl(file.path(path, "example/"), db_name = "test")
     import$extract()
     import$transform()
-    expect_error(import$load(), "Not uploading to database")
+    res <- evaluate_promise(fn(import))
+    expect_false(res$result)
+    mockery::expect_called(mock_NA_answer, 1)
+    expect_equal(res$messages, "Not uploading to database.\n")
   })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -248,9 +259,11 @@ test_that("run import asks to confirm run if configured", {
     import <- dettl(file.path(path, "example/"), db_name = "test")
     import$extract()
     import$transform()
-    expect_message(import$load(),
-                   sprintf("Running load %s", file.path(path, "example")),
-                   fixed = TRUE)
+    res <- evaluate_promise(fn(import))
+    expect_true(res$result)
+    mockery::expect_called(mock_yes_answer, 1)
+    expect_true(sprintf("Running load %s\n", file.path(path, "example")) %in%
+                  res$messages)
   })
 })
 

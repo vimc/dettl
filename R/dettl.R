@@ -101,11 +101,12 @@ DataImport <- R6::R6Class(
       if (private$confirm) {
         confirmed <- askYesNo(
           sprintf(
-            "About to upload to database %s are you sure you want to proceed?",
+            "About to upload to database '%s' are you sure you want to proceed?",
             private$db_name),
           default = FALSE)
         if (is.na(confirmed) || !confirmed) {
-          stop("Not uploading to database.")
+          message("Not uploading to database.")
+          return(invisible(FALSE))
         }
       }
       message(sprintf("Running load %s", self$path))
