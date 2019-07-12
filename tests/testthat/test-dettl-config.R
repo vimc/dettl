@@ -16,6 +16,12 @@ test_that("dettl config can be read and database connection info extracted", {
     user = "readonly",
     password = "VAULT:/secret/users/readonly:password")
   )
+  expect_false(cfg$db$example$confirm)
+  expect_false(cfg$db$uat$confirm)
+
+  path <- setup_config(confirm = TRUE)
+  cfg <- dettl_config(path)
+  expect_true(cfg$db$example$confirm)
 })
 
 test_that("reading config throws error if driver is not configured", {
