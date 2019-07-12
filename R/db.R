@@ -58,7 +58,7 @@ sqlite_enable_fk <- function(con) {
 dettl_db_args <- function(path, type = NULL) {
   config <- dettl_config(path)
   if (is.null(type)) {
-    type <- names(config$db)[[1]]
+    type <- get_default_type(config)
   }
   x <- config$db[[type]]
   if (is.null(x)) {
@@ -84,6 +84,10 @@ dettl_db_args <- function(path, type = NULL) {
     )
   )
   list(driver = driver, args = resolved_args, log_table = x$log_table)
+}
+
+get_default_type <- function(config) {
+  names(config$db)[[1]]
 }
 
 #' Verify the data adheres to the DB schema.

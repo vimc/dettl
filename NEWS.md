@@ -1,3 +1,8 @@
+## 0.0.7
+
+VIMC-3007 - Users can configure if an import to a particular DB needs to be
+confirmed. If so they are asked a yes/no question when running load step.
+
 ## 0.0.6
 
 VIMC-3022 - Allow upload to not specify serial PKs when they are not referenced

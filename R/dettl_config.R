@@ -52,7 +52,8 @@ dettl_config_read_yaml <- function(filename, path) {
 
   check_length(info$db, "gt", 0)
   for (db_cfg in names(info$db)) {
-    check_fields(info$db[[db_cfg]], filename, c("driver", "log_table", "args"), NULL)
+    check_fields(info$db[[db_cfg]], filename, c("driver", "log_table", "args"),
+                 "confirm")
     if (is.null(info$db[[db_cfg]]$driver)) {
       stop(sprintf("No driver specified for DB config %s.", db_cfg))
     }
@@ -61,6 +62,9 @@ dettl_config_read_yaml <- function(filename, path) {
     )
     assert_db_name(info$db[[db_cfg]]$log_table,
                    sprintf("%s:%s:log_table", filename, db_cfg))
+    if (is.null(info$db[[db_cfg]]$confirm)) {
+      info$db[[db_cfg]]$confirm <- FALSE
+    }
   }
 
   if (!is.null(info$vault_server)) {
