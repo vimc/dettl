@@ -98,7 +98,7 @@ DataImport <- R6::R6Class(
     },
 
     load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
-      if (private$confirm && !dry_run) {
+      if (private$confirm) {
         confirmed <- askYesNo(
           sprintf(
             "About to upload to database %s are you sure you want to proceed?",
