@@ -41,14 +41,16 @@ DataImport <- R6::R6Class(
     test_queries = NULL,
     extracted_data = NULL,
     transformed_data = NULL,
-    log_table = NULL
+    log_table = NULL,
+    confirm = NULL,
+    db_name = NULL
   ),
 
   public = list(
     path = NULL,
     initialize = function(path, extract, extract_test, transform,
                           transform_test, load, load_test, test_queries,
-                          db_name, rollback = NULL) {
+                          db_name, confirm, rollback = NULL) {
       self$path <- path
       ## TODO: Only set up connection when it is actually needed
       private$con <- db_connect(db_name, path)
@@ -60,6 +62,12 @@ DataImport <- R6::R6Class(
       private$load_test_ <- load_test
       private$test_queries <- test_queries
       private$log_table <- db_get_log_table(db_name, path)
+      cfg <- dettl_config(path)
+      if (is.null(db_name)) {
+        db_name <- get_default_type(cfg)
+      }
+      private$confirm <- cfg$db[[db_name]]$confirm
+      private$db_name <- db_name
       lockBinding("path", self)
     },
 
@@ -90,6 +98,16 @@ DataImport <- R6::R6Class(
     },
 
     load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+      if (private$confirm && !dry_run) {
+        confirmed <- askYesNo(
+          sprintf(
+            "About to upload to database %s are you sure you want to proceed?",
+            private$db_name),
+          default = FALSE)
+        if (is.na(confirmed) || !confirmed) {
+          stop("Not uploading to database.")
+        }
+      }
       message(sprintf("Running load %s", self$path))
       if (!force && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
