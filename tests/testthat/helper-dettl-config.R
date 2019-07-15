@@ -1,7 +1,8 @@
 setup_config <- function(db_driver = "RSQLite::SQLite",
                          vault_server = "https://example.com",
                          db_pw = "VAULT:/secret/users/readonly:password",
-                         log_table = "data_import_log") {
+                         log_table = "data_import_log",
+                         confirm = FALSE) {
   path <- temp_file()
   dir.create(path)
   filename <- file.path(path, "dettl_config.yml")
@@ -10,6 +11,7 @@ setup_config <- function(db_driver = "RSQLite::SQLite",
   cfg_server <- gsub("<driver>", db_driver, cfg_server, fixed = TRUE)
   cfg_server <- gsub("<db_pw>", db_pw, cfg_server, fixed = TRUE)
   cfg_server <- gsub("<log_table>", log_table, cfg_server, fixed = TRUE)
+  cfg_server <- gsub("<confirm>", confirm, cfg_server, fixed = TRUE)
   writeLines(cfg_server, filename)
   path
 }

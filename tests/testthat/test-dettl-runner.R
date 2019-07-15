@@ -210,6 +210,87 @@ test_that("run import checks git state before import is run", {
   expect_true(import_load)
 })
 
+test_that("run import asks to confirm run if configured", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Mock dettl_config return
+  config <- dettl_config(file.path(path, "example/"))
+  config$db[["test"]]$confirm <- TRUE
+  mock_confim_config <- mockery::mock(config, cycle = TRUE)
+  mock_no_answer <- mockery::mock(FALSE, cycle = TRUE)
+  mock_NA_answer <- mockery::mock(NA, cycle = TRUE)
+  mock_yes_answer <- mockery::mock(TRUE, cycle = TRUE)
+
+  ## Set up promise for checking returned messages
+  fn <- function(import) {
+    import$load()
+  }
+
+  with_mock("dettl:::dettl_config" = mock_confim_config,
+            "askYesNo" = mock_no_answer, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    res <- evaluate_promise(fn(import))
+    expect_false(res$result)
+    mockery::expect_called(mock_no_answer, 1)
+    expect_equal(res$messages, "Not uploading to database.\n")
+  })
+
+  with_mock("dettl:::dettl_config" = mock_confim_config,
+            "askYesNo" = mock_NA_answer, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    res <- evaluate_promise(fn(import))
+    expect_false(res$result)
+    mockery::expect_called(mock_NA_answer, 1)
+    expect_equal(res$messages, "Not uploading to database.\n")
+  })
+
+  with_mock("dettl:::dettl_config" = mock_confim_config,
+            "askYesNo" = mock_yes_answer, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    res <- evaluate_promise(fn(import))
+    expect_true(res$result)
+    mockery::expect_called(mock_yes_answer, 1)
+    expect_true(sprintf("Running load %s\n", file.path(path, "example")) %in%
+                  res$messages)
+  })
+})
+
+test_that("run import doesn't ask to confirm run if not configured", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Mock dettl_config return
+  config <- dettl_config(file.path(path, "example/"))
+  config$db[["test"]]$confirm <- FALSE
+  mock_no_confirm_config <- mockery::mock(config, cycle = TRUE)
+
+  with_mock("dettl:::dettl_config" = mock_no_confirm_config, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    expect_message(import$load(),
+                   sprintf("Running load %s", file.path(path, "example")),
+                   fixed = TRUE)
+  })
+})
+
 test_that("extract can be run from path", {
   path <- prepare_test_import()
 

@@ -4,6 +4,7 @@ db:
     args:
       dbname: test.sqlite
     log_table: <log_table>
+    confirm: <confirm>
   uat:
     driver: RPostgres::Postgres
     args:
