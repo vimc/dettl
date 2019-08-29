@@ -4,12 +4,12 @@ testthat::test_that("user specified load tests can be run", {
   test_path <- "example_tests/failing_load_test.R"
   before <- list(count = 0)
   after <- list(count = 2)
-  result <- run_load_tests(test_path, before, after, NULL, SilentReporter)
+  result <- run_load_tests(test_path, before, after, NULL, NULL, NULL, SilentReporter)
 
   expect_false(all_passed(result))
 
   test_path <- "example_tests/passing_load_test.R"
-  result <- run_load_tests(test_path, before, after, NULL, SilentReporter)
+  result <- run_load_tests(test_path, before, after, NULL,NULL, NULL, SilentReporter)
 
   expect_true(all_passed(result))
 })
@@ -59,7 +59,7 @@ testthat::test_that("connection is available to tests", {
   test_path <- "example_tests/connection_load_test.R"
   before <- list(count = 0)
   after <- list(count = 2)
-  result <- run_load_tests(test_path, before, after, con, SilentReporter)
+  result <- run_load_tests(test_path, before, after, NULL, NULL, con, SilentReporter)
   expect_true(all_passed(result))
 
 })
