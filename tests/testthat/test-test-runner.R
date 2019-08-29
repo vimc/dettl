@@ -30,13 +30,13 @@ testthat::test_that("user specified extract tests can be run", {
 testthat::test_that("user specified transform tests can be run", {
   test_path <- "example_tests/failing_transform_test.R"
   transformed_data <- list("test_data" = data.frame(c(1,2), c(3,4)))
-  result <- run_transform_tests(test_path, transformed_data, NULL,
+  result <- run_transform_tests(test_path, extracted_data = NULL, transformed_data, NULL,
                                 SilentReporter)
 
   expect_false(all_passed(result))
 
   test_path <- "example_tests/passing_transform_test.R"
-  result <- run_transform_tests(test_path, transformed_data, NULL,
+  result <- run_transform_tests(test_path, extracted_data = NULL, transformed_data, NULL,
                                 SilentReporter)
 
   expect_true(all_passed(result))
@@ -52,7 +52,7 @@ testthat::test_that("connection is available to tests", {
 
   test_path <- "example_tests/connection_transform_test.R"
   transformed_data <- list("test_data" = data.frame(c(1,2), c(3,4)))
-  result <- run_transform_tests(test_path, transformed_data, con,
+  result <- run_transform_tests(test_path, extracted_data = NULL, transformed_data, con,
                                 SilentReporter)
   expect_true(all_passed(result))
 
