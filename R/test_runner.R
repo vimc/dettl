@@ -1,8 +1,10 @@
-run_load_tests <- function(path, before, after, con,
+run_load_tests <- function(path, before, after, extracted_data, transformed_data, con,
                            reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$before <- before
   env$after <- after
+  env$extracted_data <- extracted_data
+  env$transformed_data <- transformed_data
   env$con <- con
   test_results <- testthat::test_file(path, env = env, reporter = reporter)
 }
