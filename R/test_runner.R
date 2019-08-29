@@ -15,10 +15,11 @@ run_extract_tests <- function(path, extracted_data, con,
   test_results <- testthat::test_file(path, env = env, reporter = reporter)
 }
 
-run_transform_tests <- function(path, transformed_data, con,
+run_transform_tests <- function(path, transformed_data, extracted_data, con,
                                 reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$transformed_data <- transformed_data
+  env$extracted_data <- extracted_data
   env$con <- con
   test_results <- testthat::test_file(path, env = env, reporter = reporter)
 }

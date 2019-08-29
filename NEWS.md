@@ -1,3 +1,7 @@
+## 0.0.8
+
+VIMC-3108 - Allow test_transform to refer to extracted_data
+
 ## 0.0.7
 
 VIMC-3007 - Users can configure if an import to a particular DB needs to be
