@@ -113,7 +113,7 @@ DataImport <- R6::R6Class(
       if (!force && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
-      run_load(private$con, private$load_, private$transformed_data,
+      run_load(private$con, private$load_, private$extracted_data, private$transformed_data,
                private$test_queries, self$path, private$load_test_, dry_run,
                private$log_table, comment)
       invisible(TRUE)

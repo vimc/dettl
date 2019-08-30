@@ -25,7 +25,7 @@ run_transform <- function(con, transform, path, extracted_data,
       message(sprintf("Running transform tests %s", transform_test))
       test_path <- file.path(path, transform_test)
       test_results <-
-        run_transform_tests(test_path, transformed_data, con)
+        run_transform_tests(test_path, transformed_data, extracted_data, con)
       if (!all_passed(test_results)) {
         stop("Not all transform tests passed. Fix tests before proceeding.")
       } else {
