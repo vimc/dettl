@@ -1,3 +1,7 @@
+## 0.0.9
+
+VIMC-3155 - Allow load with force = TRUE to re-run already run imports
+
 ## 0.0.8
 
 VIMC-3108 - Allow test_transform to refer to extracted_data
