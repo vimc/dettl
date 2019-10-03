@@ -5,7 +5,7 @@
 \title{Run the load step ensuring tests pass before db changes are committed.}
 \usage{
 run_load(con, load, extracted_data, transformed_data, test_queries, path,
-  test_file, dry_run, log_table, comment)
+  test_file, dry_run, log_table, comment, force = FALSE)
 }
 \arguments{
 \item{con}{Connection to the database.}
@@ -31,6 +31,9 @@ db will be rolled back.}
 
 \item{comment}{An optional comment to add to the import log table for this
 run.}
+
+\item{force}{If TRUE check that import has previously been run will be
+skipped}
 }
 \description{
 Runs the load function on the DB within a transaction. Then run a set of

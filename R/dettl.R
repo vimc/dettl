@@ -115,7 +115,7 @@ DataImport <- R6::R6Class(
       }
       run_load(private$con, private$load_, private$extracted_data, private$transformed_data,
                private$test_queries, self$path, private$load_test_, dry_run,
-               private$log_table, comment)
+               private$log_table, comment, force)
       invisible(TRUE)
     },
 

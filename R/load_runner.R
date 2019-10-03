@@ -18,17 +18,28 @@
 #' db will be rolled back.
 #' @param comment An optional comment to add to the import log table for this
 #' run.
+#' @param force If TRUE check that import has previously been run will be
+#' skipped
 #'
 #' @keywords internal
 #'
 run_load <- function(con, load, extracted_data, transformed_data, test_queries, path,
-                     test_file, dry_run, log_table, comment) {
+                     test_file, dry_run, log_table, comment, force = FALSE) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
-  verify_first_run(con, log_table, log_data)
+  if (!force) {
+    verify_first_run(con, log_table, log_data)
+  } else {
+    ## TODO: This is super hacky way of working around not supporting re-use of
+    ## import code. Ideally users would be able to run an import multiple times
+    ## with some parametrisation.
+    used_names <- DBI::dbGetQuery(con,
+      "SELECT name from dettl_import_log where name like 'example_tests%'")
+    log_data$name <- sprintf("%s_%s", log_data$name, nrow(used_names) + 1)
+  }
   DBI::dbBegin(con)
   withCallingHandlers(
     do_load(con, load, extracted_data, transformed_data, path, test_file, test_queries,

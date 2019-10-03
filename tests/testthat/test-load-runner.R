@@ -120,7 +120,7 @@ testthat::test_that("import fails if log table misconfigured", {
   })
 })
 
-test_that("import can only be run once", {
+test_that("import can only be run once unless force is TRUE", {
   path <- prepare_test_import("example_tests")
   con <- db_connect("test", path)
   load_func <- function(data, con) {}
@@ -136,6 +136,9 @@ test_that("import can only be run once", {
            path = test_dir, test_file = test_file,
            dry_run = FALSE, log_table = "dettl_import_log",
            comment = NULL)
+  import_log <- DBI::dbGetQuery(con, "SELECT * from dettl_import_log")
+  expect_equal(nrow(import_log), 1)
+  expect_equal(import_log[1, "name"], "example_tests")
 
   expect_error(run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
                         path = test_dir, test_file = test_file,
@@ -149,6 +152,23 @@ test_that("import can only be run once", {
   git user.email: email@example.com
   git branch:     master
   git hash:       \\w+", perl = TRUE)
+
+  ## Running with force = TRUE
+  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
+           path = test_dir, test_file = test_file,
+           dry_run = FALSE, log_table = "dettl_import_log",
+           comment = NULL, force = TRUE)
+  import_log <- DBI::dbGetQuery(con, "SELECT * from dettl_import_log")
+  expect_equal(nrow(import_log), 2)
+  expect_equal(import_log[2, "name"], "example_tests_2")
+
+  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
+           path = test_dir, test_file = test_file,
+           dry_run = FALSE, log_table = "dettl_import_log",
+           comment = NULL, force = TRUE)
+  import_log <- DBI::dbGetQuery(con, "SELECT * from dettl_import_log")
+  expect_equal(nrow(import_log), 3)
+  expect_equal(import_log[3, "name"], "example_tests_3")
 })
 
 test_that("transaction is cleaned up if import fails", {
