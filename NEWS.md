@@ -1,3 +1,7 @@
+# dettl 0.0.9
+
+* The import object's sources can be reloaded with `$reload()`, allowing refreshing of source code and repairing a Postgres connection with a failed transaction (VIMC-3035, partly fixes VIMC-3154)
+
 # dettl 0.0.8
 
 * Allow `test_transform` to refer to `extracted_data` (VIMC-3108)
