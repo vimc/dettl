@@ -62,6 +62,8 @@ DataImport <- R6::R6Class(
       } else {
         load_func <- dettl_config$load$func
       }
+      cfg <- dettl_config(self$path)
+
       db_name <- private$db_name %||% get_default_type(cfg)
       private$con <- db_connect(db_name, self$path)
       private$extract_ <- dettl_config$extract$func
@@ -71,7 +73,9 @@ DataImport <- R6::R6Class(
       private$load_ <- load_func
       private$load_test_ <- dettl_config$load$test
       private$test_queries <- dettl_config$load$verification_queries
+
       private$log_table <- db_get_log_table(db_name, self$path)
+      private$confirm <- cfg$db[[db_name]]$confirm
     },
 
     format = function(brief = FALSE) {
