@@ -1,25 +1,25 @@
-## 0.0.8
+# dettl 0.0.8
 
-VIMC-3108 - Allow test_transform to refer to extracted_data
+* Allow `test_transform` to refer to `extracted_data` (VIMC-3108)
 
-## 0.0.7
+# dettl 0.0.7
 
-VIMC-3007 - Users can configure if an import to a particular DB needs to be
-confirmed. If so they are asked a yes/no question when running load step.
+* Users can configure if an import to a particular DB needs to be
+confirmed. If so they are asked a yes/no question when running load step (VIMC-3007)
 
-## 0.0.6
+# dettl 0.0.6
 
-VIMC-3022 - Allow upload to not specify serial PKs when they are not referenced
-by any other data within the upload
+* Allow upload to not specify serial PKs when they are not referenced
+by any other data within the upload (VIMC-3022)
 
-## 0.0.5
+# dettl 0.0.5
 
-VIMC-3015 - Expose automatic load function for use in custom load functions
+* Expose automatic load function for use in custom load functions (VIMC-3015)
 
-## 0.0.4
+# dettl 0.0.4
 
-VIMC-3004 - Use gert package instead of system calls to git
+* Use `gert` package instead of system calls to git (VIMC-3004)
 
-## 0.0.3
+# dettl 0.0.3
 
-VIMC-2859 - Read foreign key constraints automatically from the database
+* Read foreign key constraints automatically from the database (VIMC-2859)
