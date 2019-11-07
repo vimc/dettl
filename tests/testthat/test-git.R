@@ -3,10 +3,10 @@ context("git")
 test_that("git parent directory can be located", {
   path <- build_git_demo()
   root <- git_root_directory(path)
-  expect_equal(root, path)
+  expect_equal(normalizePath(root), normalizePath(path))
 
   root <- git_root_directory(file.path(path, "example", "R"))
-  expect_equal(root, path)
+  expect_equal(normalizePath(root), normalizePath(path))
 
   path <- temp_dir()
   expect_error(git_root_directory(path), sprintf(

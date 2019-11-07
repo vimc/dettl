@@ -1,6 +1,7 @@
 context("save-data")
 
 test_that("extracted data can be saved", {
+  skip_if_not_installed("readxl")
   path <- prepare_test_import(add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -26,6 +27,7 @@ test_that("extracted data can be saved", {
 })
 
 test_that("transformed data can be saved", {
+  skip_if_not_installed("readxl")
   path <- prepare_test_import(add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
@@ -75,6 +77,7 @@ test_that("save data can create new file", {
 })
 
 test_that("saving data with multiple sheets is supported", {
+  skip_if_not_installed("readxl")
   path <- prepare_test_import("example_automatic_load",
                               add_data = TRUE, add_job_table = TRUE)
 
@@ -101,6 +104,7 @@ test_that("saving data with multiple sheets is supported", {
 })
 
 test_that("saving data can save extract and transform at same time", {
+  skip_if_not_installed("readxl")
   path <- prepare_test_import("example_automatic_load",
                               add_data = TRUE, add_job_table = TRUE)
 
@@ -121,7 +125,7 @@ test_that("saving data can save extract and transform at same time", {
                c("extracted_people", "extracted_jobs",
                  "transformed_people", "transformed_jobs"))
 
-   extr_people <- readxl::read_excel(file, sheet = "extracted_people")
+  extr_people <- readxl::read_excel(file, sheet = "extracted_people")
   expect_equal(colnames(extr_people), c("id", "name", "age", "height"))
   expect_equal(nrow(extr_people), 3)
   extr_jobs <- readxl::read_excel(file, sheet = "extracted_jobs")
