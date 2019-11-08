@@ -43,6 +43,7 @@ DataImport <- R6::R6Class(
     transformed_data = NULL,
     log_table = NULL,
     confirm = NULL,
+    require_branch = NULL,
     db_name = NULL
   ),
 
@@ -76,6 +77,7 @@ DataImport <- R6::R6Class(
 
       private$log_table <- db_get_log_table(db_name, self$path)
       private$confirm <- cfg$db[[db_name]]$confirm
+      private$require_branch <- cfg$db[[db_name]]$require_branch
     },
 
     format = function(brief = FALSE) {
@@ -105,6 +107,12 @@ DataImport <- R6::R6Class(
     },
 
     load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+      if (!is.null(private$require_branch)) {
+        if (git_branch(self$path) != private$require_branch) {
+          stop(sprintf("This import can only be run from the '%s' branch",
+                       private$require_branch), call. = FALSE)
+        }
+      }
       if (private$confirm) {
         confirmed <- askYesNo(
           sprintf(
