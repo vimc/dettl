@@ -351,3 +351,34 @@ test_that("extract can be run from path", {
   expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
                expected_data)
 })
+
+test_that("require_branch prevents branch changes if configured", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Mock dettl_config return
+  cfg <- file.path(path, "dettl_config.yml")
+  dat <- yaml_read(file.path(path, "dettl_config.yml"))
+  dat$db$test$require_branch <- "deploy"
+  yaml::write_yaml(dat, cfg)
+
+  expect_error(
+    dettl_run_load(file.path(path, "example/"), db_name = "test"),
+    "This import can only be run from the 'deploy' branch")
+
+  gert::git_branch_create("deploy", repo = path)
+  gert::git_branch_checkout("deploy", repo = path)
+
+  dettl_run_load(file.path(path, "example/"), db_name = "test", force = TRUE)
+
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  res <- DBI::dbReadTable(con, "dettl_import_log")
+  expect_equal(res$name, "example")
+  expect_equal(res$git_branch, "deploy")
+})
