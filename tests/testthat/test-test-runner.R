@@ -70,3 +70,23 @@ testthat::test_that("no tests completing counts as passed suite", {
   result <- run_extract_tests(test_path, extracted_data, NULL, SilentReporter)
   expect_true(all_passed(result))
 })
+
+
+test_that("can reload changed sources", {
+  path <- prepare_test_import()
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  p <- file.path(path, "example", "R", "extract.R")
+  txt <- readLines(p)
+  writeLines(txt[!grepl("raw_data$people", txt, fixed = TRUE)], p)
+
+  import <- dettl(file.path(path, "example/"), db_name = "test")
+  expect_error(import$extract(),
+               "Not all extract tests passed. Fix tests before proceeding")
+
+  writeLines(txt, p)
+  import$reload()
+  expect_error(import$extract(), NA)
+})

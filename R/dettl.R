@@ -48,27 +48,34 @@ DataImport <- R6::R6Class(
 
   public = list(
     path = NULL,
-    initialize = function(path, extract, extract_test, transform,
-                          transform_test, load, load_test, test_queries,
-                          db_name, rollback = NULL) {
-      self$path <- path
-      ## TODO: Only set up connection when it is actually needed
-      private$con <- db_connect(db_name, path)
-      private$extract_ <- extract
-      private$extract_test_ <- extract_test
-      private$transform_ <- transform
-      private$transform_test_ <- transform_test
-      private$load_ <- load
-      private$load_test_ <- load_test
-      private$test_queries <- test_queries
-      private$log_table <- db_get_log_table(db_name, path)
-      cfg <- dettl_config(path)
-      if (is.null(db_name)) {
-        db_name <- get_default_type(cfg)
-      }
-      private$confirm <- cfg$db[[db_name]]$confirm
+    initialize = function(path, db_name) {
+      self$path <- normalizePath(path, winslash = "/", mustWork = TRUE)
       private$db_name <- db_name
       lockBinding("path", self)
+      self$reload()
+    },
+
+    reload = function() {
+      dettl_config <- read_config(self$path)
+      if (dettl_config$load$automatic) {
+        load_func <- dettl_auto_load
+      } else {
+        load_func <- dettl_config$load$func
+      }
+      cfg <- dettl_config(self$path)
+
+      db_name <- private$db_name %||% get_default_type(cfg)
+      private$con <- db_connect(db_name, self$path)
+      private$extract_ <- dettl_config$extract$func
+      private$extract_test_ <- dettl_config$extract$test
+      private$transform_ <- dettl_config$transform$func
+      private$transform_test_ <- dettl_config$transform$test
+      private$load_ <- load_func
+      private$load_test_ <- dettl_config$load$test
+      private$test_queries <- dettl_config$load$verification_queries
+
+      private$log_table <- db_get_log_table(db_name, self$path)
+      private$confirm <- cfg$db[[db_name]]$confirm
     },
 
     format = function(brief = FALSE) {

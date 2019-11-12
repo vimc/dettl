@@ -72,7 +72,8 @@ test_that("import can be created using a default db", {
   import <- dettl(file.path(path, "example/"))
   con <- import$get_connection()
   fs_dbname <- gsub('\\\\', '/', con@dbname)
-  expect_equal(fs_dbname, file.path(path, "test.sqlite"))
+  expect_equal(normalizePath(fs_dbname),
+               normalizePath(file.path(path, "test.sqlite")))
 })
 
 test_that("run import runs a full import process", {
@@ -181,7 +182,7 @@ test_that("run import prints import directory to the log", {
 
   import <- dettl(file.path(path, "example/"), db_name = "test")
   expect_message(import$extract(),
-    sprintf("Running extract %s", file.path(path, "example")))
+    sprintf("Running extract .*example"))
 })
 
 test_that("run import checks git state before import is run", {
@@ -254,7 +255,7 @@ test_that("run import asks to confirm run if configured", {
     expect_equal(res$messages, "Not uploading to database.\n")
   })
 
-  with_mock("dettl:::dettl_config" = mock_confim_config,
+  res <- with_mock("dettl:::dettl_config" = mock_confim_config,
             "askYesNo" = mock_yes_answer, {
     import <- dettl(file.path(path, "example/"), db_name = "test")
     import$extract()
@@ -262,8 +263,7 @@ test_that("run import asks to confirm run if configured", {
     res <- evaluate_promise(fn(import))
     expect_true(res$result)
     mockery::expect_called(mock_yes_answer, 1)
-    expect_true(sprintf("Running load %s\n", file.path(path, "example")) %in%
-                  res$messages)
+    expect_match(res$messages, "Running load .*example", all = FALSE)
   })
 })
 
@@ -285,9 +285,7 @@ test_that("run import doesn't ask to confirm run if not configured", {
     import <- dettl(file.path(path, "example/"), db_name = "test")
     import$extract()
     import$transform()
-    expect_message(import$load(),
-                   sprintf("Running load %s", file.path(path, "example")),
-                   fixed = TRUE)
+    expect_message(import$load(), "Running load .*example")
   })
 })
 

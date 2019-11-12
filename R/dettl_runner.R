@@ -9,26 +9,7 @@
 #' @export
 #'
 dettl <- function(path, db_name = NULL) {
-
-  path <- normalizePath(path, winslash = '/', mustWork = TRUE)
-  dettl_config <- read_config(path)
-
-  if (dettl_config$load$automatic) {
-    load_func <- dettl_auto_load
-  } else {
-    load_func <- dettl_config$load$func
-  }
-
-  import <- DataImport$new(path,
-                           extract = dettl_config$extract$func,
-                           extract_test = dettl_config$extract$test,
-                           transform = dettl_config$transform$func,
-                           transform_test = dettl_config$transform$test,
-                           load = load_func,
-                           load_test = dettl_config$load$test,
-                           test_queries = dettl_config$load$verification_queries,
-                           db_name = db_name
-                           )
+  DataImport$new(path, db_name)
 }
 
 #' Run extract stage of an import
