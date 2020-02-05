@@ -135,7 +135,7 @@ test_that("load cannot be run until transform stage has been run", {
 test_that("trying to create import for db missing from config fails", {
 
   expect_error(dettl(file.path("example/"), db_name = "missing"),
-              "Cannot find config for database missing.")
+               "Cannot find config for database missing.")
 })
 
 test_that("a dry run of the import can be executed", {
@@ -182,7 +182,7 @@ test_that("run import prints import directory to the log", {
 
   import <- dettl(file.path(path, "example/"), db_name = "test")
   expect_message(import$extract(),
-    sprintf("Running extract .*example"))
+                 sprintf("Running extract .*example"))
 })
 
 test_that("run import checks git state before import is run", {
@@ -200,7 +200,7 @@ test_that("run import checks git state before import is run", {
   import$extract()
   import$transform()
   expect_error(import$load(),
-    sprintf("Can't run load as repository has unstaged changes. Update git or run in dry-run mode."))
+               sprintf("Can't run load as repository has unstaged changes. Update git or run in dry-run mode."))
 
   ## Import can be run in dry-run mode still
   import_load <- import$load(dry_run = TRUE)
@@ -235,36 +235,36 @@ test_that("run import asks to confirm run if configured", {
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
             "askYesNo" = mock_no_answer, {
-    import <- dettl(file.path(path, "example/"), db_name = "test")
-    import$extract()
-    import$transform()
-    res <- evaluate_promise(fn(import))
-    expect_false(res$result)
-    mockery::expect_called(mock_no_answer, 1)
-    expect_equal(res$messages, "Not uploading to database.\n")
-  })
+              import <- dettl(file.path(path, "example/"), db_name = "test")
+              import$extract()
+              import$transform()
+              res <- evaluate_promise(fn(import))
+              expect_false(res$result)
+              mockery::expect_called(mock_no_answer, 1)
+              expect_equal(res$messages, "Not uploading to database.\n")
+            })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
             "askYesNo" = mock_NA_answer, {
-    import <- dettl(file.path(path, "example/"), db_name = "test")
-    import$extract()
-    import$transform()
-    res <- evaluate_promise(fn(import))
-    expect_false(res$result)
-    mockery::expect_called(mock_NA_answer, 1)
-    expect_equal(res$messages, "Not uploading to database.\n")
-  })
+              import <- dettl(file.path(path, "example/"), db_name = "test")
+              import$extract()
+              import$transform()
+              res <- evaluate_promise(fn(import))
+              expect_false(res$result)
+              mockery::expect_called(mock_NA_answer, 1)
+              expect_equal(res$messages, "Not uploading to database.\n")
+            })
 
   res <- with_mock("dettl:::dettl_config" = mock_confim_config,
-            "askYesNo" = mock_yes_answer, {
-    import <- dettl(file.path(path, "example/"), db_name = "test")
-    import$extract()
-    import$transform()
-    res <- evaluate_promise(fn(import))
-    expect_true(res$result)
-    mockery::expect_called(mock_yes_answer, 1)
-    expect_match(res$messages, "Running load .*example", all = FALSE)
-  })
+                   "askYesNo" = mock_yes_answer, {
+                     import <- dettl(file.path(path, "example/"), db_name = "test")
+                     import$extract()
+                     import$transform()
+                     res <- evaluate_promise(fn(import))
+                     expect_true(res$result)
+                     mockery::expect_called(mock_yes_answer, 1)
+                     expect_match(res$messages, "Running load .*example", all = FALSE)
+                   })
 })
 
 test_that("run import doesn't ask to confirm run if not configured", {
@@ -298,19 +298,50 @@ test_that("extract can be run from path", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  extracted_data <- dettl_run_extract(file.path(path, "example/"),
-                                      db_name = "test")
+  import <- dettl_run(file.path(path, "example/"),
+                      db_name = "test", stages = "extract")
 
   expected_data <- data_frame(c("Alice", "Bob", "Clive"),
                               c(25, 43, 76),
                               c(175, 187, 163))
   colnames(expected_data) <- c("name", "age", "height")
 
-  expect_equal(length(extracted_data), 1)
-  expect_equal(extracted_data$people, expected_data)
+  expect_equal(length(import$data$extract), 1)
+  expect_equal(import$data$extract$people, expected_data)
+
+  ## There is no transformed data
+  expect_equal(import$data$transform, NULL)
+
+  ## Can run on returned import object
+  import <- dettl_run(import, stages = "transform")
+
+  ## Extracted data is unchanged
+  expect_equal(length(import$data$extract), 1)
+  expect_equal(import$data$extract$people, expected_data)
+
+  ## Trasformed data exists
+  expected_transform_data <- data_frame(c("Alice", "Bob"),
+                                        c(25, 43),
+                                        c(175, 187))
+  colnames(expected_transform_data) <- c("name", "age", "height")
+
+  expect_equal(length(import$data$transform), 1)
+  expect_equal(import$data$transform$people, expected_transform_data)
+
+  ## Data can be loaded
+  dettl_run(import, stages = "load")
+
+  expected_load_data <- data_frame(c("Alice", "Bob"),
+                                   c(25, 43),
+                                   c(175, 187))
+  colnames(expected_load_data) <- c("name", "age", "height")
+
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
+               expected_load_data)
 })
 
-test_that("transform can be run from path", {
+test_that("load can be run in one call", {
   path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
@@ -319,28 +350,8 @@ test_that("transform can be run from path", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  transformed_data <- dettl_run_transform(file.path(path, "example/"),
-                                      db_name = "test")
-
-  expected_data <- data_frame(c("Alice", "Bob"),
-                              c(25, 43),
-                              c(175, 187))
-  colnames(expected_data) <- c("name", "age", "height")
-
-  expect_equal(length(transformed_data), 1)
-  expect_equal(transformed_data$people, expected_data)
-})
-
-test_that("extract can be run from path", {
-  path <- prepare_test_import()
-
-  ## Turn off reporting when running import so import tests do not print
-  ## to avoid cluttering up test output.
-  default_reporter <- testthat::default_reporter()
-  options(testthat.default_reporter = "silent")
-  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
-
-  dettl_run_load(file.path(path, "example/"), db_name = "test")
+  dettl_run(file.path(path, "example/"), db_name = "test",
+            stages = c("extract", "transform", "load"))
 
   expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
@@ -352,8 +363,10 @@ test_that("extract can be run from path", {
                expected_data)
 })
 
-test_that("require_branch prevents branch changes if configured", {
-  path <- prepare_test_import()
+test_that("dettl_run can save data", {
+  skip_if_not_installed("readxl")
+  path <- prepare_test_import("example_automatic_load",
+                              add_data = TRUE, add_job_table = TRUE)
 
   ## Turn off reporting when running import so import tests do not print
   ## to avoid cluttering up test output.
@@ -361,24 +374,45 @@ test_that("require_branch prevents branch changes if configured", {
   options(testthat.default_reporter = "silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  ## Mock dettl_config return
-  cfg <- file.path(path, "dettl_config.yml")
-  dat <- yaml_read(file.path(path, "dettl_config.yml"))
-  dat$db$test$require_branch <- "deploy"
-  yaml::write_yaml(dat, cfg)
+  tmp <- tempfile()
+  mock_tempfile <- mockery::mock(tmp)
+  with_mock("tempfile" = mock_tempfile, {
+    import <- dettl_run(file.path(path, "example_automatic_load/"),
+                        db_name = "test", stages = "extract",
+                        save = TRUE)
+  })
 
-  expect_error(
-    dettl_run_load(file.path(path, "example/"), db_name = "test"),
-    "This import can only be run from the 'deploy' branch")
+  ## How do we get the file here?
+  expect_equal(readxl::excel_sheets(tmp),
+               c("extracted_people", "extracted_jobs"))
 
-  gert::git_branch_create("deploy", repo = path)
-  gert::git_branch_checkout("deploy", repo = path)
+  extr_people <- readxl::read_excel(tmp, sheet = "extracted_people")
+  expect_equal(colnames(extr_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(extr_people), 3)
+  extr_jobs <- readxl::read_excel(tmp, sheet = "extracted_jobs")
+  expect_equal(colnames(extr_jobs), c("person", "job"))
+  expect_equal(nrow(extr_jobs), 3)
 
-  dettl_run_load(file.path(path, "example/"), db_name = "test", force = TRUE)
+  ## Can run on returned import object
+  save_file <- tempfile(fileext = ".xlsx")
+  import <- dettl_run(import, stages = "transform", save = save_file)
 
-  con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
-  on.exit(DBI::dbDisconnect(con), add = TRUE)
-  res <- DBI::dbReadTable(con, "dettl_import_log")
-  expect_equal(res$name, "example")
-  expect_equal(res$git_branch, "deploy")
+  ## Query save file
+  expect_equal(readxl::excel_sheets(save_file),
+               c("extracted_people", "extracted_jobs",
+                 "transformed_people", "transformed_jobs"))
+
+  extr_people <- readxl::read_excel(save_file, sheet = "extracted_people")
+  expect_equal(colnames(extr_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(extr_people), 3)
+  extr_jobs <- readxl::read_excel(save_file, sheet = "extracted_jobs")
+  expect_equal(colnames(extr_jobs), c("person", "job"))
+  expect_equal(nrow(extr_jobs), 3)
+
+  trans_people <- readxl::read_excel(save_file, sheet = "transformed_people")
+  expect_equal(colnames(trans_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(trans_people), 2)
+  trans_jobs <- readxl::read_excel(save_file, sheet = "transformed_jobs")
+  expect_equal(colnames(trans_jobs), c("person", "job"))
+  expect_equal(nrow(trans_jobs), 2)
 })
