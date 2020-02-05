@@ -20,7 +20,7 @@ The transformed data.
 Run up to and including the transform stage of an import
 }
 \examples{
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl")
 )

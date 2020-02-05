@@ -27,7 +27,7 @@ This will run all stages and make updates to the database unless run in
 dry_run mode.
 }
 \examples{
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl")
 )

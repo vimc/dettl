@@ -36,7 +36,7 @@ directory and creates a test SQLite DB in the temp directory as test.sqlite.
 This should only be called from a test, vignette or roxygen example.
 }
 \examples{
-dettl::prepare_test_import(
+dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl")
 )
