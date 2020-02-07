@@ -206,8 +206,8 @@ test_that("run import checks git state before import is run", {
   import_load <- import$load(dry_run = TRUE)
   expect_true(import_load)
 
-  ## Import can skip git checks using force
-  import_load <- import$load(force = TRUE)
+  ## Import can skip git checks using allow_dirty_git
+  import_load <- import$load(allow_dirty_git = TRUE)
   expect_true(import_load)
 })
 
@@ -299,7 +299,7 @@ test_that("extract can be run from path", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   import <- dettl_run(file.path(path, "example/"),
-                      db_name = "test", stages = "extract")
+                      db_name = "test", stage = "extract")
 
   expected_data <- data_frame(c("Alice", "Bob", "Clive"),
                               c(25, 43, 76),
@@ -313,7 +313,7 @@ test_that("extract can be run from path", {
   expect_equal(import$data$transform, NULL)
 
   ## Can run on returned import object
-  import <- dettl_run(import, stages = "transform")
+  import <- dettl_run(import, stage = "transform")
 
   ## Extracted data is unchanged
   expect_equal(length(import$data$extract), 1)
@@ -329,7 +329,7 @@ test_that("extract can be run from path", {
   expect_equal(import$data$transform$people, expected_transform_data)
 
   ## Data can be loaded
-  dettl_run(import, stages = "load")
+  dettl_run(import, stage = "load")
 
   expected_load_data <- data_frame(c("Alice", "Bob"),
                                    c(25, 43),
@@ -351,7 +351,7 @@ test_that("load can be run in one call", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   dettl_run(file.path(path, "example/"), db_name = "test",
-            stages = c("extract", "transform", "load"))
+            stage = c("extract", "transform", "load"))
 
   expected_data <- data_frame(c("Alice", "Bob"),
                               c(25, 43),
@@ -378,26 +378,53 @@ test_that("dettl_run can save data", {
   mock_tempfile <- mockery::mock(tmp)
   with_mock("tempfile" = mock_tempfile, {
     import <- dettl_run(file.path(path, "example_automatic_load/"),
-                        db_name = "test", stages = "extract",
+                        db_name = "test", stage = "extract",
                         save = TRUE)
   })
 
-  ## How do we get the file here?
   expect_equal(readxl::excel_sheets(tmp),
-               c("extracted_people", "extracted_jobs"))
+               c("people", "jobs"))
 
-  extr_people <- readxl::read_excel(tmp, sheet = "extracted_people")
+  extr_people <- readxl::read_excel(tmp, sheet = "people")
   expect_equal(colnames(extr_people), c("id", "name", "age", "height"))
   expect_equal(nrow(extr_people), 3)
-  extr_jobs <- readxl::read_excel(tmp, sheet = "extracted_jobs")
+  extr_jobs <- readxl::read_excel(tmp, sheet = "jobs")
   expect_equal(colnames(extr_jobs), c("person", "job"))
   expect_equal(nrow(extr_jobs), 3)
 
   ## Can run on returned import object
   save_file <- tempfile(fileext = ".xlsx")
-  import <- dettl_run(import, stages = "transform", save = save_file)
+  import <- dettl_run(import, stage = "transform", save = save_file)
 
   ## Query save file
+  expect_equal(readxl::excel_sheets(save_file),
+               c("people", "jobs"))
+
+  trans_people <- readxl::read_excel(save_file, sheet = "people")
+  expect_equal(colnames(trans_people), c("id", "name", "age", "height"))
+  expect_equal(nrow(trans_people), 2)
+  trans_jobs <- readxl::read_excel(save_file, sheet = "jobs")
+  expect_equal(colnames(trans_jobs), c("person", "job"))
+  expect_equal(nrow(trans_jobs), 2)
+})
+
+test_that("running extract and transform with save outputs 4 sheets", {
+  skip_if_not_installed("readxl")
+  path <- prepare_test_import("example_automatic_load",
+                              add_data = TRUE, add_job_table = TRUE)
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  save_file <- tempfile(fileext = ".xlsx")
+  import <- dettl_run(file.path(path, "example_automatic_load/"),
+                      db_name = "test", stage = c("extract", "transform"),
+                      save = save_file)
+
+  # Query save file
   expect_equal(readxl::excel_sheets(save_file),
                c("extracted_people", "extracted_jobs",
                  "transformed_people", "transformed_jobs"))

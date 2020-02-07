@@ -21,7 +21,7 @@ dettl <- function(path, db_name = NULL) {
 #' @param db_name The name of the db to connect to. Connection info must be
 #' configured via the `dettl_config.yml`. If name is left blank this will default
 #' to using the first db configured.
-#' @param stages The stages of the import to be run.
+#' @param stage The stage or stages of the import to be run.
 #' @param comment Optional comment to be written to db log table when import is
 #' run.
 #' @param save Path and name to save data from each stage at, if TRUE then will
@@ -45,40 +45,38 @@ dettl <- function(path, db_name = NULL) {
 #'   comment = "Example import",
 #'   save = tempfile())
 #' import <- dettl::dettl_run(file.path(path, "person_information/"),
-#'   "test", stages = "extract")
-#' dettl::dettl_run(import, stages = "transform")
+#'   "test", stage = "extract")
+#' dettl::dettl_run(import, stage = "transform")
 #' dettl::dettl_run(file.path(path, "person_information/"), "test",
-#'   stages = c("extract", "transform", "load"),
+#'   stage = c("extract", "transform", "load"),
 #'   comment = "Example import")
-dettl_run <- function(import, db_name = NULL, stages = c("extract", "transform"),
+dettl_run <- function(import, db_name = NULL, stage = c("extract", "transform"),
                       comment = NULL, save = FALSE,
                       dry_run = FALSE, allow_dirty_git = FALSE) {
   import_object <- get_import_object(import, db_name)
-  extracted_data <- NULL
-  if ("extract" %in% stages) {
-    extracted_data <- import_object$extract()
+  if ("extract" %in% stage) {
+    import_object$extract()
   }
-  transformed_data <- NULL
-  if ("transform" %in% stages) {
+  if ("transform" %in% stage) {
     ## TODO what happens if called but extract not done?
-    transformed_data <- import_object$transform()
+    import_object$transform()
   }
-  if ("load" %in% stages) {
-    import_object$load(comment, dry_run, force)
+  if ("load" %in% stage) {
+    import_object$load(comment, dry_run, allow_dirty_git)
   }
 
   if (!isFALSE(save)) {
     if (isTRUE(save)) {
       save <- tempfile(fileext = ".xlsx")
     }
-    dettl_save(import_object, save, stages)
+    dettl_save(import_object, save, stage)
   }
 
   output <- list(
     import = import_object,
     data = list(
-      extract = extracted_data,
-      transform = transformed_data
+      extract = import_object$get_extracted_data(),
+      transform = import_object$get_transformed_data()
     )
   )
   class(output) <- "import"

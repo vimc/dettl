@@ -106,7 +106,7 @@ DataImport <- R6::R6Class(
       invisible(private$transformed_data)
     },
 
-    load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+    load = function(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE) {
       if (!is.null(private$require_branch)) {
         if (git_branch(self$path) != private$require_branch) {
           stop(sprintf("This import can only be run from the '%s' branch",
@@ -125,7 +125,7 @@ DataImport <- R6::R6Class(
         }
       }
       message(sprintf("Running load %s", self$path))
-      if (!force && !dry_run && !git_repo_is_clean(self$path)) {
+      if (!allow_dirty_git && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
       run_load(private$con, private$load_, private$extracted_data, private$transformed_data,

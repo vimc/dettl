@@ -16,9 +16,9 @@ load:
     dry_run: >-
       Whether to run in dry run mode. If TRUE then any database changes will
       be rolled back. Defaults to FALSE.
-    force: >-
+    allow_dirty_git: >-
       If TRUE then checks that repo is up to date with git remote will be
-      skipped. Defautls to FALSE.
+      skipped. Defaults to FALSE.
 
 get_extracted_data:
   short: >-

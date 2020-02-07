@@ -4,7 +4,7 @@
 \alias{dettl_run}
 \title{Run an import}
 \usage{
-dettl_run(import, db_name = NULL, stages = c("extract", "transform"),
+dettl_run(import, db_name = NULL, stage = c("extract", "transform"),
   comment = NULL, save = FALSE, dry_run = FALSE,
   allow_dirty_git = FALSE)
 }
@@ -16,7 +16,7 @@ call to this function.}
 configured via the `dettl_config.yml`. If name is left blank this will default
 to using the first db configured.}
 
-\item{stages}{The stages of the import to be run.}
+\item{stage}{The stage or stages of the import to be run.}
 
 \item{comment}{Optional comment to be written to db log table when import is
 run.}
@@ -47,9 +47,9 @@ dettl::dettl_run(file.path(path, "person_information/"), "test",
   comment = "Example import",
   save = tempfile())
 import <- dettl::dettl_run(file.path(path, "person_information/"),
-  "test", stages = "extract")
-dettl::dettl_run(import, stages = "transform")
+  "test", stage = "extract")
+dettl::dettl_run(import, stage = "transform")
 dettl::dettl_run(file.path(path, "person_information/"), "test",
-  stages = c("extract", "transform", "load"),
+  stage = c("extract", "transform", "load"),
   comment = "Example import")
 }
