@@ -363,6 +363,51 @@ test_that("load can be run in one call", {
                expected_data)
 })
 
+test_that("calling to run transform when extract hasn't been done will run both", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl_run(file.path(path, "example/"), db_name = "test",
+                      stage = "transform")
+
+  ## Extracted data has been generated
+  expected_data <- data_frame(c("Alice", "Bob", "Clive"),
+                              c(25, 43, 76),
+                              c(175, 187, 163))
+  colnames(expected_data) <- c("name", "age", "height")
+  expect_equal(length(import$data$extract), 1)
+  expect_equal(import$data$extract$people, expected_data)
+
+  ## Trasformed data exists
+  expected_transform_data <- data_frame(c("Alice", "Bob"),
+                                        c(25, 43),
+                                        c(175, 187))
+  colnames(expected_transform_data) <- c("name", "age", "height")
+
+  expect_equal(length(import$data$transform), 1)
+  expect_equal(import$data$transform$people, expected_transform_data)
+})
+
+test_that("calling to run load when transform not complete returns error", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  expect_error(
+    dettl_run(file.path(path, "example/"), db_name = "test", stage = "load"),
+    "Can't run load as transform stage has not been run.")
+
+})
+
 test_that("dettl_run can save data", {
   skip_if_not_installed("readxl")
   path <- prepare_test_import("example_automatic_load",
@@ -408,7 +453,7 @@ test_that("dettl_run can save data", {
   expect_equal(nrow(trans_jobs), 2)
 })
 
-test_that("running extract and transform with save outputs 4 sheets", {
+test_that("running extract and transform with save all outputs", {
   skip_if_not_installed("readxl")
   path <- prepare_test_import("example_automatic_load",
                               add_data = TRUE, add_job_table = TRUE)

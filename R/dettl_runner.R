@@ -58,10 +58,15 @@ dettl_run <- function(import, db_name = NULL, stage = c("extract", "transform"),
     import_object$extract()
   }
   if ("transform" %in% stage) {
-    ## TODO what happens if called but extract not done?
+    if (is.null(import_object$get_extracted_data())) {
+      import_object$extract()
+    }
     import_object$transform()
   }
   if ("load" %in% stage) {
+    if (is.null(import_object$get_transformed_data())) {
+      stop("Can't run load as transform stage has not been run.")
+    }
     import_object$load(comment, dry_run, allow_dirty_git)
   }
 
