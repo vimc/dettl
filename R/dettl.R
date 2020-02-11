@@ -44,7 +44,8 @@ DataImport <- R6::R6Class(
     log_table = NULL,
     confirm = NULL,
     require_branch = NULL,
-    db_name = NULL
+    db_name = NULL,
+    mode = NULL
   ),
 
   public = list(
@@ -58,8 +59,14 @@ DataImport <- R6::R6Class(
 
     reload = function() {
       dettl_config <- read_config(self$path)
+      mode <- dettl_config$dettl$mode
+      if (is.null(mode) || is.na(mode) || length(mode) == 0) {
+        mode <- "append"
+      }
+      private$mode <- mode
+      check_valid_mode(private$mode)
       if (dettl_config$load$automatic) {
-        load_func <- dettl_auto_load
+        load_func <- get_auto_load_function(private$mode)
       } else {
         load_func <- dettl_config$load$func
       }
@@ -78,6 +85,7 @@ DataImport <- R6::R6Class(
       private$log_table <- db_get_log_table(db_name, self$path)
       private$confirm <- cfg$db[[db_name]]$confirm
       private$require_branch <- cfg$db[[db_name]]$require_branch
+
     },
 
     format = function(brief = FALSE) {
@@ -98,11 +106,16 @@ DataImport <- R6::R6Class(
       invisible(private$extracted_data)
     },
 
+    get_mode = function() {
+      private$mode
+    },
+
     transform = function() {
       message(sprintf("Running transform %s", self$path))
       private$transformed_data <- run_transform(private$con, private$transform_,
                                                 self$path, private$extracted_data,
-                                                private$transform_test_)
+                                                private$transform_test_,
+                                                private$mode)
       invisible(private$transformed_data)
     },
 

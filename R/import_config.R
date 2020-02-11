@@ -29,7 +29,7 @@ read_config <- function(path) {
   )
   info <- add_missing_function_fields(info, function_fields)
   required <- c(function_fields, "sources")
-  check_fields(info, filename, required, "")
+  check_fields(info, filename, required, "dettl")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path, winslash = '/'))
