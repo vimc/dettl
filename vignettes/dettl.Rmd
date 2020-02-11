@@ -130,9 +130,9 @@ To develop a complete import you need to implement the extract, transform and lo
 Open the created `R/extract.R` file and implement the templated `extract` function. This can delegate to other R functions written elsewhere. If you add any other R files they will need to be added to the list of `sources` in the `dettl.yml`. The extract code should just read data the required data into memory and do no more. For our simple example we want to read from a csv.
 
 ```r
-extract <- function(path, con) {
+extract <- function(con) {
   raw_data <- list()
-  raw_data$people <- read.csv(file.path(path, "data/people.csv"), stringsAsFactors = FALSE)
+  raw_data$people <- read.csv(file.path("data", "people.csv"), stringsAsFactors = FALSE)
   raw_data
 }
 ```

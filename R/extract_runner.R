@@ -15,7 +15,9 @@
 #'
 run_extract <- function(con, extract, path, extract_test){
   if (!is.null(con) && DBI::dbIsValid(con)) {
-    extracted_data <- extract(path, con)
+    withr::with_dir(path, {
+      extracted_data <- extract(con)
+    })
   } else {
     stop("DB connection is not valid cannot extract data")
   }
