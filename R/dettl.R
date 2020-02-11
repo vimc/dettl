@@ -105,10 +105,6 @@ DataImport <- R6::R6Class(
       invisible(private$extracted_data)
     },
 
-    get_mode = function() {
-      private$mode
-    },
-
     transform = function() {
       message(sprintf("Running transform %s", self$path))
       private$transformed_data <- run_transform(private$con, private$transform_,
