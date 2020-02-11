@@ -10,17 +10,18 @@
 #' @param extracted_data Data returned from the extract step.
 #' @param transform_test Optional path to the transform tests. Relative to path
 #' argument.
+#' @param mode The type of import being run.
 #'
 #' @return The successfully transformed data.
 #' @keywords internal
 #'
 run_transform <- function(con, transform, path, extracted_data,
-                          transform_test) {
+                          transform_test, mode) {
     if (is.null(extracted_data)) {
       stop("Cannot run transform as no data has been extracted.")
     }
     transformed_data <- transform(extracted_data)
-    verify_data(con, transformed_data)
+    verify_data(con, transformed_data, mode)
     if (!is.null(transform_test)) {
       message(sprintf("Running transform tests %s", transform_test))
       test_path <- file.path(path, transform_test)
@@ -40,19 +41,24 @@ run_transform <- function(con, transform, path, extracted_data,
 #'
 #' Transformed data returns a list of data frames. Ensure that each item of the
 #' list matches a table in the DB and has only columns which exist in the DB.
+#' Check that table exists in skipped if mode is 'create'.
 #'
 #' @param con The active DB connection to check the schema for.
 #' @param transformed_data The transformed data.
+#' @param mode The type of import run.
 #'
 #' @keywords internal
 #'
-verify_data <- function(con, transformed_data) {
+verify_data <- function(con, transformed_data, mode) {
   if (length(transformed_data) == 0) {
     stop("Data transform failed, returned empty list.")
   }
-  for (table_name in names(transformed_data)) {
-    verify_table(con, table_name, transformed_data[[table_name]],
-                 context_info = "Transformed data")
+  if (!allow_create_table(mode)) {
+    for (table_name in names(transformed_data)) {
+      verify_table(con, table_name, transformed_data[[table_name]],
+                   context_info = "Transformed data")
+    }
   }
+  invisible(TRUE)
 }
 

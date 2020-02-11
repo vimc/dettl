@@ -4,15 +4,18 @@
 \alias{verify_data}
 \title{Verify the transformed data adhered to the DB schema.}
 \usage{
-verify_data(con, transformed_data)
+verify_data(con, transformed_data, mode)
 }
 \arguments{
 \item{con}{The active DB connection to check the schema for.}
 
 \item{transformed_data}{The transformed data.}
+
+\item{mode}{The type of import run.}
 }
 \description{
 Transformed data returns a list of data frames. Ensure that each item of the
 list matches a table in the DB and has only columns which exist in the DB.
+Check that table exists in skipped if mode is 'create'.
 }
 \keyword{internal}

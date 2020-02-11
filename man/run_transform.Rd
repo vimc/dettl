@@ -4,7 +4,7 @@
 \alias{run_transform}
 \title{Run transform step.}
 \usage{
-run_transform(con, transform, path, extracted_data, transform_test)
+run_transform(con, transform, path, extracted_data, transform_test, mode)
 }
 \arguments{
 \item{con}{The active DB connection.}
@@ -17,6 +17,8 @@ run_transform(con, transform, path, extracted_data, transform_test)
 
 \item{transform_test}{Optional path to the transform tests. Relative to path
 argument.}
+
+\item{mode}{The type of import being run.}
 }
 \value{
 The successfully transformed data.
