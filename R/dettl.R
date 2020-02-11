@@ -137,10 +137,6 @@ DataImport <- R6::R6Class(
       invisible(TRUE)
     },
 
-    get_mode = function() {
-      private$mode
-    },
-
     get_connection = function() {
       private$con
     },
