@@ -85,7 +85,6 @@ DataImport <- R6::R6Class(
       private$log_table <- db_get_log_table(db_name, self$path)
       private$confirm <- cfg$db[[db_name]]$confirm
       private$require_branch <- cfg$db[[db_name]]$require_branch
-
     },
 
     format = function(brief = FALSE) {

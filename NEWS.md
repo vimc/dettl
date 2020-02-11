@@ -1,3 +1,7 @@
+# dettl 0.0.10
+
+* Add "mode" option to dettl config, by default mode is "append". If use "create" then import can only create new tables and not append to existing ones. (VIMC-3426)
+
 # dettl 0.0.9
 
 * The import object's sources can be reloaded with `$reload()`, allowing refreshing of source code and repairing a Postgres connection with a failed transaction (VIMC-3035, partly fixes VIMC-3154)
