@@ -1,4 +1,4 @@
-#' Automatic load function.
+#' Automatic load function for append mode imports.
 #'
 #' The automatic load function loops over the transformed data and appends each
 #' data frame to the matching table in the database. If the appended table
