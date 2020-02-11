@@ -59,12 +59,7 @@ DataImport <- R6::R6Class(
 
     reload = function() {
       dettl_config <- read_config(self$path)
-      mode <- dettl_config$dettl$mode
-      if (is.null(mode) || is.na(mode) || length(mode) == 0) {
-        mode <- "append"
-      }
-      private$mode <- mode
-      check_valid_mode(private$mode)
+      private$mode <- check_valid_mode(dettl_config$dettl$mode)
       if (dettl_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
@@ -140,6 +135,10 @@ DataImport <- R6::R6Class(
                private$test_queries, self$path, private$load_test_, dry_run,
                private$log_table, comment)
       invisible(TRUE)
+    },
+
+    get_mode = function() {
+      private$mode
     },
 
     get_connection = function() {
