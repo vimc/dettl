@@ -1,3 +1,8 @@
+# dettl 0.0.11
+
+* Remove path arg from extract stage - this will break previous imports
+* Always run the extract stage from path of the root of the import directory - all paths should be relative to this this fixes the bug where you needed to be in the same directory as root of the import to run it.
+
 # dettl 0.0.10
 
 * Add "mode" option to dettl config, by default mode is "append". If use "create" then import can only create new tables and not append to existing ones. (VIMC-3426)
