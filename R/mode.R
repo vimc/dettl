@@ -8,17 +8,11 @@ check_valid_mode <- function(mode) {
 }
 
 allow_create_table <- function(mode) {
-  allow <- FALSE
-  if (mode == "create") {
-    allow <- TRUE
-  }
-  allow
+  mode == "create"
 }
 
 get_auto_load_function <- function(mode) {
-  auto_load_function <- dettl_auto_load
-  if (mode == "create") {
-    auto_load_function <- dettl_auto_load_create
-  }
-  auto_load_function
+  switch(mode,
+         create = dettl_auto_load_create,
+         append = dettl_auto_load)
 }
