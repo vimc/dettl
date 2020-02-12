@@ -10,7 +10,11 @@ test_that("dettl-auto-load-create can create new tables from df", {
 
   con <- get_local_connection()
 
-  expect_true(dettl_auto_load_create(transformed_data, con))
+  expect_message(
+    res <- dettl_auto_load_create(transformed_data, con),
+    "Creating table 'people' (2 rows x 2 columns)",
+    fixed = TRUE)
+  expect_true(res)
 
   expect_equal(DBI::dbGetQuery(con, "SELECT * from people"),
                transformed_data$people)
