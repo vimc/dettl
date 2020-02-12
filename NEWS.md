@@ -1,3 +1,7 @@
+# dettl 0.0.11
+
+* The automatic load functions provide information about their progress while they run (VIMC-3432)
+
 # dettl 0.0.10
 
 * Add "mode" option to dettl config, by default mode is "append". If use "create" then import can only create new tables and not append to existing ones. (VIMC-3426)
