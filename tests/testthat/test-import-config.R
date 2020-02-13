@@ -113,3 +113,19 @@ test_that("automatic load can be specified in config", {
   expect_error(read_config(dir),
                "Load stage must specify a load function OR use the automatic load function. Got automatic TRUE and NULL func FALSE.")
 })
+
+test_that("read config loads pre and post load functions in config", {
+
+  cfg <- read_config("example_pre_post_load")
+  expect_s3_class(cfg, "dettl_import_config")
+
+  expect_length(cfg, 6)
+
+  expect_true("load" %in% names(cfg))
+  expect_length(cfg$load, 5)
+  expect_true(cfg$load$automatic)
+  expect_true("pre" %in% names(cfg$load))
+  expect_true("post" %in% names(cfg$load))
+  expect_is(cfg$load$pre, "function")
+  expect_is(cfg$load$post, "function")
+})

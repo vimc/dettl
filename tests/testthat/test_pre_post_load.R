@@ -18,11 +18,11 @@ test_that("pre and post load can be run", {
   con <- import$get_connection()
 
   ## Preload was run
-  data <- DBI::dbGetQuery(con,
-                          "SELECT * FROM people WHERE name = 'Ed'")
-  expect_true(length(data), 1)
+  count <- DBI::dbGetQuery(con,
+                          "SELECT count(*) FROM people WHERE name = 'Ed'")
+  expect_equal(count[[1]], 1)
 
   ## Post load was run
   indexes <- DBI::dbGetQuery(con, "PRAGMA  index_list('people')")
-  expect_equal("people_name" %in% indexes$name)
+  expect_true("people_name" %in% indexes$name)
 })

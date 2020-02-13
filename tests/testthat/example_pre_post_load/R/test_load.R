@@ -7,5 +7,5 @@ testthat::test_that("No of rows in people increases by 2", {
 
 testthat::test_that("index has been created", {
   indexes <- DBI::dbGetQuery(con, "PRAGMA  index_list('people')")
-  expect_equal("people_name" %in% indexes$name)
+  expect_true("people_name" %in% indexes$name)
 })
