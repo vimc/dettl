@@ -129,3 +129,16 @@ test_that("read config loads pre and post load functions in config", {
   expect_is(cfg$load$pre, "function")
   expect_is(cfg$load$post, "function")
 })
+
+test_that("missing required function fields throw error", {
+  fields <- list(extract = list(
+    list(
+      func = "func",
+      must_exist = TRUE
+    )
+  ))
+  config <- list()
+  env <- new.env()
+  expect_error(read_function_fields(fields, config, env),
+               "Can't find required function func for field extract")
+})

@@ -129,7 +129,8 @@ read_function_fields <- function(fields, config, env) {
     for (property in fields[[field]]) {
       func_name <- config[[field]][[property$func]]
       if (is.null(func_name) && property$must_exist) {
-        stop("Can't find required func %s for field %s", property$func, field)
+        stop(sprintf("Can't find required function %s for field %s",
+                     property$func, field))
       }
       if (!is.null(func_name)) {
         assert_func_exists(func_name, env)
