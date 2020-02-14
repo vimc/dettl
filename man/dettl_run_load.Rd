@@ -4,8 +4,13 @@
 \alias{dettl_run_load}
 \title{Run up to and including the load stage of an import}
 \usage{
-dettl_run_load(path, db_name = NULL, comment = NULL, dry_run = FALSE,
-  force = FALSE)
+dettl_run_load(
+  path,
+  db_name = NULL,
+  comment = NULL,
+  dry_run = FALSE,
+  force = FALSE
+)
 }
 \arguments{
 \item{path}{Path to the import directory.}

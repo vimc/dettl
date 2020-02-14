@@ -4,16 +4,16 @@
 \alias{run_transform}
 \title{Run transform step.}
 \usage{
-run_transform(con, transform, path, extracted_data, transform_test, mode)
+run_transform(transform, extracted_data, extract_passed)
 }
 \arguments{
-\item{con}{The active DB connection.}
-
 \item{transform}{Transform function loaded from config.}
 
-\item{path}{Path to the project directory, for locating the transform tests}
-
 \item{extracted_data}{Data returned from the extract step.}
+
+\item{con}{The active DB connection.}
+
+\item{path}{Path to the project directory, for locating the transform tests}
 
 \item{transform_test}{Optional path to the transform tests. Relative to path
 argument.}

@@ -4,7 +4,7 @@
 \alias{run_extract}
 \title{Run extract step.}
 \usage{
-run_extract(con, extract, path, extract_test)
+run_extract(con, extract, path)
 }
 \arguments{
 \item{con}{The active DB connection.}
