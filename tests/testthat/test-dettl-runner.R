@@ -382,3 +382,45 @@ test_that("require_branch prevents branch changes if configured", {
   expect_equal(res$name, "example")
   expect_equal(res$git_branch, "deploy")
 })
+
+test_that("can get extracted data if tests fail", {
+  path <- prepare_test_import("example_failing_extract_test")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example_failing_extract_test/"))
+  expect_error(import$extract(),
+               "Not all extract tests passed. Fix tests before proceeding.")
+
+  extracted_data <- import$get_extracted_data()
+  expect_true(!is.null(extracted_data))
+
+  ## Trying to run transform after failed extract test throws error
+  expect_error(import$transform(),
+               "Cannot run transform as extract tests failed.")
+})
+
+test_that("can get transformed data if tests fail", {
+  path <- prepare_test_import("example_failing_transform_test")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example_failing_transform_test/"))
+  import$extract()
+  expect_error(import$transform(),
+               "Not all transform tests passed. Fix tests before proceeding.")
+
+  transformed_data <- import$get_transformed_data()
+  expect_true(!is.null(transformed_data))
+
+  ## Trying to run load after failed transform tests throws error
+  expect_error(import$load(), "Cannot run load as transform tests failed.")
+})
