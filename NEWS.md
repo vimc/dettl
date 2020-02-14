@@ -1,7 +1,11 @@
-# dettl 0.0.11
+# dettl 0.0.12
 
 * Remove path arg from extract stage - this will break previous imports
 * Always run the extract stage from path of the root of the import directory - all paths should be relative to this this fixes the bug where you needed to be in the same directory as root of the import to run it.
+
+# dettl 0.0.11
+
+* The automatic load functions provide information about their progress while they run (VIMC-3432)
 
 # dettl 0.0.10
 
