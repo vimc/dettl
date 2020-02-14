@@ -1,3 +1,7 @@
+# dettl 0.0.13
+
+* Make extracted/transformed data available even if tests for that stage fail
+
 # dettl 0.0.12
 
 * Remove path arg from extract stage - this will break previous imports
