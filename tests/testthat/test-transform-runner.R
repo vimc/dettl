@@ -73,12 +73,13 @@ testthat::test_that("messages are printed to console when tests are run", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
   data <- list()
 
+  transformed_data <- run_transform(transform_func, data, TRUE)
   expect_message(
-    run_transform(con, transform_func, test_dir, data, test_file, "append"),
+    test_transform(con, test_dir, "append", test_file, transformed_data, data),
     "Running transform tests connection_transform_test.R")
 
   expect_message(
-    run_transform(con, transform_func, test_dir, data, test_file, "append"),
+    test_transform(con, test_dir, "append", test_file, transformed_data, data),
     "All transform tests passed.")
 })
 
@@ -149,7 +150,21 @@ testthat::test_that("useful error returned when transform tests fail", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
   data <- list()
 
+  transformed_data <- run_transform(transform_func, data, TRUE)
   expect_error(
-    run_transform(con, transform_func, test_dir, data, test_file, "append"),
+    test_transform(con, test_dir, "append", test_file, transformed_data, data),
     "Not all transform tests passed. Fix tests before proceeding.")
+})
+
+test_that("transform can't be run until extract tests have passed", {
+  transform_func <- function(data, con) {
+    list(people = data_frame(
+      name = "Test",
+      age = 2,
+      height = 3
+    ))
+  }
+  data <- list()
+  expect_error(run_transform(transform_func, data, FALSE),
+               "Cannot run transform as extract tests failed.")
 })

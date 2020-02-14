@@ -15,26 +15,32 @@
 #' @return The successfully transformed data.
 #' @keywords internal
 #'
-run_transform <- function(con, transform, path, extracted_data,
-                          transform_test, mode) {
-    if (is.null(extracted_data)) {
-      stop("Cannot run transform as no data has been extracted.")
-    }
-    transformed_data <- transform(extracted_data)
-    verify_data(con, transformed_data, mode)
-    if (!is.null(transform_test)) {
-      message(sprintf("Running transform tests %s", transform_test))
-      test_path <- file.path(path, transform_test)
-      test_results <-
-        run_transform_tests(test_path, transformed_data, extracted_data, con)
-      if (!all_passed(test_results)) {
-        stop("Not all transform tests passed. Fix tests before proceeding.")
-      } else {
-        message("All transform tests passed.")
-      }
-    }
-    transformed_data
+run_transform <- function(transform, extracted_data, extract_passed) {
+  if (is.null(extracted_data)) {
+    stop("Cannot run transform as no data has been extracted.")
   }
+  if (!extract_passed) {
+    stop("Cannot run transform as extract tests failed.")
+  }
+  transform(extracted_data)
+}
+
+test_transform <- function(con, path, mode, transform_test, transformed_data,
+                           extracted_data) {
+  verify_data(con, transformed_data, mode)
+  if (!is.null(transform_test)) {
+    message(sprintf("Running transform tests %s", transform_test))
+    test_path <- file.path(path, transform_test)
+    test_results <-
+      run_transform_tests(test_path, transformed_data, extracted_data, con)
+    if (!all_passed(test_results)) {
+      stop("Not all transform tests passed. Fix tests before proceeding.")
+    } else {
+      message("All transform tests passed.")
+    }
+  }
+  invisible(TRUE)
+}
 
 
 #' Verify the transformed data adhered to the DB schema.

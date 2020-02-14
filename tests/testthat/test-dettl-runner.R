@@ -129,7 +129,7 @@ test_that("load cannot be run until transform stage has been run", {
   import <- dettl(file.path(path, "example/"), db_name = "test")
 
   expect_error(import$load(),
-               "Cannot run tests as no data has been transformed.")
+               "Cannot run load as no data has been transformed.")
 })
 
 test_that("trying to create import for db missing from config fails", {

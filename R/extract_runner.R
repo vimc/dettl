@@ -13,12 +13,16 @@
 #' @return The extracted data.
 #' @keywords internal
 #'
-run_extract <- function(con, extract, path, extract_test){
+run_extract <- function(con, extract, path) {
   if (!is.null(con) && DBI::dbIsValid(con)) {
     extracted_data <- extract(path, con)
   } else {
     stop("DB connection is not valid cannot extract data")
   }
+  extracted_data
+}
+
+test_extract <- function(con, path, extract_test, extracted_data) {
   if (!is.null(extract_test)) {
     message(sprintf("Running extract tests %s", extract_test))
     test_path <- file.path(path, extract_test)
@@ -29,5 +33,5 @@ run_extract <- function(con, extract, path, extract_test){
       message("All extract tests passed.")
     }
   }
-  extracted_data
+  invisible(TRUE)
 }

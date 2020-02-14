@@ -23,9 +23,6 @@
 #'
 run_load <- function(con, load, extracted_data, transformed_data, test_queries, path,
                      test_file, dry_run, log_table, comment) {
-  if (is.null(transformed_data)) {
-    stop("Cannot run tests as no data has been transformed.")
-  }
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
