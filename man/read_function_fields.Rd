@@ -2,12 +2,12 @@
 % Please edit documentation in R/import_config.R
 \name{read_function_fields}
 \alias{read_function_fields}
-\title{Read file fields of the dettl config yaml file.}
+\title{Read function fields of the dettl config yaml file.}
 \usage{
 read_function_fields(fields, config, env)
 }
 \arguments{
-\item{fields}{The name of the field.}
+\item{fields}{List of fields with functions and whether they have to exist.}
 
 \item{config}{The config being read.}
 

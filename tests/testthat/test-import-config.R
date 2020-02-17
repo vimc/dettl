@@ -115,3 +115,42 @@ test_that("automatic load can be specified in config", {
   expect_error(read_config(dir),
                "Load stage must specify a load function OR use the automatic load function. Got automatic TRUE and NULL func FALSE.")
 })
+
+test_that("error thrown if pre or post load used without automatic load", {
+  dir <- setup_dettl_config("func: load_func\n  pre: pre_load")
+  expect_error(read_config(dir),
+               "Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load.")
+
+  dir <- setup_dettl_config("func: load_func\n  post: post_load")
+  expect_error(read_config(dir),
+               "Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load.")
+})
+
+test_that("read config loads pre and post load functions in config", {
+
+  cfg <- read_config("example_pre_post_load")
+  expect_s3_class(cfg, "dettl_import_config")
+
+  expect_length(cfg, 6)
+
+  expect_true("load" %in% names(cfg))
+  expect_length(cfg$load, 5)
+  expect_true(cfg$load$automatic)
+  expect_true("pre" %in% names(cfg$load))
+  expect_true("post" %in% names(cfg$load))
+  expect_is(cfg$load$pre, "function")
+  expect_is(cfg$load$post, "function")
+})
+
+test_that("missing required function fields throw error", {
+  fields <- list(extract = list(
+    list(
+      func = "func",
+      must_exist = TRUE
+    )
+  ))
+  config <- list()
+  env <- new.env()
+  expect_error(read_function_fields(fields, config, env),
+               "Can't find required function func for field extract")
+})

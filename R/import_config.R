@@ -22,13 +22,40 @@ read_config <- function(path) {
 
   ## If certain fields don't exist in the config then add defaults
   info <- validate_load(info)
-  function_fields <- c(
-    "extract",
-    "transform",
-    "load"
+  function_fields <- list(
+    extract = list(
+      list(
+        func = "func",
+        must_exist = TRUE
+      )
+    ),
+    transform = list(
+      list(
+        func = "func",
+        must_exist = TRUE
+      )
+    ),
+    load = list(
+      list(
+        func = "func",
+        must_exist = !info$load$automatic
+      ),
+      list(
+        func = "verification_queries",
+        must_exist = TRUE
+      ),
+      list(
+        func = "pre",
+        must_exist = FALSE
+      ),
+      list(
+        func = "post",
+        must_exist = FALSE
+      )
+    )
   )
-  info <- add_missing_function_fields(info, function_fields)
-  required <- c(function_fields, "sources")
+  info <- add_missing_function_fields(info, names(function_fields))
+  required <- c(names(function_fields), "sources")
   check_fields(info, filename, required, "dettl")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
@@ -46,6 +73,9 @@ validate_load <- function(info) {
     stop(sprintf(
       "Load stage must specify a load function OR use the automatic load function. Got automatic %s and NULL func %s.",
       auto, is.null(info$load$func)))
+  }
+  if (!auto && (!is.null(info$load$pre) || !is.null(info$load$post))) {
+    stop(sprintf("Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load."))
   }
   info
 }
@@ -89,31 +119,30 @@ set_missing_values <- function(info, field_name) {
   info
 }
 
-#' Read file fields of the dettl config yaml file.
+#' Read function fields of the dettl config yaml file.
 #'
 #' Reads the config file, and sources any file references.
 #'
-#' @param fields The name of the field.
+#' @param fields List of fields with functions and whether they have to exist.
 #' @param config The config being read.
 #' @param env Environment containing functions loaded from sources.
 #' @keywords internal
 #'
 read_function_fields <- function(fields, config, env) {
-  for (field in fields) {
-    if (field != "load" || !config$load$automatic) {
-      assert_func_exists(config[[field]]$func, env)
-      config[[field]]$func <- get0(config[[field]]$func,
-                                   envir = env,
-                                   mode = "function", inherits = FALSE
-      )
-    }
-    if (field == "load") {
-      assert_func_exists(config[[field]]$verification_queries, env)
-      config[[field]]$verification_queries <-
-        get0(config[[field]]$verification_queries,
-             envir = env,
-             mode = "function", inherits = FALSE
-        )
+  for (field in names(fields)) {
+    for (property in fields[[field]]) {
+      func_name <- config[[field]][[property$func]]
+      if (is.null(func_name) && property$must_exist) {
+        stop(sprintf("Can't find required function %s for field %s",
+                     property$func, field))
+      }
+      if (!is.null(func_name)) {
+        assert_func_exists(func_name, env)
+        config[[field]][[property$func]] <- get0(func_name,
+                                                 envir = env,
+                                                 mode = "function",
+                                                 inherits = FALSE)
+      }
     }
   }
   config
