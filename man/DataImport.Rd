@@ -42,6 +42,7 @@ import$load()
 \item \href{#method-new}{\code{DataImport$new()}}
 \item \href{#method-reload}{\code{DataImport$reload()}}
 \item \href{#method-format}{\code{DataImport$format()}}
+\item \href{#method-help}{\code{DataImport$help()}}
 \item \href{#method-extract}{\code{DataImport$extract()}}
 \item \href{#method-transform}{\code{DataImport$transform()}}
 \item \href{#method-load}{\code{DataImport$load()}}
@@ -98,6 +99,15 @@ Custom formatter for pretty printing object summary.
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\subsection{Method \code{help()}}{
+Print help page for the object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$help()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-extract"></a>}}

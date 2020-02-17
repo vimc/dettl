@@ -95,6 +95,12 @@ DataImport <- R6::R6Class(
     },
 
     #' @description
+    #' Print help page for the object
+    help = function() {
+      utils::help(class(self)[[1L]], package = "dettl")
+    },
+
+    #' @description
     #' Run the extract stage of the data import
     extract = function() {
       message(sprintf("Running extract %s", self$path))
