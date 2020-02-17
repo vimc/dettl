@@ -4,8 +4,14 @@
 \alias{prepare_example_db}
 \title{Prepare example db}
 \usage{
-prepare_example_db(dir, add_data = FALSE, add_job_table = FALSE,
-  add_log_table = TRUE, add_fk_data = FALSE, add_cyclic_fks = FALSE)
+prepare_example_db(
+  dir,
+  add_data = FALSE,
+  add_job_table = FALSE,
+  add_log_table = TRUE,
+  add_fk_data = FALSE,
+  add_cyclic_fks = FALSE
+)
 }
 \arguments{
 \item{dir}{Directory to create the db in}

@@ -4,8 +4,14 @@
 \alias{verify_table}
 \title{Verify the data adheres to the DB schema.}
 \usage{
-verify_table(con, table_name, table, identical_columns = FALSE,
-  context_info = "", solution_text = "")
+verify_table(
+  con,
+  table_name,
+  table,
+  identical_columns = FALSE,
+  context_info = "",
+  solution_text = ""
+)
 }
 \arguments{
 \item{con}{The active DB connection to check the schema for.}
