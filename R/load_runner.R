@@ -5,7 +5,8 @@
 #'
 #' @param load The load function for making the DB changes.
 #' @param con Connection to the database.
-#' @param extracted_data Extracted data if needed for testing, otherwise can be NULL.
+#' @param extracted_data Extracted data if needed for testing, otherwise can be
+#' NULL.
 #' @param transformed_data List of data frames representing the data to be
 #' loaded to the DB.
 #' @param test_queries Function containing queries for running on the DB before
@@ -21,8 +22,8 @@
 #'
 #' @keywords internal
 #'
-run_load <- function(con, load, extracted_data, transformed_data, test_queries, path,
-                     test_file, dry_run, log_table, comment) {
+run_load <- function(con, load, extracted_data, transformed_data, test_queries,
+                     path, test_file, dry_run, log_table, comment) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
@@ -31,8 +32,8 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries, 
   verify_first_run(con, log_table, log_data)
   DBI::dbBegin(con)
   withCallingHandlers(
-    do_load(con, load, extracted_data, transformed_data, path, test_file, test_queries,
-            log_table, log_data, dry_run),
+    do_load(con, load, extracted_data, transformed_data, path, test_file,
+            test_queries, log_table, log_data, dry_run),
     error = function(e) {
       DBI::dbRollback(con)
       stop(e)
@@ -41,14 +42,15 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries, 
   invisible(TRUE)
 }
 
-do_load <- function(con, load, extracted_data, transformed_data, path, test_file, test_queries,
-                    log_table, log_data, dry_run) {
+do_load <- function(con, load, extracted_data, transformed_data, path,
+                    test_file, test_queries, log_table, log_data, dry_run) {
   before <- test_queries(con)
   load(transformed_data, con)
   after <- test_queries(con)
   test_path <- file.path(path, test_file)
   message(sprintf("Running load tests %s", test_path))
-  test_results <- run_load_tests(test_path, before, after, extracted_data, transformed_data, con)
+  test_results <- run_load_tests(test_path, before, after, extracted_data,
+                                 transformed_data, con)
   if (all_passed(test_results)) {
     if (dry_run) {
       DBI::dbRollback(con)

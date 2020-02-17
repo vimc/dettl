@@ -32,7 +32,7 @@ read_config <- function(path) {
   check_fields(info, filename, required, "dettl")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
-  info$name <- basename(normalizePath(path, winslash = '/'))
+  info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
   class(info) <- "dettl_import_config"
   info
@@ -43,8 +43,9 @@ validate_load <- function(info) {
   if (xor(auto, !is.null(info$load$func))) {
     info$load$automatic <- auto
   } else {
-    stop(sprintf("Load stage must specify a load function OR use the automatic load function. Got automatic %s and NULL func %s.",
-                 auto, is.null(info$load$func)))
+    stop(sprintf(
+      "Load stage must specify a load function OR use the automatic load function. Got automatic %s and NULL func %s.",
+      auto, is.null(info$load$func)))
   }
   info
 }
@@ -154,7 +155,7 @@ load_sources <- function(sources, path) {
 expand_wildcards <- function(sources, path) {
   withr::with_dir(path, {
     sources <- unlist(lapply(sources, expand1), FALSE, FALSE)
-    sources <- normalizePath(sources, winslash = '/', mustWork = TRUE)
+    sources <- normalizePath(sources, winslash = "/", mustWork = TRUE)
   })
   sources
 }

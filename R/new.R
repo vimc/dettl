@@ -9,7 +9,7 @@
 #' @examples
 #' dettl::dettl_new("test import")
 dettl_new <- function(name) {
-  clean_name <- paste(Sys.Date(), gsub("[^[:alnum:]]", "_" ,name),
+  clean_name <- paste(Sys.Date(), gsub("[^[:alnum:]]", "_", name),
                 sep = "_")
   dir_created <- dir.create(clean_name, showWarnings = FALSE)
   if (!dir_created) {

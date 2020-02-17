@@ -63,8 +63,8 @@ git_email <- function(path = ".") {
 git_config <- function(path, field) {
   gitres <- gert::git_config(repo = git_root_directory(path))
   gitres <- rbind(
-    gitres[gitres$level == 'local', ],
-    gitres[gitres$level != 'local', ])
+    gitres[gitres$level == "local", ],
+    gitres[gitres$level != "local", ])
 
   if (!any(gitres$name == field)) {
     stop(sprintf("'%s' not found in git config for path %s", field, path))
@@ -85,7 +85,9 @@ git_config <- function(path, field) {
 git_branch <- function(path) {
   info <- gert::git_info(repo = git_root_directory(path))
   if (!(info$head %in% info$reflist)) {
-    stop(sprintf("Can't get current branch from path %s. Check repo is up to date and HEAD is not detached.",path))
+    stop(sprintf(
+      "Can't get current branch from path %s. Check repo is up to date and HEAD is not detached.",
+      path))
   }
   info$shorthand
 }

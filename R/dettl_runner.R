@@ -16,8 +16,8 @@ dettl <- function(path, db_name = NULL) {
 #'
 #' @param path Path to the import directory.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will default
-#' to using the first db configured.
+#' configured via the `dettl_config.yml`. If name is left blank this will
+#' default to using the first db configured.
 #'
 #' @return The extracted data.
 #' @export
@@ -37,8 +37,8 @@ dettl_run_extract <- function(path, db_name = NULL) {
 #'
 #' @param path Path to the import directory.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will default
-#' to using the first db configured.
+#' configured via the `dettl_config.yml`. If name is left blank this will
+#' default to using the first db configured.
 #'
 #' @return The transformed data.
 #' @export
@@ -62,8 +62,8 @@ dettl_run_transform <- function(path, db_name = NULL) {
 #'
 #' @param path Path to the import directory.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will default
-#' to using the first db configured.
+#' configured via the `dettl_config.yml`. If name is left blank this will
+#' default to using the first db configured.
 #' @param comment Optional comment to be written to db log table when import is
 #' run.
 #' @param dry_run If TRUE then any changes to the database will be rolled back.

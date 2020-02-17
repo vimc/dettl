@@ -72,4 +72,3 @@ get_not_nullable.SQLiteConnection <- function(con) {
   constraints$is_serial <- as.logical(constraints$is_serial)
   constraints
 }
-
