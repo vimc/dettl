@@ -73,6 +73,9 @@ validate_load <- function(info) {
     stop(sprintf("Load stage must specify a load function OR use the automatic load function. Got automatic %s and NULL func %s.",
                  auto, is.null(info$load$func)))
   }
+  if (!auto && (!is.null(info$load$pre) || !is.null(info$load$post))) {
+    stop(sprintf("Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load."))
+  }
   info
 }
 

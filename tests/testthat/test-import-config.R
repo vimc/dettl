@@ -114,6 +114,16 @@ test_that("automatic load can be specified in config", {
                "Load stage must specify a load function OR use the automatic load function. Got automatic TRUE and NULL func FALSE.")
 })
 
+test_that("error thrown if pre or post load used without automatic load", {
+  dir <- setup_dettl_config("func: load_func\n  pre: pre_load")
+  expect_error(read_config(dir),
+               "Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load.")
+
+  dir <- setup_dettl_config("func: load_func\n  post: post_load")
+  expect_error(read_config(dir),
+               "Pre or post load are configured but using a custom load step. Pre and post load can only be used with automatic load.")
+})
+
 test_that("read config loads pre and post load functions in config", {
 
   cfg <- read_config("example_pre_post_load")
