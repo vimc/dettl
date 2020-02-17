@@ -2,8 +2,10 @@
 % Please edit documentation in R/dettl.R
 \name{DataImport}
 \alias{DataImport}
-\title{Data Import}
+\title{Manage data import.}
 \description{
+Manage data import.
+
 Manage data import.
 }
 \details{
@@ -15,45 +17,6 @@ Import can be run by working with import object returned by
 working with this object if you want to step through the import process
 stage by stage and inspect the data after each stage.
 }
-\section{Methods}{
-
-
-\describe{
-\item{\code{extract}}{
-  Run the extract stage of the data import
-  \cr\emph{Usage:}\preformatted{extract()}
-}
-\item{\code{transform}}{
-  Run the transform stage of the data import
-  \cr\emph{Usage:}\preformatted{transform()}
-}
-\item{\code{load}}{
-  Run the load stage of the data import
-  \cr\emph{Usage:}\preformatted{load(comment = NULL, dry_run = FALSE, force = FALSE)}
-
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{comment}:   Optional comment which will be persisted in the log of the import run in the database.
-    }
-
-    \item{\code{dry_run}:   Whether to run in dry run mode. If TRUE then any database changes will be rolled back. Defaults to FALSE.
-    }
-
-    \item{\code{force}:   If TRUE then checks that repo is up to date with git remote will be skipped. Defautls to FALSE.
-    }
-  }
-}
-\item{\code{get_extracted_data}}{
-  Get the extracted data created by the extract step
-  \cr\emph{Usage:}\preformatted{get_extracted_data()}
-}
-\item{\code{get_transformed_data}}{
-  Get the transformed data created by the transform step
-  \cr\emph{Usage:}\preformatted{get_transformed_data()}
-}
-}
-}
-
 \examples{
 path <- dettl::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
@@ -65,4 +28,175 @@ import$extract()
 import$transform()
 import$load()
 
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{path}}{Path to directory containing import object}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{DataImport$new()}}
+\item \href{#method-reload}{\code{DataImport$reload()}}
+\item \href{#method-format}{\code{DataImport$format()}}
+\item \href{#method-help}{\code{DataImport$help()}}
+\item \href{#method-extract}{\code{DataImport$extract()}}
+\item \href{#method-transform}{\code{DataImport$transform()}}
+\item \href{#method-load}{\code{DataImport$load()}}
+\item \href{#method-get_connection}{\code{DataImport$get_connection()}}
+\item \href{#method-get_extracted_data}{\code{DataImport$get_extracted_data()}}
+\item \href{#method-get_transformed_data}{\code{DataImport$get_transformed_data()}}
+\item \href{#method-get_log_table}{\code{DataImport$get_log_table()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+Create DataImport object - shouldn't be called directly. Use
+\code{\link{dettl}} to create the object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$new(path, db_name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Path to directory containing import object}
+
+\item{\code{db_name}}{Database from dettl config to create import object for}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new `DataImport` object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-reload"></a>}}
+\subsection{Method \code{reload()}}{
+Reload the objects sources to refresh source code or repair a broken
+Postgres connection.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$reload()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\subsection{Method \code{format()}}{
+Custom formatter for pretty printing object summary.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$format(brief = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{brief}}{If TRUE then print a brief summary.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\subsection{Method \code{help()}}{
+Print help page for the object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$help()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-extract"></a>}}
+\subsection{Method \code{extract()}}{
+Run the extract stage of the data import
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$extract()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-transform"></a>}}
+\subsection{Method \code{transform()}}{
+Run the transform stage of the data import
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$transform()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-load"></a>}}
+\subsection{Method \code{load()}}{
+Run the load stage of the data import
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$load(comment = NULL, dry_run = FALSE, force = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{comment}}{Optional comment which will be persisted in the log of
+the import run in the database.}
+
+\item{\code{dry_run}}{Whether to run in dry run mode. If TRUE then any database
+changes will be rolled back. Defaults to FALSE.}
+
+\item{\code{force}}{If TRUE then checks that repo is up to date with git remote
+will be skipped. Defautls to FALSE.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_connection"></a>}}
+\subsection{Method \code{get_connection()}}{
+Get the database connection being used by the import. Used for testing.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$get_connection()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The DBI connection
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_extracted_data"></a>}}
+\subsection{Method \code{get_extracted_data()}}{
+Get the extracted data created by the extract step
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$get_extracted_data()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The extracted data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_transformed_data"></a>}}
+\subsection{Method \code{get_transformed_data()}}{
+Get the transformed data created by the transform step
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$get_transformed_data()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The transformed data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_log_table"></a>}}
+\subsection{Method \code{get_log_table()}}{
+Get the name of the log table for a particular import. This is the name
+of the log table configured in the dettl config
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$get_log_table()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Log table name
+}
+}
 }

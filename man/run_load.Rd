@@ -4,8 +4,20 @@
 \alias{run_load}
 \title{Run the load step ensuring tests pass before db changes are committed.}
 \usage{
-run_load(con, load, extracted_data, transformed_data, test_queries,
-  pre_load, post_load, path, test_file, dry_run, log_table, comment)
+run_load(
+  con,
+  load,
+  extracted_data,
+  transformed_data,
+  test_queries,
+  pre_load,
+  post_load,
+  path,
+  test_file,
+  dry_run,
+  log_table,
+  comment
+)
 }
 \arguments{
 \item{con}{Connection to the database.}
