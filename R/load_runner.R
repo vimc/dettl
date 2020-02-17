@@ -21,8 +21,9 @@
 #'
 #' @keywords internal
 #'
-run_load <- function(con, load, extracted_data, transformed_data, test_queries, path,
-                     test_file, dry_run, log_table, comment) {
+run_load <- function(con, load, extracted_data, transformed_data, test_queries,
+                     pre_load, post_load, path, test_file, dry_run, log_table,
+                     comment) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
@@ -31,8 +32,8 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries, 
   verify_first_run(con, log_table, log_data)
   DBI::dbBegin(con)
   withCallingHandlers(
-    do_load(con, load, extracted_data, transformed_data, path, test_file, test_queries,
-            log_table, log_data, dry_run),
+    do_load(con, load, extracted_data, transformed_data, path, test_file,
+            test_queries, pre_load, post_load, log_table, log_data, dry_run),
     error = function(e) {
       DBI::dbRollback(con)
       stop(e)
@@ -41,13 +42,26 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries, 
   invisible(TRUE)
 }
 
-do_load <- function(con, load, extracted_data, transformed_data, path, test_file, test_queries,
-                    log_table, log_data, dry_run) {
+do_load <- function(con, load, extracted_data, transformed_data, path,
+                    test_file, test_queries, pre_load, post_load, log_table,
+                    log_data, dry_run) {
+  message("Running load:")
+  message("\t- Running test queries before making any changes")
   before <- test_queries(con)
+  if (!is.null(pre_load)) {
+    message("\t- Running pre-load")
+    pre_load(transformed_data, con)
+  }
+  message("\t- Running load step")
   load(transformed_data, con)
+  if (!is.null(post_load)) {
+    message("\t- Running post-load")
+    post_load(transformed_data, con)
+  }
+  message("\t- Running test queries after making changes")
   after <- test_queries(con)
   test_path <- file.path(path, test_file)
-  message(sprintf("Running load tests %s", test_path))
+  message(sprintf("\t- Running load tests %s", test_path))
   test_results <- run_load_tests(test_path, before, after, extracted_data, transformed_data, con)
   if (all_passed(test_results)) {
     if (dry_run) {

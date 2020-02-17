@@ -9,7 +9,7 @@ testthat::test_that("user specified load tests can be run", {
   expect_false(all_passed(result))
 
   test_path <- "example_tests/passing_load_test.R"
-  result <- run_load_tests(test_path, before, after, NULL,NULL, NULL, SilentReporter)
+  result <- run_load_tests(test_path, before, after, NULL, NULL, NULL, SilentReporter)
 
   expect_true(all_passed(result))
 })

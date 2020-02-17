@@ -10,6 +10,8 @@ run_load(
   extracted_data,
   transformed_data,
   test_queries,
+  pre_load,
+  post_load,
   path,
   test_file,
   dry_run,
