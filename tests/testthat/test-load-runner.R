@@ -29,6 +29,8 @@ testthat::test_that("messages are printed to console when tests are run", {
     fixed = TRUE, res$messages)))
   expect_true(any(grepl("All tests passed, commiting changes to database.",
     res$messages, fixed = TRUE)))
+  expect_true(any(grepl("Running load:",
+                        res$messages, fixed = TRUE)))
 })
 
 testthat::test_that("log table is appended to", {
