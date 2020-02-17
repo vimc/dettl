@@ -19,7 +19,8 @@ testthat::test_that("messages are printed to console when tests are run", {
   ## individually.
   run_load_call <- function() {
     run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-             path = test_dir, test_file = test_file, dry_run = FALSE,
+             pre_load = NULL, post_load = NULL, path = test_dir,
+             test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = NULL)
   }
   res <- evaluate_promise(run_load_call())
@@ -28,6 +29,8 @@ testthat::test_that("messages are printed to console when tests are run", {
     fixed = TRUE, res$messages)))
   expect_true(any(grepl("All tests passed, commiting changes to database.",
     res$messages, fixed = TRUE)))
+  expect_true(any(grepl("Running load:",
+                        res$messages, fixed = TRUE)))
 })
 
 testthat::test_that("log table is appended to", {
@@ -42,7 +45,8 @@ testthat::test_that("log table is appended to", {
   options(testthat.default_reporter = "Silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries, path = test_dir,
+  run_load(con, load_func, extracted_data = NULL, transformed_data,
+           test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
            test_file = test_file, dry_run = FALSE,
            log_table = "dettl_import_log", comment = "Test comment")
   log_data <- DBI::dbGetQuery(con, "SELECT * FROM dettl_import_log")
@@ -73,7 +77,8 @@ testthat::test_that("postgres log table is appended to", {
   options(testthat.default_reporter = "Silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries, path = test_dir,
+  run_load(con, load_func, extracted_data = NULL, transformed_data,
+           test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
            test_file = test_file, dry_run = FALSE,
            log_table = "dettl_import_log", comment = "Test comment")
   log_data <- DBI::dbGetQuery(con, "SELECT * FROM dettl_import_log")
@@ -103,7 +108,8 @@ testthat::test_that("import fails if log table misconfigured", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   expect_error(
-    run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries, path = test_dir,
+    run_load(con, load_func, extracted_data = NULL, transformed_data,
+             test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
              test_file = test_file, dry_run = FALSE, log_table = "table log",
              comment = "Test comment"),
     "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_db_create_log_table first."
@@ -112,7 +118,8 @@ testthat::test_that("import fails if log table misconfigured", {
   mock_build_log_data <- mockery::mock(data_frame(name = "test"))
   with_mock("dettl:::build_log_data" = mock_build_log_data, {
     expect_error(
-      run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries, path = test_dir,
+      run_load(con, load_func, extracted_data = NULL, transformed_data,
+               test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
                test_file = test_file, dry_run = FALSE,
                log_table = "dettl_import_log", comment = "Test comment"),
       "Cannot import data: Column 'date' in table 'dettl_import_log' in DB but is missing from local table."
@@ -133,9 +140,9 @@ test_that("import can only be run once", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
   run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-           path = test_dir, test_file = test_file,
-           dry_run = FALSE, log_table = "dettl_import_log",
-           comment = NULL)
+           pre_load = NULL, post_load = NULL, path = test_dir,
+           test_file = test_file, dry_run = FALSE,
+           log_table = "dettl_import_log", comment = NULL)
 
   expect_error(run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
                         path = test_dir, test_file = test_file,
@@ -164,7 +171,8 @@ test_that("transaction is cleaned up if import fails", {
 
   ## Error thrown from bad form of transformed_data
   expect_error(
-    run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data, test_queries,
+    run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data,
+             test_queries, pre_load = NULL, post_load = NULL,
              path = test_dir, test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = "Test comment")
   )
@@ -190,7 +198,8 @@ test_that("postgres transaction is cleaned up if import throws error", {
 
   ## Error thrown from bad form of transformed_data
   expect_error(
-    run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data, test_queries,
+    run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data,
+             test_queries, pre_load = NULL, post_load = NULL,
              path = test_dir, test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = "Test comment")
   )
@@ -199,4 +208,27 @@ test_that("postgres transaction is cleaned up if import throws error", {
   ## a new one and ensuring that no error is thrown.
   expect_true(DBI::dbBegin(con))
   on.exit(DBI::dbRollback(con), add = TRUE, after = FALSE)
+})
+
+test_that("pre and post load functions are called if not NULL", {
+  path <- prepare_test_import("example_tests")
+  con <- db_connect("test", path)
+  load_func <- function(data, con) {}
+  transformed_data <- list()
+  test_queries <- function(con) {}
+  test_dir <- file.path(path, "example_tests")
+  test_file <- "connection_load_test.R"
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "Silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  mock_pre_load <- mockery::mock(TRUE)
+  mock_post_load <- mockery::mock(TRUE)
+  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
+           pre_load = mock_pre_load, post_load = mock_post_load, path = test_dir,
+           test_file = test_file, dry_run = FALSE,
+           log_table = "dettl_import_log", comment = NULL)
+
+  mockery::expect_called(mock_pre_load, 1)
+  mockery::expect_called(mock_post_load, 1)
 })
