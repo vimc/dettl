@@ -1,4 +1,4 @@
-^\.travis\.yml$
+l^\.travis\.yml$
 ^dettl\.Rproj$
 ^\.Rproj\.user$
 ^scripts$
@@ -6,4 +6,4 @@
 ^images$
 ^docs$
 ^\.vault$
-^man-roxygen$
+\ZCX/
