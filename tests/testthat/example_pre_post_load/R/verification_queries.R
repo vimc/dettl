@@ -4,4 +4,3 @@ test_queries <- function(con) {
   values$jobs_count <- DBI::dbGetQuery(con, "SELECT count(*) from jobs")[1, 1]
   values
 }
-
