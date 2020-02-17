@@ -13,10 +13,12 @@
 #'
 #' @keywords internal
 dettl_auto_load_create <- function(transformed_data, con) {
-  create_and_append <- function(table_name) {
-    DBI::dbCreateTable(con, table_name, transformed_data[[table_name]])
-    DBI::dbAppendTable(con, table_name, transformed_data[[table_name]])
+  for (table_name in names(transformed_data)) {
+    d <- transformed_data[[table_name]]
+    message(sprintf("Creating table '%s' (%d rows x %d columns)",
+                    table_name, nrow(d), ncol(d)))
+    DBI::dbCreateTable(con, table_name, d)
+    DBI::dbAppendTable(con, table_name, d)
   }
-  lapply(names(transformed_data), create_and_append)
   invisible(TRUE)
 }

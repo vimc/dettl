@@ -89,7 +89,10 @@ test_that("postgres automatic load works as expected", {
   )
 
   ## Do load and check uploaded data
-  dettl_auto_load(tables, con)
+  expect_message(
+    dettl_auto_load(tables, con),
+    "Updating region (adding 2 rows)",
+    fixed = TRUE)
 
   ## Create expected data
   db_region <- data_frame(id = c(1,2,3,4),
