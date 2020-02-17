@@ -7,7 +7,7 @@
 read_function_fields(fields, config, env)
 }
 \arguments{
-\item{fields}{List of fields with functions and whther they have to exist.}
+\item{fields}{List of fields with functions and whether they have to exist.}
 
 \item{config}{The config being read.}
 

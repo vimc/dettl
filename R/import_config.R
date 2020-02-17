@@ -119,7 +119,7 @@ set_missing_values <- function(info, field_name) {
 #'
 #' Reads the config file, and sources any file references.
 #'
-#' @param fields List of fields with functions and whther they have to exist.
+#' @param fields List of fields with functions and whether they have to exist.
 #' @param config The config being read.
 #' @param env Environment containing functions loaded from sources.
 #' @keywords internal

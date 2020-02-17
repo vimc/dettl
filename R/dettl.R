@@ -35,8 +35,8 @@ DataImport <- R6::R6Class(
     extract_ = NULL,
     transform_ = NULL,
     load_ = NULL,
-    pre_load_ = NULL,
-    post_load_ = NULL,
+    load_pre_ = NULL,
+    load_post_ = NULL,
     extract_test_ = NULL,
     transform_test_ = NULL,
     load_test_ = NULL,
@@ -76,8 +76,8 @@ DataImport <- R6::R6Class(
       private$transform_ <- dettl_config$transform$func
       private$transform_test_ <- dettl_config$transform$test
       private$load_ <- load_func
-      private$pre_load_ <- dettl_config$load$pre
-      private$post_load_ <- dettl_config$load$post
+      private$load_pre_ <- dettl_config$load$pre
+      private$load_post_ <- dettl_config$load$post
       private$load_test_ <- dettl_config$load$test
       private$test_queries <- dettl_config$load$verification_queries
 
@@ -136,7 +136,7 @@ DataImport <- R6::R6Class(
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
       run_load(private$con, private$load_, private$extracted_data, private$transformed_data,
-               private$test_queries, private$pre_load_, private$post_load_,
+               private$test_queries, private$load_pre_, private$load_post_,
                self$path, private$load_test_, dry_run, private$log_table,
                comment)
       invisible(TRUE)
