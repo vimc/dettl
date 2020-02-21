@@ -41,7 +41,8 @@ DataImport <- R6::R6Class(
     confirm = NULL,
     require_branch = NULL,
     db_name = NULL,
-    mode = NULL
+    mode = NULL,
+    transaction = TRUE
   ),
 
   public = list(
@@ -66,7 +67,8 @@ DataImport <- R6::R6Class(
     #' Postgres connection.
     reload = function() {
       dettl_config <- read_config(self$path)
-      private$mode <- check_valid_mode(dettl_config$dettl$mode)
+      private$mode <- dettl_config$dettl$mode
+      private$transaction <- dettl_config$dettl$transaction
       if (dettl_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
@@ -158,7 +160,8 @@ DataImport <- R6::R6Class(
       run_load(private$con, private$load_, private$extracted_data,
                private$transformed_data, private$test_queries,
                private$load_pre_, private$load_post_, self$path,
-               private$load_test_, dry_run, private$log_table, comment)
+               private$load_test_, private$transaction, dry_run,
+               private$log_table, comment)
       invisible(TRUE)
     },
 

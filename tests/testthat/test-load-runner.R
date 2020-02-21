@@ -20,16 +20,16 @@ testthat::test_that("messages are printed to console when tests are run", {
   run_load_call <- function() {
     run_load(con, load_func, extracted_data = NULL, transformed_data,
              test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-             test_file = test_file, dry_run = FALSE,
+             test_file = test_file, transaction = TRUE, dry_run = FALSE,
              log_table = "dettl_import_log", comment = NULL)
   }
   res <- evaluate_promise(run_load_call())
   expect_true(any(grepl(sprintf(
-    "Running load tests %s/example_tests/connection_load_test.R", path),
+    "Running load tests connection_load_test.R"),
     fixed = TRUE, res$messages)))
   expect_true(any(grepl("All tests passed, commiting changes to database.",
     res$messages, fixed = TRUE)))
-  expect_true(any(grepl("Running load:",
+  expect_true(any(grepl("Running load in a transaction:",
                         res$messages, fixed = TRUE)))
 })
 
@@ -47,7 +47,7 @@ testthat::test_that("log table is appended to", {
 
   run_load(con, load_func, extracted_data = NULL, transformed_data,
            test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-           test_file = test_file, dry_run = FALSE,
+           test_file = test_file, transaction = TRUE, dry_run = FALSE,
            log_table = "dettl_import_log", comment = "Test comment")
   log_data <- DBI::dbGetQuery(con, "SELECT * FROM dettl_import_log")
   expect_true(nrow(log_data) == 1)
@@ -79,7 +79,7 @@ testthat::test_that("postgres log table is appended to", {
 
   run_load(con, load_func, extracted_data = NULL, transformed_data,
            test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-           test_file = test_file, dry_run = FALSE,
+           test_file = test_file, transaction = TRUE, dry_run = FALSE,
            log_table = "dettl_import_log", comment = "Test comment")
   log_data <- DBI::dbGetQuery(con, "SELECT * FROM dettl_import_log")
   expect_true(nrow(log_data) == 1)
@@ -110,8 +110,8 @@ testthat::test_that("import fails if log table misconfigured", {
   expect_error(
     run_load(con, load_func, extracted_data = NULL, transformed_data,
              test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-             test_file = test_file, dry_run = FALSE, log_table = "table log",
-             comment = "Test comment"),
+             test_file = test_file, transaction = TRUE, dry_run = FALSE,
+             log_table = "table log", comment = "Test comment"),
     "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_db_create_log_table first."
   )
 
@@ -120,7 +120,7 @@ testthat::test_that("import fails if log table misconfigured", {
     expect_error(
       run_load(con, load_func, extracted_data = NULL, transformed_data,
                test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-               test_file = test_file, dry_run = FALSE,
+               test_file = test_file, transaction = TRUE, dry_run = FALSE,
                log_table = "dettl_import_log", comment = "Test comment"),
       "Cannot import data: Column 'date' in table 'dettl_import_log' in DB but is missing from local table."
     )
@@ -141,13 +141,13 @@ test_that("import can only be run once", {
 
   run_load(con, load_func, extracted_data = NULL, transformed_data,
            test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-           test_file = test_file, dry_run = FALSE,
+           test_file = test_file, transaction = TRUE, dry_run = FALSE,
            log_table = "dettl_import_log", comment = NULL)
 
   expect_error(run_load(con, load_func, extracted_data = NULL, transformed_data,
                         test_queries, path = test_dir, test_file = test_file,
-                        dry_run = FALSE, log_table = "dettl_import_log",
-                        comment = NULL),
+                        transaction = TRUE, dry_run = FALSE,
+                        log_table = "dettl_import_log", comment = NULL),
 "Import has previously been run. Previous run log:
   name:           example_tests
   date:           [0-9:\\s-]+
@@ -173,8 +173,9 @@ test_that("transaction is cleaned up if import fails", {
   expect_error(
     run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data,
              test_queries, pre_load = NULL, post_load = NULL,
-             path = test_dir, test_file = test_file, dry_run = FALSE,
-             log_table = "dettl_import_log", comment = "Test comment")
+             path = test_dir, test_file = test_file, transaction = TRUE,
+             dry_run = FALSE, log_table = "dettl_import_log",
+             comment = "Test comment")
   )
 
   ## Test that transaction is not currently active - check by trying to start
@@ -200,8 +201,9 @@ test_that("postgres transaction is cleaned up if import throws error", {
   expect_error(
     run_load(con, dettl_auto_load, extracted_data = NULL, transformed_data,
              test_queries, pre_load = NULL, post_load = NULL,
-             path = test_dir, test_file = test_file, dry_run = FALSE,
-             log_table = "dettl_import_log", comment = "Test comment")
+             path = test_dir, test_file = test_file, transaction = TRUE,
+             dry_run = FALSE, log_table = "dettl_import_log",
+             comment = "Test comment")
   )
 
   ## Test that transaction is not currently active - check by trying to start
@@ -226,8 +228,8 @@ test_that("pre and post load functions are called if not NULL", {
   mock_post_load <- mockery::mock(TRUE)
   run_load(con, load_func, extracted_data = NULL, transformed_data,
            test_queries, pre_load = mock_pre_load, post_load = mock_post_load,
-           path = test_dir, test_file = test_file, dry_run = FALSE,
-           log_table = "dettl_import_log", comment = NULL)
+           path = test_dir, test_file = test_file, transaction = TRUE,
+           dry_run = FALSE, log_table = "dettl_import_log", comment = NULL)
 
   mockery::expect_called(mock_pre_load, 1)
   mockery::expect_called(mock_post_load, 1)

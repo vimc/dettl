@@ -61,6 +61,9 @@ read_config <- function(path) {
   info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
+  info$dettl$mode <- check_valid_mode(info$dettl$mode)
+  info$dettl$transaction <-
+    is.logical(info$dettl$transaction) %?% info$dettl$transaction %:% TRUE
   class(info) <- "dettl_import_config"
   info
 }
