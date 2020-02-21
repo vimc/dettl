@@ -17,17 +17,18 @@ Imports:
     DBI,
     gert,
     R6,
+    testthat,
     yaml,
     withr,
     writexl
-Suggests: 
+Suggests:
+    docopt,
     knitr,
     mockery,
     readxl,
     rmarkdown,
     RPostgres,
     RSQLite,
-    testthat,
     vaultr (>= 0.2.2)
 VignetteBuilder: knitr
 Language: en-GB

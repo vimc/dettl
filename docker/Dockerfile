@@ -15,7 +15,9 @@ RUN install_packages \
     RPostgres \
     RSQLite \
     bit64 \
+    docopt \
     gert \
+    testthat \
     vaultr \
     yaml \
     withr \
@@ -30,3 +32,5 @@ ENV DETTL_VERSION $DETTL_VERSION
 
 COPY . /src
 RUN R CMD INSTALL /src && rm -rf /src
+
+ENTRYPOINT ["/usr/local/bin/dettl"]
