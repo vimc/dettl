@@ -28,18 +28,7 @@ test_that("import can be run outside of a transaction", {
   ## transactions off this should still upload the rest of the data
   expect_error(import$load(),
                "Not importing table 'people_load'")
-  load_suppressed_error <- function() {
-    tryCatch(
-      import$load(),
-      error = function(e) {
-        ## Consume the error so we can test the other messages printed
-      }
-    )
-  }
-  expect_message(load_suppressed_error(),
-                 "ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
 
-  ## Preload was run
   tables <- DBI::dbGetQuery(con,
                             "SELECT
                                  name
@@ -56,6 +45,19 @@ test_that("import can be run outside of a transaction", {
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[[1]], 2)
   expect_equal(
     DBI::dbGetQuery(con, "SELECT count(*) from people_transform")[[1]], 3)
+
+  ## Test that message about db changes when running not in transaction is
+  ## printed
+  load_suppressed_error <- function() {
+    tryCatch(
+      import$load(),
+      error = function(e) {
+        ## Consume the error so we can test the other messages printed
+      }
+    )
+  }
+  expect_message(load_suppressed_error(),
+                 "ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
 })
 
 test_that("run in transaction if dry_run is TRUE and transaction FALSE", {

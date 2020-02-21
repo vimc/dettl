@@ -72,9 +72,8 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
     }
     message("\t- Running test queries after making changes")
     after <- test_queries(con)
-    test_path <- file.path(path, test_file)
-    message(sprintf("\t- Running load tests %s", test_path))
-    test_results <- run_load_tests(test_path, before, after, extracted_data,
+    message(sprintf("\t- Running load tests %s", test_file))
+    test_results <- run_load_tests(test_file, before, after, extracted_data,
                                    transformed_data, con)
   })
   if (all_passed(test_results)) {
