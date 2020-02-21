@@ -23,20 +23,25 @@
 #' @keywords internal
 #'
 run_load <- function(con, load, extracted_data, transformed_data, test_queries,
-                     pre_load, post_load, path, test_file, dry_run, log_table,
-                     comment) {
+                     pre_load, post_load, path, test_file, transaction, dry_run,
+                     log_table, comment) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
-  DBI::dbBegin(con)
+  if (transaction || dry_run) {
+    DBI::dbBegin(con)
+  }
   withCallingHandlers(
     do_load(con, load, extracted_data, transformed_data, path, test_file,
-            test_queries, pre_load, post_load, log_table, log_data, dry_run),
+            test_queries, pre_load, post_load, log_table, log_data, transaction,
+            dry_run),
     error = function(e) {
-      DBI::dbRollback(con)
+      if (transaction || dry_run) {
+        DBI::dbRollback(con)
+      }
       stop(e)
     }
   )
@@ -45,8 +50,10 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries,
 
 do_load <- function(con, load, extracted_data, transformed_data, path,
                     test_file, test_queries, pre_load, post_load, log_table,
-                    log_data, dry_run) {
-  message("Running load:")
+                    log_data, transaction, dry_run) {
+  message(
+    sprintf("Running load %s:",
+            transaction %?% "in a transaction" %:% "not in a transaction"))
   message("\t- Running test queries before making any changes")
   withr::with_dir(path, {
     before <- test_queries(con)
@@ -74,7 +81,9 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
     } else {
       message("All tests passed, commiting changes to database.")
       write_log(con, log_table, log_data)
-      DBI::dbCommit(con)
+      if (transaction) {
+        DBI::dbCommit(con)
+      }
     }
   } else {
     stop("Failed to load data - not all tests passed.")

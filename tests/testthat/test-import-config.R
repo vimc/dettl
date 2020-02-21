@@ -5,7 +5,7 @@ test_that("read config loads config from directory", {
   cfg <- read_config("example")
   expect_s3_class(cfg, "dettl_import_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 2)
@@ -37,13 +37,16 @@ test_that("read config loads config from directory", {
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "example")
+
+  expect_equal(cfg$dettl$mode, "append")
+  expect_true(cfg$dettl$transaction)
 })
 
 test_that("read config adds missing fields from defaults", {
   cfg <- read_config("simple_example")
   expect_s3_class(cfg, "dettl_import_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("extract" %in% names(cfg))
   expect_length(cfg$extract, 1)
@@ -72,6 +75,9 @@ test_that("read config adds missing fields from defaults", {
 
   expect_true("path" %in% names(cfg))
   expect_equal(cfg$path, "simple_example")
+
+  expect_equal(cfg$dettl$mode, "append")
+  expect_true(cfg$dettl$transaction)
 })
 
 test_that("read config fails if required configuration is not available", {
@@ -131,7 +137,7 @@ test_that("read config loads pre and post load functions in config", {
   cfg <- read_config("example_pre_post_load")
   expect_s3_class(cfg, "dettl_import_config")
 
-  expect_length(cfg, 6)
+  expect_length(cfg, 7)
 
   expect_true("load" %in% names(cfg))
   expect_length(cfg$load, 5)
@@ -153,4 +159,51 @@ test_that("missing required function fields throw error", {
   env <- new.env()
   expect_error(read_function_fields(fields, config, env),
                "Can't find required function func for field extract")
+})
+
+test_that("dettl config interprets import mode is invalid", {
+  dir <- setup_dettl_config()
+  cfg <- read_config(dir)
+  expect_equal(cfg$dettl$mode, "append")
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       mode: append")
+  cfg <- read_config(dir)
+  expect_equal(cfg$dettl$mode, "append")
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       mode: create")
+  cfg <- read_config(dir)
+  expect_equal(cfg$dettl$mode, "create")
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       mode: invalid")
+  expect_error(read_config(dir),
+               'Invalid mode - mode must be one of append, create got "invalid".')
+})
+
+test_that("dettl config transaction correctly", {
+  dir <- setup_dettl_config()
+  cfg <- read_config(dir)
+  expect_true(cfg$dettl$transaction)
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       transaction: TRUE")
+  cfg <- read_config(dir)
+  expect_true(cfg$dettl$transaction)
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       transaction: FALSE")
+  cfg <- read_config(dir)
+  expect_false(cfg$dettl$transaction)
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       transaction: invalid")
+  cfg <- read_config(dir)
+  expect_true(cfg$dettl$transaction)
+
+  dir <- setup_dettl_config(dettl = "dettl:
+                                       transaction: no")
+  cfg <- read_config(dir)
+  expect_false(cfg$dettl$transaction)
 })
