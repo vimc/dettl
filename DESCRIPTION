@@ -20,7 +20,8 @@ Imports:
     yaml,
     withr,
     writexl
-Suggests: 
+Suggests:
+    docopt,
     knitr,
     mockery,
     readxl,

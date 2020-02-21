@@ -15,6 +15,7 @@ RUN install_packages \
     RPostgres \
     RSQLite \
     bit64 \
+    docopt \
     gert \
     testthat \
     vaultr \
