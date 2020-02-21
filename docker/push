@@ -10,5 +10,4 @@ docker push $TAG_VERSION
 if [ $GIT_BRANCH == "master" ]; then
     TAG_LATEST="${PACKAGE_ORG}/${PACKAGE_NAME}:latest"
     docker tag $TAG_BRANCH $TAG_LATEST
-    docker tag $TAG_WORKER_BRANCH $TAG_WORKER_LATEST
 fi
