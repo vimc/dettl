@@ -32,3 +32,5 @@ ENV DETTL_VERSION $DETTL_VERSION
 
 COPY . /src
 RUN R CMD INSTALL /src && rm -rf /src
+
+ENTRYPOINT ["/usr/local/bin/dettl"]
