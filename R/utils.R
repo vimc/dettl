@@ -3,7 +3,7 @@
 }
 
 `%?%` <- function(x, y) list(x = x, y = y)
-`%:%` <- function(xy, z) if(xy$x) xy$y else z
+`%:%` <- function(xy, z) if (xy$x) xy$y else z
 
 yaml_load <- function(string) {
   ## More restrictive true/false handling.  Only accept if it maps to
