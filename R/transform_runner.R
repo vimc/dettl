@@ -20,7 +20,9 @@ run_transform <- function(con, transform, path, extracted_data,
     if (is.null(extracted_data)) {
       stop("Cannot run transform as no data has been extracted.")
     }
-    transformed_data <- transform(extracted_data)
+    withr::with_dir(path, {
+      transformed_data <- transform(extracted_data)
+    })
     verify_data(con, transformed_data, mode)
     if (!is.null(transform_test)) {
       message(sprintf("Running transform tests %s", transform_test))

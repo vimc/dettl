@@ -48,19 +48,21 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
                     log_data, dry_run) {
   message("Running load:")
   message("\t- Running test queries before making any changes")
-  before <- test_queries(con)
-  if (!is.null(pre_load)) {
-    message("\t- Running pre-load")
-    pre_load(transformed_data, con)
-  }
-  message("\t- Running load step")
-  load(transformed_data, con)
-  if (!is.null(post_load)) {
-    message("\t- Running post-load")
-    post_load(transformed_data, con)
-  }
-  message("\t- Running test queries after making changes")
-  after <- test_queries(con)
+  withr::with_dir(path, {
+    before <- test_queries(con)
+    if (!is.null(pre_load)) {
+      message("\t- Running pre-load")
+      pre_load(transformed_data, con)
+    }
+    message("\t- Running load step")
+    load(transformed_data, con)
+    if (!is.null(post_load)) {
+      message("\t- Running post-load")
+      post_load(transformed_data, con)
+    }
+    message("\t- Running test queries after making changes")
+    after <- test_queries(con)
+  })
   test_path <- file.path(path, test_file)
   message(sprintf("\t- Running load tests %s", test_path))
   test_results <- run_load_tests(test_path, before, after, extracted_data,
