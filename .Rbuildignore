@@ -8,3 +8,4 @@ l^\.travis\.yml$
 ^\.vault$
 \ZCX/
 ^\.lintr$
+^docker$
