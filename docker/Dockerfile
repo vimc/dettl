@@ -16,6 +16,7 @@ RUN install_packages \
     RSQLite \
     bit64 \
     gert \
+    testthat \
     vaultr \
     yaml \
     withr \
