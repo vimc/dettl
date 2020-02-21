@@ -14,6 +14,7 @@ run_load(
   post_load,
   path,
   test_file,
+  transaction,
   dry_run,
   log_table,
   comment
@@ -24,7 +25,8 @@ run_load(
 
 \item{load}{The load function for making the DB changes.}
 
-\item{extracted_data}{Extracted data if needed for testing, otherwise can be NULL.}
+\item{extracted_data}{Extracted data if needed for testing, otherwise can be
+NULL.}
 
 \item{transformed_data}{List of data frames representing the data to be
 loaded to the DB.}
