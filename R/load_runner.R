@@ -31,7 +31,8 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries,
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
-  if (transaction || dry_run) {
+  use_transaction <- transaction || dry_run
+  if (use_transaction) {
     DBI::dbBegin(con)
   }
   withCallingHandlers(
@@ -39,8 +40,10 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries,
             test_queries, pre_load, post_load, log_table, log_data, transaction,
             dry_run),
     error = function(e) {
-      if (transaction || dry_run) {
+      if (use_transaction) {
         DBI::dbRollback(con)
+      } else {
+        message("ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
       }
       stop(e)
     }
@@ -69,11 +72,11 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
     }
     message("\t- Running test queries after making changes")
     after <- test_queries(con)
+    test_path <- file.path(path, test_file)
+    message(sprintf("\t- Running load tests %s", test_path))
+    test_results <- run_load_tests(test_path, before, after, extracted_data,
+                                   transformed_data, con)
   })
-  test_path <- file.path(path, test_file)
-  message(sprintf("\t- Running load tests %s", test_path))
-  test_results <- run_load_tests(test_path, before, after, extracted_data,
-                                 transformed_data, con)
   if (all_passed(test_results)) {
     if (dry_run) {
       DBI::dbRollback(con)
