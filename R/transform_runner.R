@@ -61,4 +61,3 @@ verify_data <- function(con, transformed_data, mode) {
   }
   invisible(TRUE)
 }
-

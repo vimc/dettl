@@ -9,8 +9,8 @@ local({
   user <- "postgres"
   host <- "localhost"
   tryCatch({
-    con_pg <- DBI::dbConnect(RPostgres::Postgres(), dbname = dbname, user = user,
-                             host = host)
+    con_pg <- DBI::dbConnect(RPostgres::Postgres(), dbname = dbname,
+                             user = user, host = host)
     DBI::dbDisconnect(con_pg)
   }, error = function(e) {
     ## Just consume the error, we expect that this may not exist when being run

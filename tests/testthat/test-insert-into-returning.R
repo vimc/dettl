@@ -10,7 +10,7 @@ test_that("can add data to SQLite database returning primary key", {
     height = c(176, 189))
 
   ids <- insert_into_returning(con, "people", data, "id")
-  expect_equal(ids, data_frame(id = c(1,2)))
+  expect_equal(ids, data_frame(id = c(1, 2)))
 
   data <- data_frame(
     name = c("Clive", "Daisy"),
@@ -116,7 +116,7 @@ test_that("can add data to SQLite database and returning multiple columns", {
     height = c(176, 189))
 
   ids <- insert_into_returning(con, "people", data, key = "id", c("id", "name"))
-  expect_equal(ids, data_frame("id" = c(1,2), "name" = c("Alice", "Bob")))
+  expect_equal(ids, data_frame("id" = c(1, 2), "name" = c("Alice", "Bob")))
 
 })
 
@@ -130,7 +130,7 @@ test_that("can add data to Postgres database returning multiple columns", {
     height = c(176, 189))
 
   ids <- insert_into_returning(con, "people", data, key = "id", c("id", "name"))
-  expect_equal(ids, data_frame("id" = c(1,2), "name" = c("Alice", "Bob")))
+  expect_equal(ids, data_frame("id" = c(1, 2), "name" = c("Alice", "Bob")))
 })
 
 test_that("empty row can be inserted into SQLite db", {
@@ -140,7 +140,7 @@ test_that("empty row can be inserted into SQLite db", {
   data <- as.data.frame(matrix(nrow = 2, ncol = 0))
 
   ids <- insert_into_returning(con, "jobs", data, key = "id", "id")
-  expect_equal(ids, data_frame("id" = c(1,2)))
+  expect_equal(ids, data_frame("id" = c(1, 2)))
 })
 
 test_that("empty row can be inserted into Postgres db", {
@@ -150,5 +150,5 @@ test_that("empty row can be inserted into Postgres db", {
   data <- as.data.frame(matrix(nrow = 2, ncol = 0))
 
   ids <- insert_into_returning(con, "jobs", data, key = "id", "id")
-  expect_equal(ids, data_frame("id" = c(1,2)))
+  expect_equal(ids, data_frame("id" = c(1, 2)))
 })

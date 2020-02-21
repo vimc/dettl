@@ -11,7 +11,7 @@ test_that("child tables can be updated", {
   col3 <- c(6, 7, 8)
   child_table <- data_frame(col3, col1_child)
 
-  col4 <- c(4,3,2)
+  col4 <- c(4, 3, 2)
   col5 <- c(TRUE, FALSE, FALSE)
   other_table <- data_frame(col4, col5)
 
@@ -21,10 +21,10 @@ test_that("child tables can be updated", {
     other_table = other_table
   )
 
-  table_key_pair = list("child_table" = "col1_child")
+  table_key_pair <- list("child_table" = "col1_child")
 
-  old_key_values = c(2, 3, 5)
-  new_key_values = c(20, 30, 50)
+  old_key_values <- c(2, 3, 5)
+  new_key_values <- c(20, 30, 50)
 
   updated_tables <- update_child_tables(tables, table_key_pair, old_key_values,
                                         new_key_values, "parent_table")
@@ -51,9 +51,9 @@ test_that("automatic load supports 2 referenced fields within same table", {
   expect_equal(referenced_keys, c("id", "nid"))
 
   ## Create test data
-  referenced_table <- data_frame(id = c(1,2), nid = c(1,2))
-  id_constraint <- data_frame(name = c("idRef1", "idRef2"), ref = c(1,2))
-  nid_constraint <- data_frame(name = c("nidRef1", "nidRef2"), ref = c(2,1))
+  referenced_table <- data_frame(id = c(1, 2), nid = c(1, 2))
+  id_constraint <- data_frame(name = c("idRef1", "idRef2"), ref = c(1, 2))
+  nid_constraint <- data_frame(name = c("nidRef1", "nidRef2"), ref = c(2, 1))
 
   tables <- list(
     referenced_table = referenced_table,
@@ -78,7 +78,7 @@ test_that("postgres automatic load works as expected", {
   on.exit(DBI::dbDisconnect(con), add = TRUE)
 
   ## Create test data
-  region <- data_frame(id = c(5,6), name = c("France", "Paris"))
+  region <- data_frame(id = c(5, 6), name = c("France", "Paris"))
   street <- data_frame(name = "Test Avenue")
   address <- data_frame(street = "Test Avenue", region = 5)
 
@@ -95,7 +95,7 @@ test_that("postgres automatic load works as expected", {
     fixed = TRUE)
 
   ## Create expected data
-  db_region <- data_frame(id = c(1,2,3,4),
+  db_region <- data_frame(id = c(1, 2, 3, 4),
                           name = c("UK", "London", "France", "Paris"),
                           parent = c(NA, 1, NA, NA))
   db_street <- data_frame(name = c("Commercial Road", "The Street",
@@ -115,7 +115,7 @@ test_that("postgres automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   db_region <- data_frame(
-    id = c(1,2,3,4,5,6),
+    id = c(1, 2, 3, 4, 5, 6),
     name = c("UK", "London", "France", "Paris", "France", "Paris"),
     parent = c(NA, 1, NA, NA, NA, NA))
   region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
@@ -131,7 +131,7 @@ test_that("sqlite automatic load works as expected", {
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
   ## Create test data
-  region <- data_frame(id = c(5,6), name = c("France", "Paris"))
+  region <- data_frame(id = c(5, 6), name = c("France", "Paris"))
   street <- data_frame(name = "Test Avenue")
   address <- data_frame(street = "Test Avenue", region = 5)
 
@@ -145,7 +145,7 @@ test_that("sqlite automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   ## Create expected data
-  db_region <- data_frame(id = c(1,2,3,4),
+  db_region <- data_frame(id = c(1, 2, 3, 4),
                           name = c("UK", "London", "France", "Paris"),
                           parent = c(NA, 1, NA, NA))
   db_street <- data_frame(name = c("Commercial Road", "The Street",
@@ -165,7 +165,7 @@ test_that("sqlite automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   db_region <- data_frame(
-    id = c(1,2,3,4,5,6),
+    id = c(1, 2, 3, 4, 5, 6),
     name = c("UK", "London", "France", "Paris", "France", "Paris"),
     parent = c(NA, 1, NA, NA, NA, NA))
   region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")

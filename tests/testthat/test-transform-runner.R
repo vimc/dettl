@@ -82,7 +82,7 @@ testthat::test_that("messages are printed to console when tests are run", {
     "All transform tests passed.")
 })
 
-testthat::test_that("verification fails if not null constraints violated sqlite", {
+test_that("verification fails if not null constraints violated sqlite", {
   path <- prepare_test_import(add_job_table = TRUE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
@@ -107,7 +107,7 @@ testthat::test_that("verification fails if not null constraints violated sqlite"
 })
 
 
-testthat::test_that("verification fails if not null constraints violated postgres", {
+test_that("verification fails if not null constraints violated postgres", {
   path <- prepare_test_import(create_db = FALSE)
   con <- prepare_example_postgres_db(add_job_table = TRUE)
   on.exit(DBI::dbDisconnect(con), add = TRUE)

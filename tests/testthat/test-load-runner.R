@@ -18,8 +18,8 @@ testthat::test_that("messages are printed to console when tests are run", {
   ## around this by storing the messages in a variable and checking these
   ## individually.
   run_load_call <- function() {
-    run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-             pre_load = NULL, post_load = NULL, path = test_dir,
+    run_load(con, load_func, extracted_data = NULL, transformed_data,
+             test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
              test_file = test_file, dry_run = FALSE,
              log_table = "dettl_import_log", comment = NULL)
   }
@@ -139,13 +139,13 @@ test_that("import can only be run once", {
   options(testthat.default_reporter = "Silent")
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
 
-  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-           pre_load = NULL, post_load = NULL, path = test_dir,
+  run_load(con, load_func, extracted_data = NULL, transformed_data,
+           test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
            test_file = test_file, dry_run = FALSE,
            log_table = "dettl_import_log", comment = NULL)
 
-  expect_error(run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-                        path = test_dir, test_file = test_file,
+  expect_error(run_load(con, load_func, extracted_data = NULL, transformed_data,
+                        test_queries, path = test_dir, test_file = test_file,
                         dry_run = FALSE, log_table = "dettl_import_log",
                         comment = NULL),
 "Import has previously been run. Previous run log:
@@ -224,9 +224,9 @@ test_that("pre and post load functions are called if not NULL", {
 
   mock_pre_load <- mockery::mock(TRUE)
   mock_post_load <- mockery::mock(TRUE)
-  run_load(con, load_func, extracted_data = NULL, transformed_data, test_queries,
-           pre_load = mock_pre_load, post_load = mock_post_load, path = test_dir,
-           test_file = test_file, dry_run = FALSE,
+  run_load(con, load_func, extracted_data = NULL, transformed_data,
+           test_queries, pre_load = mock_pre_load, post_load = mock_post_load,
+           path = test_dir, test_file = test_file, dry_run = FALSE,
            log_table = "dettl_import_log", comment = NULL)
 
   mockery::expect_called(mock_pre_load, 1)

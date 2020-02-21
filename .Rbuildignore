@@ -7,3 +7,4 @@ l^\.travis\.yml$
 ^docs$
 ^\.vault$
 \ZCX/
+^\.lintr$

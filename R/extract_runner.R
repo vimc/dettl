@@ -13,7 +13,7 @@
 #' @return The extracted data.
 #' @keywords internal
 #'
-run_extract <- function(con, extract, path, extract_test){
+run_extract <- function(con, extract, path, extract_test) {
   if (!is.null(con) && DBI::dbIsValid(con)) {
     withr::with_dir(path, {
       extracted_data <- extract(con)

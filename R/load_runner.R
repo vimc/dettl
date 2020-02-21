@@ -5,7 +5,8 @@
 #'
 #' @param load The load function for making the DB changes.
 #' @param con Connection to the database.
-#' @param extracted_data Extracted data if needed for testing, otherwise can be NULL.
+#' @param extracted_data Extracted data if needed for testing, otherwise can be
+#' NULL.
 #' @param transformed_data List of data frames representing the data to be
 #' loaded to the DB.
 #' @param test_queries Function containing queries for running on the DB before
@@ -62,7 +63,8 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
   after <- test_queries(con)
   test_path <- file.path(path, test_file)
   message(sprintf("\t- Running load tests %s", test_path))
-  test_results <- run_load_tests(test_path, before, after, extracted_data, transformed_data, con)
+  test_results <- run_load_tests(test_path, before, after, extracted_data,
+                                 transformed_data, con)
   if (all_passed(test_results)) {
     if (dry_run) {
       DBI::dbRollback(con)

@@ -114,5 +114,3 @@ trigger_dbi_warning()
 get_local_connection <- function() {
   dbi_db_connect(RSQLite::SQLite(), ":memory:")
 }
-
-
