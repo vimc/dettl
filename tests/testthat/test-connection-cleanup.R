@@ -4,12 +4,12 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   ## In case there are any database connections waiting on garbage collection
   gc()
 
-  path <- build_git_demo("example_load_error", "dettl_config.yml")
+  path <- build_git_demo("example", "dettl_config.yml")
   con <- prepare_example_postgres_db()
   ## Close this connection as the import creates a new one below
   DBI::dbDisconnect(con)
 
-  import <- dettl(file.path(path, "example_load_error"), db_name = "psql_test")
+  import <- dettl(file.path(path, "example"), db_name = "psql_test")
   con <- import$get_connection()
 
   ## Start a transaction
