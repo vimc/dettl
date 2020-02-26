@@ -19,8 +19,9 @@
 #' import$transform()
 #' import$load()
 #'
-
+# nolint start
 DataImport <- R6::R6Class(
+# nolint end
   "DataImport",
   cloneable = FALSE,
 
