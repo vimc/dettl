@@ -22,26 +22,26 @@
 #'
 #' @keywords internal
 #'
-run_load <- function(con, load, extracted_data, transformed_data, test_queries,
-                     pre_load, post_load, path, test_file, transaction, dry_run,
-                     log_table, comment) {
+run_load <- function(connection, load, extracted_data, transformed_data,
+                     test_queries, pre_load, post_load, path, test_file,
+                     transaction, dry_run, log_table, comment) {
   if (is.null(transformed_data)) {
     stop("Cannot run tests as no data has been transformed.")
   }
   log_data <- build_log_data(path, comment)
-  verify_log_table(con, log_table, log_data)
-  verify_first_run(con, log_table, log_data)
+  verify_log_table(connection$con, log_table, log_data)
+  verify_first_run(connection$con, log_table, log_data)
   use_transaction <- transaction || dry_run
   if (use_transaction) {
-    DBI::dbBegin(con)
+    connection$begin()
   }
   withCallingHandlers(
-    do_load(con, load, extracted_data, transformed_data, path, test_file,
+    do_load(connection, load, extracted_data, transformed_data, path, test_file,
             test_queries, pre_load, post_load, log_table, log_data, transaction,
             dry_run),
     error = function(e) {
       if (use_transaction) {
-        DBI::dbRollback(con)
+        connection$rollback()
       } else {
         message("ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
       }
@@ -51,7 +51,7 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries,
   invisible(TRUE)
 }
 
-do_load <- function(con, load, extracted_data, transformed_data, path,
+do_load <- function(connection, load, extracted_data, transformed_data, path,
                     test_file, test_queries, pre_load, post_load, log_table,
                     log_data, transaction, dry_run) {
   message(
@@ -59,32 +59,32 @@ do_load <- function(con, load, extracted_data, transformed_data, path,
             transaction %?% "in a transaction" %:% "not in a transaction"))
   message("\t- Running test queries before making any changes")
   withr::with_dir(path, {
-    before <- test_queries(con)
+    before <- test_queries(connection$con)
     if (!is.null(pre_load)) {
       message("\t- Running pre-load")
-      pre_load(transformed_data, con)
+      pre_load(transformed_data, connection$con)
     }
     message("\t- Running load step")
-    load(transformed_data, con)
+    load(transformed_data, connection$con)
     if (!is.null(post_load)) {
       message("\t- Running post-load")
-      post_load(transformed_data, con)
+      post_load(transformed_data, connection$con)
     }
     message("\t- Running test queries after making changes")
-    after <- test_queries(con)
+    after <- test_queries(connection$con)
     message(sprintf("\t- Running load tests %s", test_file))
     test_results <- run_load_tests(test_file, before, after, extracted_data,
-                                   transformed_data, con)
+                                   transformed_data, connection$con)
   })
   if (all_passed(test_results)) {
     if (dry_run) {
-      DBI::dbRollback(con)
+      connection$rollback()
       message("All tests passed, rolling back dry run import.")
     } else {
       message("All tests passed, commiting changes to database.")
-      write_log(con, log_table, log_data)
+      write_log(connection$con, log_table, log_data)
       if (transaction) {
-        DBI::dbCommit(con)
+        connection$commit()
       }
     }
   } else {

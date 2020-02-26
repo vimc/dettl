@@ -14,11 +14,11 @@ test_that("format works for functions with many args", {
   ## many arguments
   call <- capture_args(run_load, "run_load", width = 50)
   expect_equal(call,
-"    run_load(con, load, extracted_data,
-        transformed_data, test_queries,
-        pre_load, post_load, path,
-        test_file, transaction, dry_run,
-        log_table, comment)")
+"    run_load(connection, load,
+        extracted_data, transformed_data,
+        test_queries, pre_load, post_load,
+        path, test_file, transaction,
+        dry_run, log_table, comment)")
 })
 
 

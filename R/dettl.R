@@ -19,13 +19,11 @@
 #' import$transform()
 #' import$load()
 #'
-
 DataImport <- R6::R6Class(
   "DataImport",
   cloneable = FALSE,
 
   private = list(
-    con = NULL,
     extract_ = NULL,
     transform_ = NULL,
     load_ = NULL,
@@ -42,10 +40,12 @@ DataImport <- R6::R6Class(
     require_branch = NULL,
     db_name = NULL,
     mode = NULL,
-    transaction = TRUE
+    load_in_transaction = TRUE
   ),
 
   public = list(
+    #' @field connection Connection object which manages transactions
+    connection = NULL,
     #' @field path Path to directory containing import object
     path = NULL,
 
@@ -58,8 +58,15 @@ DataImport <- R6::R6Class(
     initialize = function(path, db_name) {
       self$path <- normalizePath(path, winslash = "/", mustWork = TRUE)
       private$db_name <- db_name
+      self$connection <- Connection$new(self$path)
       lockBinding("path", self)
       self$reload()
+    },
+
+    #' @description
+    #' Cleanup DataImport object - is called by garbage collector
+    finalize = function() {
+      self$connection$finalize()
     },
 
     #' @description
@@ -68,7 +75,7 @@ DataImport <- R6::R6Class(
     reload = function() {
       dettl_config <- read_config(self$path)
       private$mode <- dettl_config$dettl$mode
-      private$transaction <- dettl_config$dettl$transaction
+      private$load_in_transaction <- dettl_config$dettl$transaction
       if (dettl_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
@@ -76,8 +83,8 @@ DataImport <- R6::R6Class(
       }
       cfg <- dettl_config(self$path)
 
-      db_name <- private$db_name %||% get_default_type(cfg)
-      private$con <- db_connect(db_name, self$path)
+      private$db_name <- private$db_name %||% get_default_type(cfg)
+      self$connection$reset_connection(private$db_name)
       private$extract_ <- dettl_config$extract$func
       private$extract_test_ <- dettl_config$extract$test
       private$transform_ <- dettl_config$transform$func
@@ -88,9 +95,9 @@ DataImport <- R6::R6Class(
       private$load_test_ <- dettl_config$load$test
       private$test_queries <- dettl_config$load$verification_queries
 
-      private$log_table <- db_get_log_table(db_name, self$path)
-      private$confirm <- cfg$db[[db_name]]$confirm
-      private$require_branch <- cfg$db[[db_name]]$require_branch
+      private$log_table <- db_get_log_table(private$db_name, self$path)
+      private$confirm <- cfg$db[[private$db_name]]$confirm
+      private$require_branch <- cfg$db[[private$db_name]]$require_branch
     },
 
     #' @description
@@ -110,7 +117,8 @@ DataImport <- R6::R6Class(
     #' Run the extract stage of the data import
     extract = function() {
       message(sprintf("Running extract %s", self$path))
-      private$extracted_data <- run_extract(private$con, private$extract_,
+      private$extracted_data <- run_extract(self$connection$con,
+                                            private$extract_,
                                             self$path, private$extract_test_)
       invisible(private$extracted_data)
     },
@@ -119,7 +127,8 @@ DataImport <- R6::R6Class(
     #' Run the transform stage of the data import
     transform = function() {
       message(sprintf("Running transform %s", self$path))
-      private$transformed_data <- run_transform(private$con, private$transform_,
+      private$transformed_data <- run_transform(self$connection$con,
+                                                private$transform_,
                                                 self$path,
                                                 private$extracted_data,
                                                 private$transform_test_,
@@ -157,10 +166,10 @@ DataImport <- R6::R6Class(
       if (!force && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
-      run_load(private$con, private$load_, private$extracted_data,
+      run_load(self$connection, private$load_, private$extracted_data,
                private$transformed_data, private$test_queries,
                private$load_pre_, private$load_post_, self$path,
-               private$load_test_, private$transaction, dry_run,
+               private$load_test_, private$load_in_transaction, dry_run,
                private$log_table, comment)
       invisible(TRUE)
     },
@@ -169,7 +178,7 @@ DataImport <- R6::R6Class(
     #' Get the database connection being used by the import. Used for testing.
     #' @return The DBI connection
     get_connection = function() {
-      private$con
+      self$connection$con
     },
 
     #' @description
@@ -192,6 +201,83 @@ DataImport <- R6::R6Class(
     #' @return Log table name
     get_log_table = function() {
       private$log_table
+    }
+  )
+)
+
+Connection <- R6::R6Class(
+  "Connection",
+  cloneable = FALSE,
+
+  private = list(
+    transaction_active = FALSE,
+
+    #' @description
+    #' Tidy up open connections, rolling back any active transactions
+    close_connection = function() {
+      if (private$transaction_active) {
+        warning("Rolling back active transaction")
+        self$rollback()
+      }
+      ## Connection will always be null on first call to reload
+      if (!is.null(self$con)) {
+        tryCatch(
+          DBI::dbDisconnect(self$con),
+          error = function(e) {
+            ## Consume the error and print as warning
+            warning(e$message)
+          }
+        )
+      }
+      invisible(TRUE)
+    }
+  ),
+
+  public = list(
+    #' @field con Current connection being managed
+    con = NULL,
+    #' @field path Path to directory containing db config
+    path = NULL,
+
+    #' @description
+    #' Create Connection object.
+    initialize = function(path) {
+      self$path <- path
+    },
+
+    #' @description
+    #' Cleanup Connection object - is called by garbage collector
+    finalize = function() {
+      private$close_connection()
+    },
+
+    #' @description
+    #' Reset the connection, clears old connection and creates a new one
+    #' @param db_name Name of db in cfg to connect to
+    reset_connection = function(db_name) {
+      private$close_connection()
+      self$con <- db_connect(db_name, self$path)
+    },
+
+    #' @description
+    #' Start a transaction
+    begin = function() {
+      DBI::dbBegin(self$con)
+      private$transaction_active <- TRUE
+    },
+
+    #' @description
+    #' Rollback a transaction
+    rollback = function() {
+      DBI::dbRollback(self$con)
+      private$transaction_active <- FALSE
+    },
+
+    #' @description
+    #' Commit a transaction
+    commit = function() {
+      DBI::dbCommit(self$con)
+      private$transaction_active <- FALSE
     }
   )
 )

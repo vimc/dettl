@@ -2,7 +2,7 @@ context("load_runner")
 
 testthat::test_that("messages are printed to console when tests are run", {
   path <- prepare_test_import("example_tests")
-  con <- db_connect("test", path)
+  connection <- create_test_connection("test", path)
   load_func <- function(data, con) {}
   transformed_data <- list()
   test_queries <- function(con) {}
@@ -18,7 +18,7 @@ testthat::test_that("messages are printed to console when tests are run", {
   ## around this by storing the messages in a variable and checking these
   ## individually.
   run_load_call <- function() {
-    run_load(con, load_func, extracted_data = NULL, transformed_data,
+    run_load(connection, load_func, extracted_data = NULL, transformed_data,
              test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
              test_file = test_file, transaction = TRUE, dry_run = FALSE,
              log_table = "dettl_import_log", comment = NULL)
