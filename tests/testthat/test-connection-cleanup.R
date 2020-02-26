@@ -13,7 +13,7 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   con <- import$get_connection()
 
   ## Start a transaction
-  import$connection$begin()
+  import$begin_transaction()
   connections <- get_connections(con)
   connection_no_start <- nrow(connections)
 
@@ -27,23 +27,6 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   expect_equal(nrow(connections), connection_no_start)
   expect_false(any(connections$state == 'idle in transaction'))
 
-  ## Old connection has been closed
-  expect_false(DBI::dbIsValid(con))
-})
-
-test_that("import finalize closes the connection", {
-  ## In case there are any database connections waiting on garbage collection
-  gc()
-
-  path <- build_git_demo("example_load_error", "dettl_config.yml")
-  con <- prepare_example_postgres_db()
-  ## Close this connection as the import creates a new one below
-  DBI::dbDisconnect(con)
-
-  import <- dettl(file.path(path, "example_load_error"), db_name = "psql_test")
-  con <- import$get_connection()
-
-  import$finalize()
   ## Old connection has been closed
   expect_false(DBI::dbIsValid(con))
 })

@@ -28,9 +28,8 @@ run_load <- function(con, load, extracted_data, transformed_data, test_queries,
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
   withr::with_dir(path,
-    do_load(connection, load, extracted_data, transformed_data, test_file,
+    do_load(con, load, extracted_data, transformed_data, test_file,
             test_queries, pre_load, post_load))
-
   log_data
 }
 

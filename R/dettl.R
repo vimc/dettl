@@ -83,12 +83,6 @@ DataImport <- R6::R6Class(
     },
 
     #' @description
-    #' Cleanup DataImport object - is called by garbage collector
-    finalize = function() {
-      private$close_connection()
-    },
-
-    #' @description
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
@@ -185,7 +179,7 @@ DataImport <- R6::R6Class(
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
 
-      use_transaction <- private$load_in_transation || dry_run
+      use_transaction <- private$load_in_transaction || dry_run
       if (use_transaction) {
         self$begin_transaction()
       }
@@ -202,8 +196,8 @@ DataImport <- R6::R6Class(
           message("All tests passed, rolling back dry run import.")
         } else {
           message("All tests passed, commiting changes to database.")
-          write_log(con, log_table, log_data)
-          if (transaction) {
+          write_log(private$con, private$log_table, log_data)
+          if (use_transaction) {
             self$commit_transaction()
           }
         }
