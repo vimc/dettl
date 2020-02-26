@@ -57,8 +57,7 @@ DataImport <- R6::R6Class(
         tryCatch(
           DBI::dbDisconnect(private$con),
           error = function(e) {
-            ## Consume the error and print as warning
-            warning(e$message)
+            ## Consume the error
           }
         )
       }
