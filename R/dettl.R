@@ -26,6 +26,7 @@ DataImport <- R6::R6Class(
 
   private = list(
     con = NULL,
+    transaction_active = FALSE,
     extract_ = NULL,
     transform_ = NULL,
     load_ = NULL,
@@ -42,7 +43,26 @@ DataImport <- R6::R6Class(
     require_branch = NULL,
     db_name = NULL,
     mode = NULL,
-    transaction = TRUE
+    load_in_transaction = TRUE,
+
+    #' @description
+    #' Tidy up open connections, rolling back any active transactions
+    close_connection = function() {
+      if (private$transaction_active) {
+        warning("Rolling back active transaction")
+        self$rollback_transaction()
+      }
+      ## Connection will always be null on first call to reload
+      if (!is.null(private$con)) {
+        tryCatch(
+          DBI::dbDisconnect(private$con),
+          error = function(e) {
+            ## Consume the error and print as warning
+            warning(e$message)
+          }
+        )
+      }
+    }
   ),
 
   public = list(
@@ -63,12 +83,18 @@ DataImport <- R6::R6Class(
     },
 
     #' @description
+    #' Cleanup DataImport object - is called by garbage collector
+    finalize = function() {
+      private$close_connection()
+    },
+
+    #' @description
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
       dettl_config <- read_config(self$path)
       private$mode <- dettl_config$dettl$mode
-      private$transaction <- dettl_config$dettl$transaction
+      private$load_in_transaction <- dettl_config$dettl$transaction
       if (dettl_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
@@ -77,6 +103,7 @@ DataImport <- R6::R6Class(
       cfg <- dettl_config(self$path)
 
       db_name <- private$db_name %||% get_default_type(cfg)
+      private$close_connection()
       private$con <- db_connect(db_name, self$path)
       private$extract_ <- dettl_config$extract$func
       private$extract_test_ <- dettl_config$extract$test
@@ -157,11 +184,37 @@ DataImport <- R6::R6Class(
       if (!force && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
-      run_load(private$con, private$load_, private$extracted_data,
-               private$transformed_data, private$test_queries,
-               private$load_pre_, private$load_post_, self$path,
-               private$load_test_, private$transaction, dry_run,
-               private$log_table, comment)
+
+      use_transaction <- private$load_in_transation || dry_run
+      if (use_transaction) {
+        self$begin_transaction()
+      }
+      message(
+        sprintf("Running load %s:",
+                use_transaction %?% "in a transaction" %:% "not in a transaction"))
+      withCallingHandlers({
+        log_data <- run_load(private$con, private$load_, private$extracted_data,
+                             private$transformed_data, private$test_queries,
+                             private$load_pre_, private$load_post_, self$path,
+                             private$load_test_, private$log_table, comment)
+        if (dry_run) {
+          self$rollback_transaction()
+          message("All tests passed, rolling back dry run import.")
+        } else {
+          message("All tests passed, commiting changes to database.")
+          write_log(con, log_table, log_data)
+          if (transaction) {
+            self$commit_transaction()
+          }
+        }
+      }, error = function(e) {
+        if (use_transaction) {
+          message("Rolling back changes to database as error has occured")
+          self$rollback_transaction()
+        } else {
+          message("ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
+        }
+      })
       invisible(TRUE)
     },
 
@@ -192,6 +245,28 @@ DataImport <- R6::R6Class(
     #' @return Log table name
     get_log_table = function() {
       private$log_table
+    },
+
+    #' @description
+    #' Start a transaction
+    begin_transaction = function() {
+      DBI::dbBegin(private$con)
+      private$transaction_active <- TRUE
+    },
+
+    #' @description
+    #' Rollback a transaction
+    rollback_transaction = function() {
+      DBI::dbRollback(private$con)
+      private$transaction_active <- FALSE
+    },
+
+    #' @description
+    #' Commit a transaction
+    commit_transaction = function() {
+      DBI::dbCommit(private$con)
+      private$transaction_active <- FALSE
     }
   )
 )
+
