@@ -13,7 +13,7 @@ get_fk_constraints <- function(con) {
     stop(sprintf("Only sqlite and postgresql dialects are supported got %s.",
                   dialect))
   )
-  parse_constraints(get_fks(con))
+  get_fks(con)
 }
 
 #' Get FK constraints for SQLite connection

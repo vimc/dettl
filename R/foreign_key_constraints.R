@@ -2,12 +2,15 @@ ForeignKeyConstraints <- R6::R6Class(
   "ForeignKeyConstraints",
 
   private = list(
-    constraints = NULL
+    constraints = NULL,
+    constraint_table = NULL
   ),
 
   public = list(
+
     initialize = function(con) {
-      private$constraints <- get_fk_constraints(con)
+      private$constraint_table <- get_fk_constraints(con)
+      private$constraints <- parse_constraints(private$constraint_table)
     },
 
     used_as_foreign_key = function(name) {
@@ -61,6 +64,21 @@ ForeignKeyConstraints <- R6::R6Class(
         }
       }
       is_serial && is_used_as_constraint
+    },
+
+    get_network_table = function(tables) {
+      ## We are only concerned with the subset of tables we are trying to
+      ## upload here. If any other required tables don't exist the import
+      ## will fail and postgres error will be returned to user
+      rows_to_keep <- private$constraint_table$constraint_table %in% tables &
+                      private$constraint_table$referenced_table %in% tables
+      filtered_tables <- private$constraint_table[
+        rows_to_keep, c("constraint_table", "referenced_table")]
+      constraints <- unique(filtered_tables$constraint_table)
+      lapply(setNames(constraints, constraints), function(table) {
+        unique(filtered_tables[filtered_tables$constraint_table == table,
+                        "referenced_table"])
+      })
     }
   )
 )

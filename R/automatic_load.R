@@ -33,7 +33,8 @@
 #' dettl_auto_load(data, con)
 dettl_auto_load <- function(transformed_data, con) {
   rewrite_keys <- ForeignKeyConstraints$new(con)
-  for (name in names(transformed_data)) {
+  ordered_data <- order_transformed_data(transformed_data, rewrite_keys)
+  for (name in names(ordered_data)) {
     message(sprintf("Updating %s (adding %d rows)",
                     name, nrow(transformed_data[[name]])))
     has_serial_foreign_keys <- rewrite_keys$used_as_foreign_key(name) &&

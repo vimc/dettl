@@ -20,8 +20,10 @@ test_that("foreign key constraints can be initialised and accessed", {
       "serial" = c("id", "nid")
     )
   )
-  mock_get_fk_constraints <- mockery::mock(constraints)
-  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+  mock_get_fk_constraints <- mockery::mock(NULL)
+  mock_parse_constraints <- mockery::mock(constraints)
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints,
+            "dettl:::parse_constraints" = mock_parse_constraints, {
     keys <- ForeignKeyConstraints$new("con")
   })
 
@@ -95,7 +97,9 @@ test_that("foreign key constraints can be initialised and accessed", {
 
 test_that("empty key constraints returns appropriate messages", {
   mock_get_fk_constraints <- mockery::mock(list())
-  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+  mock_parse_constraints <- mockery::mock(list())
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints,
+            "dettl:::parse_constraints" = mock_parse_constraints, {
     keys <- ForeignKeyConstraints$new("con")
   })
   expect_false(keys$used_as_foreign_key("test"))
@@ -107,4 +111,23 @@ test_that("empty key constraints returns appropriate messages", {
     "Tried to get foreign key usages for referenced table 'test' and column 'test2', table and column are missing from constraints.")
 
   expect_false(keys$is_serial("table", "id"))
+})
+
+test_that("can get network table from foreign key constraints", {
+  constraint_table <- data_frame(
+    constraint_table = c("A", "A", "A", "B", "C", "D", "A"),
+    referenced_table = c("B", "B", "D", "A", "A", "A", "C")
+  )
+  mock_get_fk_constraints <- mockery::mock(constraint_table)
+  mock_parse_constraints <- mockery::mock(list())
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints,
+            "dettl:::parse_constraints" = mock_parse_constraints, {
+              keys <- ForeignKeyConstraints$new("con")
+            })
+  network <- keys$get_network_table(c("A", "B", "C"))
+  expect_equal(network, list(
+    A = c("B", "C"),
+    B = "A",
+    C = "A"
+  ))
 })
