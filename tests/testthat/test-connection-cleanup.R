@@ -30,3 +30,19 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   ## Old connection has been closed
   expect_false(DBI::dbIsValid(con))
 })
+
+test_that("error during disconnect is caught", {
+  gc()
+
+  path <- build_git_demo("example", "dettl_config.yml")
+  con <- prepare_example_postgres_db()
+
+  import <- dettl(file.path(path, "example"), db_name = "psql_test")
+
+  mock_db_disconnect <- mockery::mock(stop("Error closing connection"))
+
+  with_mock("DBI::dbDisconnect" = mock_db_disconnect, {
+    expect_message(import$reload(), "While disconnecting from db, ignored error:
+Error closing connection")
+  })
+})

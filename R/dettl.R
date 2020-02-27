@@ -58,7 +58,7 @@ DataImport <- R6::R6Class(
         tryCatch(
           DBI::dbDisconnect(private$con),
           error = function(e) {
-            message("While disconnecting from db, ignored error:", e$message)
+            message("While disconnecting from db, ignored error:\n", e$message)
           }
         )
       }
