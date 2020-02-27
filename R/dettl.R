@@ -50,7 +50,7 @@ DataImport <- R6::R6Class(
     #' Tidy up open connections, rolling back any active transactions
     close_connection = function() {
       if (private$transaction_active) {
-        warning("Rolling back active transaction")
+        message("Rolling back active transaction")
         self$rollback_transaction()
       }
       ## Connection will always be null on first call to reload
@@ -58,7 +58,7 @@ DataImport <- R6::R6Class(
         tryCatch(
           DBI::dbDisconnect(private$con),
           error = function(e) {
-            ## Consume the error
+            message("While disconnecting from db, ignored error:", e$message)
           }
         )
       }
@@ -185,7 +185,11 @@ DataImport <- R6::R6Class(
       }
       message(
         sprintf("Running load %s:",
-                use_transaction %?% "in a transaction" %:% "not in a transaction"))
+                if (use_transaction) {
+                  "in a transaction"
+                } else {
+                  "not in a transaction"
+                }))
       withCallingHandlers({
         log_data <- run_load(private$con, private$load_, private$extracted_data,
                              private$transformed_data, private$test_queries,
