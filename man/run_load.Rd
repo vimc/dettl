@@ -14,8 +14,6 @@ run_load(
   post_load,
   path,
   test_file,
-  transaction,
-  dry_run,
   log_table,
   comment
 )
@@ -38,10 +36,6 @@ and after the load is run. Used within the tests to check changes to the DB.}
 
 \item{test_file}{Path to file containing the testthat tests for verifying the
 DB changes.}
-
-\item{dry_run}{If TRUE then any database changes are rolled back when the
-import completes. i.e. the load stage can be run and tests executed but the
-db will be rolled back.}
 
 \item{comment}{An optional comment to add to the import log table for this
 run.}

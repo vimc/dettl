@@ -4,3 +4,10 @@ db:
     args:
       dbname: test.sqlite
     log_table: dettl_import_log
+  psql_test:
+    driver: RPostgres::Postgres
+    args:
+      dbname: dettl_test_db
+      user: postgres
+      host: localhost
+    log_table: dettl_import_log

@@ -50,11 +50,17 @@ import$load()
 \item \href{#method-get_extracted_data}{\code{DataImport$get_extracted_data()}}
 \item \href{#method-get_transformed_data}{\code{DataImport$get_transformed_data()}}
 \item \href{#method-get_log_table}{\code{DataImport$get_log_table()}}
+\item \href{#method-begin_transaction}{\code{DataImport$begin_transaction()}}
+\item \href{#method-rollback_transaction}{\code{DataImport$rollback_transaction()}}
+\item \href{#method-commit_transaction}{\code{DataImport$commit_transaction()}}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
+Tidy up open connections, rolling back any active transactions
+
+
 Create DataImport object - shouldn't be called directly. Use
 \code{\link{dettl}} to create the object
 \subsection{Usage}{
@@ -198,5 +204,32 @@ of the log table configured in the dettl config
 \subsection{Returns}{
 Log table name
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-begin_transaction"></a>}}
+\subsection{Method \code{begin_transaction()}}{
+Start a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$begin_transaction()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rollback_transaction"></a>}}
+\subsection{Method \code{rollback_transaction()}}{
+Rollback a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$rollback_transaction()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-commit_transaction"></a>}}
+\subsection{Method \code{commit_transaction()}}{
+Commit a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataImport$commit_transaction()}\if{html}{\out{</div>}}
+}
+
 }
 }

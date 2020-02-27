@@ -14,77 +14,42 @@
 #' @param path Path to the import project directory.
 #' @param test_file Path to file containing the testthat tests for verifying the
 #' DB changes.
-#' @param dry_run If TRUE then any database changes are rolled back when the
-#' import completes. i.e. the load stage can be run and tests executed but the
-#' db will be rolled back.
 #' @param comment An optional comment to add to the import log table for this
 #' run.
 #'
 #' @keywords internal
 #'
 run_load <- function(con, load, extracted_data, transformed_data, test_queries,
-                     pre_load, post_load, path, test_file, transaction, dry_run,
-                     log_table, comment) {
+                     pre_load, post_load, path, test_file, log_table, comment) {
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
-  use_transaction <- transaction || dry_run
-  if (use_transaction) {
-    DBI::dbBegin(con)
-  }
-  withCallingHandlers(
-    do_load(con, load, extracted_data, transformed_data, path, test_file,
-            test_queries, pre_load, post_load, log_table, log_data, transaction,
-            dry_run),
-    error = function(e) {
-      if (use_transaction) {
-        DBI::dbRollback(con)
-      } else {
-        message("ATTENTION: even though your load has failed, because you did not use a transaction, the database may have been modified")
-      }
-      stop(e)
-    }
-  )
-  invisible(TRUE)
+  withr::with_dir(path,
+    do_load(con, load, extracted_data, transformed_data, test_file,
+            test_queries, pre_load, post_load))
+  log_data
 }
 
-do_load <- function(con, load, extracted_data, transformed_data, path,
-                    test_file, test_queries, pre_load, post_load, log_table,
-                    log_data, transaction, dry_run) {
-  message(
-    sprintf("Running load %s:",
-            transaction %?% "in a transaction" %:% "not in a transaction"))
+do_load <- function(con, load, extracted_data, transformed_data, test_file,
+                    test_queries, pre_load, post_load) {
   message("\t- Running test queries before making any changes")
-  withr::with_dir(path, {
-    before <- test_queries(con)
-    if (!is.null(pre_load)) {
-      message("\t- Running pre-load")
-      pre_load(transformed_data, con)
-    }
-    message("\t- Running load step")
-    load(transformed_data, con)
-    if (!is.null(post_load)) {
-      message("\t- Running post-load")
-      post_load(transformed_data, con)
-    }
-    message("\t- Running test queries after making changes")
-    after <- test_queries(con)
-    message(sprintf("\t- Running load tests %s", test_file))
-    test_results <- run_load_tests(test_file, before, after, extracted_data,
-                                   transformed_data, con)
-  })
-  if (all_passed(test_results)) {
-    if (dry_run) {
-      DBI::dbRollback(con)
-      message("All tests passed, rolling back dry run import.")
-    } else {
-      message("All tests passed, commiting changes to database.")
-      write_log(con, log_table, log_data)
-      if (transaction) {
-        DBI::dbCommit(con)
-      }
-    }
-  } else {
+  before <- test_queries(con)
+  if (!is.null(pre_load)) {
+    message("\t- Running pre-load")
+    pre_load(transformed_data, con)
+  }
+  message("\t- Running load step")
+  load(transformed_data, con)
+  if (!is.null(post_load)) {
+    message("\t- Running post-load")
+    post_load(transformed_data, con)
+  }
+  message("\t- Running test queries after making changes")
+  after <- test_queries(con)
+  message(sprintf("\t- Running load tests %s", test_file))
+  test_results <- run_load_tests(test_file, before, after, extracted_data,
+                                 transformed_data, con)
+  if (!all_passed(test_results)) {
     stop("Failed to load data - not all tests passed.")
   }
 }
