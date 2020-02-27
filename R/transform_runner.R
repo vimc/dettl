@@ -1,41 +1,60 @@
 #' Run transform step.
 #'
 #' Step is responsible for taking extracted data, running the configured
-#' transform function on the data, checking the returned data adheres to the
-#' db schema and running any configured user defined tests.
+#' transform function on the data.
 #'
-#' @param con The active DB connection.
 #' @param transform Transform function loaded from config.
-#' @param path Path to the project directory, for locating the transform tests
 #' @param extracted_data Data returned from the extract step.
-#' @param transform_test Optional path to the transform tests. Relative to path
-#' argument.
-#' @param mode The type of import being run.
+#' @param extracted_passed TRUE if the extract stage tests passed successfully
 #'
-#' @return The successfully transformed data.
+#' @return The transformed data.
 #' @keywords internal
 #'
-run_transform <- function(con, transform, path, extracted_data,
-                          transform_test, mode) {
-    if (is.null(extracted_data)) {
-      stop("Cannot run transform as no data has been extracted.")
-    }
-    withr::with_dir(path, {
-      transformed_data <- transform(extracted_data)
-      verify_data(con, transformed_data, mode)
-      if (!is.null(transform_test)) {
-        message(sprintf("Running transform tests %s", transform_test))
-        test_results <-
-          run_transform_tests(transform_test, transformed_data, extracted_data, con)
-        if (!all_passed(test_results)) {
-          stop("Not all transform tests passed. Fix tests before proceeding.")
-        } else {
-          message("All transform tests passed.")
-        }
-      }
-    })
-    transformed_data
+run_transform <- function(transform, extracted_data, extract_passed, path) {
+  if (is.null(extracted_data)) {
+    stop("Cannot run transform as no data has been extracted.")
   }
+  if (!extract_passed) {
+    stop("Cannot run transform as extract tests failed.")
+  }
+  withr::with_dir(path, {
+    transform(extracted_data)
+  })
+}
+
+#' Run tests for transform step.
+#'
+#' This checks the transformed data adheres to the db schema and runs any
+#' configured user defined tests.
+#'
+#' @param con The active DB connection.
+#' @param path Path to the project directory, for locating the transform tests.
+#' @param mode The type of import being run.
+#' @param transform_test Optional path to the transform tests. Relative to path
+#' argument.
+#' @param transformed_data Data returned from the transform stage.
+#' @param extracted_data Data returned from the extract step.
+#'
+#' @return TRUE is tests pass, otherwise throws an error.
+#' @keywords internal
+#'
+test_transform <- function(con, path, mode, transform_test, transformed_data,
+                           extracted_data) {
+  withr::with_dir(path, {
+    verify_data(con, transformed_data, mode)
+    if (!is.null(transform_test)) {
+      message(sprintf("Running transform tests %s", transform_test))
+      test_results <-
+        run_transform_tests(transform_test, transformed_data, extracted_data, con)
+      if (!all_passed(test_results)) {
+        stop("Not all transform tests passed. Fix tests before proceeding.")
+      } else {
+        message("All transform tests passed.")
+      }
+    }
+  })
+  invisible(TRUE)
+}
 
 
 #' Verify the transformed data adhered to the DB schema.
