@@ -4,7 +4,7 @@
 \alias{run_transform}
 \title{Run transform step.}
 \usage{
-run_transform(transform, extracted_data, extract_passed)
+run_transform(transform, extracted_data, extract_passed, path)
 }
 \arguments{
 \item{transform}{Transform function loaded from config.}
