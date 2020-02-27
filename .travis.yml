@@ -13,10 +13,8 @@ before_script:
   - R CMD INSTALL .
 after_success:
   - Rscript -e 'covr::codecov(quiet = FALSE)'
-  - Rscript -e 'lintr::lint_package()'
 r_github_packages:
   - vimc/vaultr
-  - jimhester/lintr
 env:
   global:
     - VAULTR_TEST_SERVER_INSTALL=true
