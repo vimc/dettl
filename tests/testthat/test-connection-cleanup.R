@@ -18,7 +18,7 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   connection_no_start <- nrow(connections)
 
   ## Reload the database connection
-  expect_warning(import$reload(), "Rolling back active transaction")
+  expect_message(import$reload(), "Rolling back active transaction")
 
   ## No 'idle in transaction' connections exist and number of connections is
   ## constant
