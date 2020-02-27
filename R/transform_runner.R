@@ -10,14 +10,16 @@
 #' @return The transformed data.
 #' @keywords internal
 #'
-run_transform <- function(transform, extracted_data, extract_passed) {
+run_transform <- function(transform, extracted_data, extract_passed, path) {
   if (is.null(extracted_data)) {
     stop("Cannot run transform as no data has been extracted.")
   }
   if (!extract_passed) {
     stop("Cannot run transform as extract tests failed.")
   }
-  transform(extracted_data)
+  withr::with_dir(path, {
+    transform(extracted_data)
+  })
 }
 
 #' Run tests for transform step.
@@ -38,18 +40,19 @@ run_transform <- function(transform, extracted_data, extract_passed) {
 #'
 test_transform <- function(con, path, mode, transform_test, transformed_data,
                            extracted_data) {
-  verify_data(con, transformed_data, mode)
-  if (!is.null(transform_test)) {
-    message(sprintf("Running transform tests %s", transform_test))
-    test_path <- file.path(path, transform_test)
-    test_results <-
-      run_transform_tests(test_path, transformed_data, extracted_data, con)
-    if (!all_passed(test_results)) {
-      stop("Not all transform tests passed. Fix tests before proceeding.")
-    } else {
-      message("All transform tests passed.")
+  withr::with_dir(path, {
+    verify_data(con, transformed_data, mode)
+    if (!is.null(transform_test)) {
+      message(sprintf("Running transform tests %s", transform_test))
+      test_results <-
+        run_transform_tests(transform_test, transformed_data, extracted_data, con)
+      if (!all_passed(test_results)) {
+        stop("Not all transform tests passed. Fix tests before proceeding.")
+      } else {
+        message("All transform tests passed.")
+      }
     }
-  }
+  })
   invisible(TRUE)
 }
 
@@ -78,4 +81,3 @@ verify_data <- function(con, transformed_data, mode) {
   }
   invisible(TRUE)
 }
-

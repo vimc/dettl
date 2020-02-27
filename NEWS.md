@@ -1,6 +1,11 @@
-# dettl 0.0.13
+# dettl 0.0.14
 
 * Make extracted/transformed data available even if tests for that stage fail
+
+# dettl 0.0.13
+
+* Set working directory to transform & load stages to be the import directory (working dir now consistent over extract, transform and load)
+* Allow running the load stage outside of a transaction (if dry_run = TRUE then it will still be run inside a transaction)
 
 # dettl 0.0.12
 

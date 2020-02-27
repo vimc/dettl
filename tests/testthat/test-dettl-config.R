@@ -60,4 +60,3 @@ test_that("database log table must be a valid table name", {
   expect_error(dettl_config(path),
     ":example:log_table' must consist of only lower case letters and underscores")
 })
-

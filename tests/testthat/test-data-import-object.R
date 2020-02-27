@@ -17,8 +17,8 @@ test_that("format works for functions with many args", {
 "    run_load(con, load, extracted_data,
         transformed_data, test_queries,
         pre_load, post_load, path,
-        test_file, dry_run, log_table,
-        comment)")
+        test_file, transaction, dry_run,
+        log_table, comment)")
 })
 
 

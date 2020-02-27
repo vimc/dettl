@@ -13,6 +13,7 @@
 #' @keywords internal
 transform <- function(extracted_data) {
   transformed_data <- list()
-  transformed_data$people <- extracted_data$people[which(extracted_data$people$age < 50), ]
+  transformed_data$people <- extracted_data$people[
+    which(extracted_data$people$age < 50), ]
   transformed_data
 }

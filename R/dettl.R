@@ -44,6 +44,7 @@ DataImport <- R6::R6Class(
     require_branch = NULL,
     db_name = NULL,
     mode = NULL,
+    transaction = TRUE,
 
     invalidate_extracted_data = function() {
       private$extracted_data <- NULL
@@ -80,7 +81,8 @@ DataImport <- R6::R6Class(
       private$invalidate_extracted_data()
       private$invalidate_transformed_data()
       dettl_config <- read_config(self$path)
-      private$mode <- check_valid_mode(dettl_config$dettl$mode)
+      private$mode <- dettl_config$dettl$mode
+      private$transaction <- dettl_config$dettl$transaction
       if (dettl_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
@@ -137,7 +139,8 @@ DataImport <- R6::R6Class(
       message(sprintf("Running transform %s", self$path))
       private$transformed_data <- run_transform(private$transform_,
                                                 private$extracted_data,
-                                                private$extract_passed)
+                                                private$extract_passed,
+                                                self$path)
       private$transform_passed <- test_transform(private$con, self$path,
                                                  private$mode,
                                                  private$transform_test_,
@@ -182,10 +185,11 @@ DataImport <- R6::R6Class(
       if (!force && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
-      run_load(private$con, private$load_, private$extracted_data, private$transformed_data,
-               private$test_queries, private$load_pre_, private$load_post_,
-               self$path, private$load_test_, dry_run, private$log_table,
-               comment)
+      run_load(private$con, private$load_, private$extracted_data,
+               private$transformed_data, private$test_queries,
+               private$load_pre_, private$load_post_, self$path,
+               private$load_test_, private$transaction, dry_run,
+               private$log_table, comment)
       invisible(TRUE)
     },
 

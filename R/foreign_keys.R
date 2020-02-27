@@ -82,7 +82,8 @@ get_postgres_fk <- function(con) {
 parse_constraints <- function(constraints_table) {
   constraints <- list()
   for (referenced_table in unique(constraints_table$referenced_table)) {
-    data <- constraints_table[constraints_table$referenced_table == referenced_table, ]
+    data <- constraints_table[
+      constraints_table$referenced_table == referenced_table, ]
     constraints[[referenced_table]]$foreign <-
       handle_single_table_fks(referenced_table, data)
     constraints[[referenced_table]]$serial <-

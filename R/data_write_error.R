@@ -10,5 +10,3 @@ data_write_error <- function(message, table_name, data,
   class(ret) <- c("dettl_data_write_error", "dettl_error", "error", "condition")
   ret
 }
-
-

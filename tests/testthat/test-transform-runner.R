@@ -73,7 +73,7 @@ testthat::test_that("messages are printed to console when tests are run", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
   data <- list()
 
-  transformed_data <- run_transform(transform_func, data, TRUE)
+  transformed_data <- run_transform(transform_func, data, TRUE, path)
   expect_message(
     test_transform(con, test_dir, "append", test_file, transformed_data, data),
     "Running transform tests connection_transform_test.R")
@@ -83,7 +83,7 @@ testthat::test_that("messages are printed to console when tests are run", {
     "All transform tests passed.")
 })
 
-testthat::test_that("verification fails if not null constraints violated sqlite", {
+test_that("verification fails if not null constraints violated sqlite", {
   path <- prepare_test_import(add_job_table = TRUE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
@@ -108,7 +108,7 @@ testthat::test_that("verification fails if not null constraints violated sqlite"
 })
 
 
-testthat::test_that("verification fails if not null constraints violated postgres", {
+test_that("verification fails if not null constraints violated postgres", {
   path <- prepare_test_import(create_db = FALSE)
   con <- prepare_example_postgres_db(add_job_table = TRUE)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
@@ -150,7 +150,7 @@ testthat::test_that("useful error returned when transform tests fail", {
   on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
   data <- list()
 
-  transformed_data <- run_transform(transform_func, data, TRUE)
+  transformed_data <- run_transform(transform_func, data, TRUE, path)
   expect_error(
     test_transform(con, test_dir, "append", test_file, transformed_data, data),
     "Not all transform tests passed. Fix tests before proceeding.")

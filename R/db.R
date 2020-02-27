@@ -103,8 +103,10 @@ get_default_type <- function(config) {
 #'
 #' @keywords internal
 #'
-verify_table <- function(con, table_name, table, identical_columns = FALSE,
+# nolint start
+verify_table <- function(con,table_name, table, identical_columns = FALSE,
                          context_info = "", solution_text = "") {
+#nolint end
   if (!DBI::dbExistsTable(con, table_name)) {
     stop(sprintf(
       "%s: Table '%s' is missing from db schema. %s",
