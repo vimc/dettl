@@ -424,3 +424,31 @@ test_that("can get transformed data if tests fail", {
   ## Trying to run load after failed transform tests throws error
   expect_error(import$load(), "Cannot run load as transform tests failed.")
 })
+
+test_that("re-running extract invalidates transformed data", {
+  path <- prepare_test_import("example")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example/"))
+  import$extract()
+  import$transform()
+
+  expect_false(is.null(import$get_transformed_data()))
+
+  import$extract()
+  expect_true(is.null(import$get_transformed_data()))
+
+  ## Reloading invalidates all data
+  import$transform()
+  expect_false(is.null(import$get_extracted_data()))
+  expect_false(is.null(import$get_transformed_data()))
+
+  import$reload()
+  expect_true(is.null(import$get_extracted_data()))
+  expect_true(is.null(import$get_transformed_data()))
+})

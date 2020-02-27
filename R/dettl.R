@@ -43,7 +43,17 @@ DataImport <- R6::R6Class(
     confirm = NULL,
     require_branch = NULL,
     db_name = NULL,
-    mode = NULL
+    mode = NULL,
+
+    invalidate_extracted_data = function() {
+      private$extracted_data <- NULL
+      private$extract_passed <- FALSE
+    },
+
+    invalidate_transformed_data = function() {
+      private$transformed_data <- NULL
+      private$transform_passed <- FALSE
+    }
   ),
 
   public = list(
@@ -67,6 +77,8 @@ DataImport <- R6::R6Class(
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
+      private$invalidate_extracted_data()
+      private$invalidate_transformed_data()
       dettl_config <- read_config(self$path)
       private$mode <- check_valid_mode(dettl_config$dettl$mode)
       if (dettl_config$load$automatic) {
@@ -110,6 +122,7 @@ DataImport <- R6::R6Class(
     #' Run the extract stage of the data import
     extract = function() {
       message(sprintf("Running extract %s", self$path))
+      private$invalidate_transformed_data()
       private$extracted_data <- run_extract(private$con, private$extract_,
                                             self$path)
       private$extract_passed <- test_extract(private$con, self$path,
