@@ -33,6 +33,8 @@ DataImport <- R6::R6Class(
     load_post_ = NULL,
     extract_test_ = NULL,
     transform_test_ = NULL,
+    extract_passed = FALSE,
+    transform_passed = FALSE,
     load_test_ = NULL,
     test_queries = NULL,
     extracted_data = NULL,
@@ -42,7 +44,17 @@ DataImport <- R6::R6Class(
     require_branch = NULL,
     db_name = NULL,
     mode = NULL,
-    transaction = TRUE
+    transaction = TRUE,
+
+    invalidate_extracted_data = function() {
+      private$extracted_data <- NULL
+      private$extract_passed <- FALSE
+    },
+
+    invalidate_transformed_data = function() {
+      private$transformed_data <- NULL
+      private$transform_passed <- FALSE
+    }
   ),
 
   public = list(
@@ -66,6 +78,8 @@ DataImport <- R6::R6Class(
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
+      private$invalidate_extracted_data()
+      private$invalidate_transformed_data()
       dettl_config <- read_config(self$path)
       private$mode <- dettl_config$dettl$mode
       private$transaction <- dettl_config$dettl$transaction
@@ -110,8 +124,12 @@ DataImport <- R6::R6Class(
     #' Run the extract stage of the data import
     extract = function() {
       message(sprintf("Running extract %s", self$path))
+      private$invalidate_transformed_data()
       private$extracted_data <- run_extract(private$con, private$extract_,
-                                            self$path, private$extract_test_)
+                                            self$path)
+      private$extract_passed <- test_extract(private$con, self$path,
+                                             private$extract_test_,
+                                             private$extracted_data)
       invisible(private$extracted_data)
     },
 
@@ -119,11 +137,15 @@ DataImport <- R6::R6Class(
     #' Run the transform stage of the data import
     transform = function() {
       message(sprintf("Running transform %s", self$path))
-      private$transformed_data <- run_transform(private$con, private$transform_,
-                                                self$path,
+      private$transformed_data <- run_transform(private$transform_,
                                                 private$extracted_data,
-                                                private$transform_test_,
-                                                private$mode)
+                                                private$extract_passed,
+                                                self$path)
+      private$transform_passed <- test_transform(private$con, self$path,
+                                                 private$mode,
+                                                 private$transform_test_,
+                                                 private$transformed_data,
+                                                 private$extracted_data)
       invisible(private$transformed_data)
     },
 
@@ -136,6 +158,12 @@ DataImport <- R6::R6Class(
     #' @param force If TRUE then checks that repo is up to date with git remote
     #' will be skipped. Defautls to FALSE.
     load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+      if (is.null(private$transformed_data)) {
+        stop("Cannot run load as no data has been transformed.")
+      }
+      if (!private$transform_passed) {
+        stop("Cannot run load as transform tests failed.")
+      }
       if (!is.null(private$require_branch)) {
         if (git_branch(self$path) != private$require_branch) {
           stop(sprintf("This import can only be run from the '%s' branch",

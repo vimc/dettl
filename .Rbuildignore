@@ -1,4 +1,4 @@
-l^\.travis\.yml$
+^\.travis\.yml$
 ^dettl\.Rproj$
 ^\.Rproj\.user$
 ^scripts$
