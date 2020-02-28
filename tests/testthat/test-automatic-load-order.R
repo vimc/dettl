@@ -1,14 +1,14 @@
 context("automatic-load-order")
 
 test_that("ordering can be retrieved", {
-  graph <- list(b=NA,
-                e="k",
-                k=c("b", "i", "j"),
-                g=c("k", "h"),
-                i=NA,
-                j=NA,
-                h="i",
-                c=c("j", "h"))
+  graph <- list(b = NA,
+                e = "k",
+                k = c("b", "i", "j"),
+                g = c("k", "h"),
+                i = NA,
+                j = NA,
+                h = "i",
+                c = c("j", "h"))
   order <- topological_order(graph)
   expect_equal(order,
                c("b", "i", "j", "k", "h", "e", "g", "c"))
@@ -34,4 +34,3 @@ Please write a custom load", fixed = TRUE)
   c: depends on a
 Please write a custom load", fixed = TRUE)
 })
-
