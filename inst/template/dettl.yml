@@ -4,7 +4,7 @@ dettl:
 sources:
   - R/extract.R
   - R/transform.R
-  - R/load.R
+  - R/verification_queries.R
 
 extract:
   func: extract
@@ -15,6 +15,6 @@ transform:
   test: tests/test_transform.R
 
 load:
-  func: load
-  verification_queries:
+  automatic: TRUE
+  verification_queries: verification_queries
   test: tests/test_load.R
