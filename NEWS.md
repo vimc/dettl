@@ -1,3 +1,7 @@
+# dettl 0.0.15
+
+* Update template upload to use automatic load
+
 # dettl 0.0.14
 
 * Make extracted/transformed data available even if tests for that stage fail
