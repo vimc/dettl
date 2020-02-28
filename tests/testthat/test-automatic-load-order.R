@@ -1,12 +1,12 @@
 context("automatic-load-order")
 
 test_that("ordering can be retrieved", {
-  graph <- list(b=NULL,
+  graph <- list(b=NA,
                 e="k",
                 k=c("b", "i", "j"),
                 g=c("k", "h"),
-                i=NULL,
-                j=NULL,
+                i=NA,
+                j=NA,
                 h="i",
                 c=c("j", "h"))
   order <- topological_order(graph)

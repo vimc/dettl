@@ -1,5 +1,5 @@
 order_transformed_data <- function(transformed_data, key_constraints) {
-  graph <- key_constraints$get_network_table(names(transformed_data))
+  graph <- key_constraints$get_network_table(transformed_data)
   order <- topological_order(graph)
   transformed_data[order]
 }

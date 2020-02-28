@@ -115,8 +115,9 @@ test_that("empty key constraints returns appropriate messages", {
 
 test_that("can get network table from foreign key constraints", {
   constraint_table <- data_frame(
-    constraint_table = c("A", "A", "A", "B", "C", "D", "A"),
-    referenced_table = c("B", "B", "D", "A", "A", "A", "C")
+    constraint_table =  c("A",  "A",  "A",  "B",  "C",  "D",  "A",  "A",  "A"),
+    constraint_column = c("A1", "A2", "A1", "B1", "C1", "D1", "A3", "A4", "A5"),
+    referenced_table =  c("B",  "B",  "D",  "A",  "A",  "A",  "C",  "C",  "C")
   )
   mock_get_fk_constraints <- mockery::mock(constraint_table)
   mock_parse_constraints <- mockery::mock(list())
@@ -124,10 +125,28 @@ test_that("can get network table from foreign key constraints", {
             "dettl:::parse_constraints" = mock_parse_constraints, {
               keys <- ForeignKeyConstraints$new("con")
             })
-  network <- keys$get_network_table(c("A", "B", "C"))
+  data <- list(
+    A = data_frame(
+      A1 = c(1, 2),
+      A2 = c(3, 4),
+      A3 = c(5, 7),
+      A4 = c(NA, NA)
+    ),
+    B = data_frame(
+      B1 = 1
+    ),
+    C = data_frame(
+      C1 = 1
+    ),
+    E = data_frame(
+      E1 = c(1, 2)
+    )
+  )
+  network <- keys$get_network_table(data)
   expect_equal(network, list(
     A = c("B", "C"),
     B = "A",
-    C = "A"
+    C = "A",
+    E = NA
   ))
 })

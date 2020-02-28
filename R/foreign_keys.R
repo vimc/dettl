@@ -75,7 +75,34 @@ get_postgres_fk <- function(con) {
 
 #' Parse foreign key constraint data frame into list representation
 #'
-#' @param constraitns_table Table of constraints to parse.
+#' The representation is
+#'
+#' table_name = list(
+#'   serial = list(
+#'     serial_field1,
+#'     serial_field2,
+#'     ...
+#'   ),
+#'   foreign = list(
+#'     field_from_table_name = list(
+#'       table1 = field1,
+#'       table2 = field2,
+#'       ...
+#'     ),
+#'     ...
+#'   )
+#' )
+#'
+#' For a table we list the columns in that table which are serials i.e. the
+#' columns which are generated automatically by the db. And the fields which
+#' are referenced by a foreign key constraint. The way to read the foreign
+#' section is \code{field_from_table_name} is a column in \code{table_name}
+#' which is used as the referenced table in foreign key constraint from
+#' \code{field1} in \code{table1} and \code{field2} in \code{table2}. The
+#' implication being that \code{table_name} must exist before \code{field1} of
+#' \code{table2} can be written to.
+#'
+#' @param constraints_table Table of constraints to parse.
 #'
 #' @return A list representing foreign key constraints.
 #' @keywords internal
