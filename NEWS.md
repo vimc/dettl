@@ -1,3 +1,7 @@
+# dettl 0.0.15
+
+* Automatic load now orders the transformed data based on pk dependencies from the db
+
 # dettl 0.0.14
 
 * Make extracted/transformed data available even if tests for that stage fail
