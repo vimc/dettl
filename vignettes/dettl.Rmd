@@ -390,3 +390,46 @@ knitr::kable(jobs, caption = "jobs")
 
 where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the automatic load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
 
+### What about cycles?
+
+If you have cycles in your database, for example something which looks like
+
+```{r pressure, echo=FALSE, out.width = '100%'}
+knitr::include_graphics("images/cycle_example.png")
+```
+
+Then the automatic load can resolve these dependencies if at least one of them is nullable.
+
+e.g. if we want to upload data like
+
+```{r echo = FALSE}
+data <- list(
+  A = data.frame(
+    id = c(1, 2),
+    b = c(1, 2)
+  ),
+  B = data.frame(
+    id = c(1, 2),
+    a = c(NA, NA)
+  ))
+print(data)
+```
+
+this would work. The automatic load would determine that we have a dependency of `A` on `B` and of `B` on `A` but it would ignore the dependency from `B` on `A` because the column in the `B` table has `NA` values. It would upload `B` first which would pass successfully if column `a` of table `B` is nullable and then would successfully upload table `A`. 
+
+If we had something like
+
+```{r echo = FALSE}
+data <- list(
+  A = data.frame(
+    id = c(1, 2),
+    b = c(1, 2)
+  ),
+  B = data.frame(
+    id = c(1, 2),
+    a = c(1, 2)
+  ))
+print(data)
+```
+
+This would fail because the automatic load cannot determine the order that the data should be uploaded in.

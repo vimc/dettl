@@ -274,6 +274,29 @@ test_that("postgres automatic load works with cyclic fks", {
 
 })
 
+
+test_that("trying to upload cycle with no NA columns throws an error", {
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db(add_cyclic_fks = TRUE)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## Create test data
+  model <- data_frame(id = c("one", "two"),
+                      current_version = c(4, 5))
+  model_version <- data_frame(id = c(4, 5), model = c("one", "two"))
+
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+
+  expect_error(dettl_auto_load(tables, con),
+"A cyclic dependency detected for model_version, model:
+  model_version: depends on model
+  model: depends on model_version
+Please write a custom load")
+})
+
 test_that("map values works as expected", {
   data <- c(1, 3, 2, 2)
   old <- c(1, 2, 3)
