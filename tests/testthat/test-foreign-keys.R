@@ -4,7 +4,7 @@ test_that("postgres constraints can be retireved", {
   con <- prepare_example_postgres_db(add_fk_data = TRUE)
   on.exit(DBI::dbDisconnect(con))
 
-  constraints <- get_fk_constraints(con)
+  constraints <- parse_constraints(get_fk_constraints(con))
 
   expect_equal(names(constraints), c("region", "street"))
   expect_true(all(names(constraints$street) %in% c("foreign", "serial")))
@@ -27,7 +27,7 @@ test_that("sqlite constraints can be retireved", {
   path <- prepare_test_import(add_fk_data = TRUE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
-  constraints <- get_fk_constraints(con)
+  constraints <- parse_constraints(get_fk_constraints(con))
 
   expect_equal(names(constraints), c("region", "street"))
   expect_true(all(names(constraints$street) %in% c("foreign", "serial")))
@@ -202,7 +202,7 @@ test_that("empty list returned when no constraints", {
   path <- prepare_test_import(add_fk_data = FALSE)
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
-  constraints <- get_fk_constraints(con)
+  constraints <- parse_constraints(get_fk_constraints(con))
 
   expect_equal(constraints, list())
 })
