@@ -33,8 +33,8 @@
 #' dettl_auto_load(data, con)
 dettl_auto_load <- function(transformed_data, con) {
   rewrite_keys <- ForeignKeyConstraints$new(con)
-  ordered_data <- order_transformed_data(transformed_data, rewrite_keys)
-  for (name in names(ordered_data)) {
+  ordered_data <- rewrite_keys$get_upload_order(transformed_data)
+  for (name in ordered_data) {
     message(sprintf("Updating %s (adding %d rows)",
                     name, nrow(transformed_data[[name]])))
     has_serial_foreign_keys <- rewrite_keys$used_as_foreign_key(name) &&
@@ -73,7 +73,7 @@ dettl_auto_load <- function(transformed_data, con) {
 get_old_key_values <- function(data, table_name, col_name) {
   if (!(col_name %in% colnames(data[[table_name]]))) {
     stop(sprintf(paste0(
-      "Can't uploaded data, referenced key '%s' of table '%s' is missing but ",
+      "Can't upload data, referenced key '%s' of table '%s' is missing but ",
       "is referenced by foreign key constraint used in data."),
       col_name, table_name))
   }

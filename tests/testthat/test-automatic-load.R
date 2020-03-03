@@ -360,7 +360,7 @@ test_that("automatic load supports upload without specifying referenced keys", {
 
   ## then PK must be specified
   expect_error(dettl_auto_load(tables, con),
-               paste0("Can't uploaded data, referenced key 'id' of table ",
+               paste0("Can't upload data, referenced key 'id' of table ",
                       "'region' is missing but is referenced by foreign key ",
                       "constraint used in data."))
 

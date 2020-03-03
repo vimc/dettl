@@ -66,45 +66,11 @@ ForeignKeyConstraints <- R6::R6Class(
       is_serial && is_used_as_constraint
     },
 
-    get_network_table = function(data) {
-      ## We are only concerned with the subset of tables we are trying to
-      ## upload here. If any other required tables don't exist the import
-      ## will fail and postgres error will be returned to user
-      rows_to_keep <-
-        private$constraint_table$constraint_table %in% names(data) &
-        private$constraint_table$referenced_table %in% names(data)
-      filtered_tables <- private$constraint_table[
-        rows_to_keep,
-        c("constraint_table", "constraint_column", "referenced_table")]
-
-      ## We can also ignore links where the constrained column is nullable and
-      ## all values are NULL or NA - we rely on db to enforce the column being
-      ## nullable and check here if all values in that column are null/NA
-      ## we can then remove the row when we go to work out our network of
-      ## dependencies.
-      ## This allows situations like
-      ## Table A with columns id, parent where parent references the id column
-      ## of the same table. So we have a cycle here but can still upload
-      ## to the db happily if the parent column is NULL or NA
-      all_empty <- function(column) {
-        all(is.na(column) | is.null(column))
-      }
-      keep_rows <- vlapply(seq_len(nrow(filtered_tables)), function(row_num) {
-        r <- filtered_tables[row_num, ]
-        !all_empty(data[[r$constraint_table]][[r$constraint_column]])
-      })
-      filtered_tables <- filtered_tables[keep_rows, ]
-
-      constraints <- unique(filtered_tables$constraint_table)
-      dependencies <- lapply(setNames(constraints, constraints), function(table) {
-        unique(filtered_tables[filtered_tables$constraint_table == table,
-                            "referenced_table"])
-      })
-
-      ## We want to ensure that all the tables we want to upload exist in the
-      ## network, so create an entry for missing tables with no dependencies
-      missing_tables <- names(data)[!(names(data) %in% names(dependencies))]
-      c(dependencies, setNames(rep(NA, length(missing_tables)), missing_tables))
+    get_upload_order = function(data) {
+      non_empty_columns <- get_non_empty_columns(data)
+      dependencies <- get_network_dependencies(private$constraint_table,
+                                               names(data), non_empty_columns)
+      topological_order(dependencies)
     }
   )
 )
