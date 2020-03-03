@@ -112,4 +112,3 @@ test_that("empty key constraints returns appropriate messages", {
 
   expect_false(keys$is_serial("table", "id"))
 })
-
