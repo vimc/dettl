@@ -394,7 +394,7 @@ where `id` is the primary key of table `people` which is used as a foreign key f
 
 If you have cycles in your database, for example something which looks like
 
-```{r pressure, echo=FALSE, out.width = '100%'}
+```{r, echo=FALSE, out.width = '100%'}
 knitr::include_graphics("images/cycle_example.png")
 ```
 
