@@ -1,6 +1,7 @@
 # dettl 0.0.15
 
 * Automatic load now orders the transformed data based on pk dependencies from the db
+* Update template upload to use automatic load
 
 # dettl 0.0.14
 
