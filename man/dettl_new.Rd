@@ -15,5 +15,9 @@ and replaced with _s. Directory name will be prepended with created date.}
 Create new directory and templated code for new dettl process.
 }
 \examples{
-dettl::dettl_new("test import")
+t <- tempfile()
+dir.create(t)
+withr::with_dir(t, {
+  dettl::dettl_new("test import")
+})
 }

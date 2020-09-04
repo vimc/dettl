@@ -57,6 +57,7 @@ import$load()
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Tidy up open connections, rolling back any active transactions
 
@@ -82,6 +83,7 @@ A new `DataImport` object
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-reload"></a>}}
+\if{latex}{\out{\hypertarget{method-reload}{}}}
 \subsection{Method \code{reload()}}{
 Reload the objects sources to refresh source code or repair a broken
 Postgres connection.
@@ -92,6 +94,7 @@ Postgres connection.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
 \subsection{Method \code{format()}}{
 Custom formatter for pretty printing object summary.
 \subsection{Usage}{
@@ -108,6 +111,7 @@ Custom formatter for pretty printing object summary.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-help"></a>}}
+\if{latex}{\out{\hypertarget{method-help}{}}}
 \subsection{Method \code{help()}}{
 Print help page for the object
 \subsection{Usage}{
@@ -117,6 +121,7 @@ Print help page for the object
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-extract"></a>}}
+\if{latex}{\out{\hypertarget{method-extract}{}}}
 \subsection{Method \code{extract()}}{
 Run the extract stage of the data import
 \subsection{Usage}{
@@ -126,6 +131,7 @@ Run the extract stage of the data import
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-transform}{}}}
 \subsection{Method \code{transform()}}{
 Run the transform stage of the data import
 \subsection{Usage}{
@@ -135,6 +141,7 @@ Run the transform stage of the data import
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-load"></a>}}
+\if{latex}{\out{\hypertarget{method-load}{}}}
 \subsection{Method \code{load()}}{
 Run the load stage of the data import
 \subsection{Usage}{
@@ -158,6 +165,7 @@ will be skipped. Defautls to FALSE.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_connection"></a>}}
+\if{latex}{\out{\hypertarget{method-get_connection}{}}}
 \subsection{Method \code{get_connection()}}{
 Get the database connection being used by the import. Used for testing.
 \subsection{Usage}{
@@ -170,6 +178,7 @@ The DBI connection
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_extracted_data"></a>}}
+\if{latex}{\out{\hypertarget{method-get_extracted_data}{}}}
 \subsection{Method \code{get_extracted_data()}}{
 Get the extracted data created by the extract step
 \subsection{Usage}{
@@ -182,6 +191,7 @@ The extracted data
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_transformed_data"></a>}}
+\if{latex}{\out{\hypertarget{method-get_transformed_data}{}}}
 \subsection{Method \code{get_transformed_data()}}{
 Get the transformed data created by the transform step
 \subsection{Usage}{
@@ -194,6 +204,7 @@ The transformed data
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_log_table"></a>}}
+\if{latex}{\out{\hypertarget{method-get_log_table}{}}}
 \subsection{Method \code{get_log_table()}}{
 Get the name of the log table for a particular import. This is the name
 of the log table configured in the dettl config
@@ -207,6 +218,7 @@ Log table name
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-begin_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-begin_transaction}{}}}
 \subsection{Method \code{begin_transaction()}}{
 Start a transaction
 \subsection{Usage}{
@@ -216,6 +228,7 @@ Start a transaction
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-rollback_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-rollback_transaction}{}}}
 \subsection{Method \code{rollback_transaction()}}{
 Rollback a transaction
 \subsection{Usage}{
@@ -225,6 +238,7 @@ Rollback a transaction
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-commit_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-commit_transaction}{}}}
 \subsection{Method \code{commit_transaction()}}{
 Commit a transaction
 \subsection{Usage}{
