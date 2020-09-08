@@ -21,12 +21,18 @@
 #'
 run_load <- function(con, load, extracted_data, transformed_data, test_queries,
                      pre_load, post_load, path, test_file, log_table, comment) {
+  start_time <- get_time()
   log_data <- build_log_data(path, comment)
   verify_log_table(con, log_table, log_data)
   verify_first_run(con, log_table, log_data)
   withr::with_dir(path,
     do_load(con, load, extracted_data, transformed_data, test_file,
             test_queries, pre_load, post_load))
+  log_data$start_time <- start_time
+  log_data$end_time <- get_time()
+  ## Save the duration in seconds rounded to at most precise the time in ms
+  log_data$duration <- round(
+    as.numeric(log_data$end_time) - as.numeric(log_data$start_time), digits = 3)
   log_data
 }
 

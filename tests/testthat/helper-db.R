@@ -10,6 +10,9 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
   con <- get_postgres_connection(dbname, user, host)
 
   ## Make sure we have a fresh "people" table if one existed already
+  ## Suppres NOTICE type messages from postgres - this switch persists
+  ## for as long as a session
+  DBI::dbExecute(con, "set client_min_messages to WARNING")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS people CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS jobs CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS region CASCADE")

@@ -73,7 +73,7 @@ get_network_dependencies <- function(constraints, tables, non_empty_columns) {
   filtered_tables <- filtered_tables[unlist(rows_to_keep), ]
 
   constraints <- unique(filtered_tables$constraint_table)
-  dependencies <- lapply(setNames(constraints, constraints), function(table) {
+  dependencies <- lapply(stats::setNames(constraints, constraints), function(table) {
     unique(filtered_tables[filtered_tables$constraint_table == table,
                            "referenced_table"])
   })
@@ -81,7 +81,7 @@ get_network_dependencies <- function(constraints, tables, non_empty_columns) {
   ## We want to ensure that all the tables we want to upload exist in the
   ## network, so create an entry for missing tables with no dependencies
   missing_tables <- tables[!(tables %in% names(dependencies))]
-  c(dependencies, setNames(rep(NA, length(missing_tables)), missing_tables))
+  c(dependencies, stats::setNames(rep(NA, length(missing_tables)), missing_tables))
 }
 
 ## This algorithm comes from here:

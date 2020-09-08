@@ -20,14 +20,19 @@ testthat::test_that("import fails if log table misconfigured", {
     "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_db_create_log_table first."
   )
 
+  invisible(DBI::dbExecute(con,
+    "CREATE TABLE log_table (
+      name   TEXT
+    )"
+  ))
   mock_build_log_data <- mockery::mock(data_frame(name = "test"))
   with_mock("dettl:::build_log_data" = mock_build_log_data, {
     expect_error(
       run_load(con, load_func, extracted_data = NULL, transformed_data,
                test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
-               test_file = test_file, log_table = "dettl_import_log",
+               test_file = test_file, log_table = "log_table",
                comment = "Test comment"),
-      "Cannot import data: Column 'date' in table 'dettl_import_log' in DB but is missing from local table."
+      "Cannot import data: Column 'start_time' is missing from db schema."
     )
   })
 })

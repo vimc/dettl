@@ -7,11 +7,11 @@ testthat::test_that("envir variables can be read from cfg", {
   writeLines("TEST: 123", filename)
 
   envir <- envir_read(path)
-  expect_equal(envir, setNames("123", "TEST"))
+  expect_equal(envir, stats::setNames("123", "TEST"))
 
   writeLines("TEST: example_envir\nTEST2: example_envir2", filename)
   envir <- envir_read(path)
-  expect_equal(envir, setNames(c("example_envir", "example_envir2"),
+  expect_equal(envir, stats::setNames(c("example_envir", "example_envir2"),
                                c("TEST", "TEST2")))
 
   writeLines("TEST:\n  - example_envir\n  - example_envir2", filename)

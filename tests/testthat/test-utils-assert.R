@@ -56,7 +56,7 @@ test_that("assert_file_exists: error in case", {
 
 test_that("assert_named", {
   expect_error(assert_named(1), "must be named")
-  expect_error(assert_named(setNames(1:2, c("a", "a")), TRUE),
+  expect_error(assert_named(stats::setNames(1:2, c("a", "a")), TRUE),
                "must have unique names")
-  expect_silent(assert_named(setNames(1:2, c("a", "a")), FALSE))
+  expect_silent(assert_named(stats::setNames(1:2, c("a", "a")), FALSE))
 })

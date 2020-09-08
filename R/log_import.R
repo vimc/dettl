@@ -23,11 +23,7 @@ build_log_data <- function(import_path, comment) {
   if (is.null(comment)) {
     comment <- NA_character_
   }
-  date <- Sys.time()
-  ## Convert date to UTC for persitence
-  attr(date, "tzone") <- "UTC"
   import_log <- data_frame(name = basename(import_path),
-                           date = date,
                            comment = comment,
                            git_user = git_user(import_path),
                            git_email = git_email(import_path),
@@ -36,10 +32,11 @@ build_log_data <- function(import_path, comment) {
 }
 
 verify_log_table <- function(con, log_table_name, log_data) {
-  verify_table(con, log_table_name, log_data, identical_columns = TRUE,
-              context_info = "Cannot import data",
-              solution_text =
-                "Please run dettl::dettl_db_create_log_table first.")
+  verify_table(con, log_table_name, log_data,
+               additional_columns = c("start_time", "end_time", "duration"),
+               context_info = "Cannot import data",
+               solution_text =
+                 "Please run dettl::dettl_db_create_log_table first.")
 }
 
 #' Verify that this is the first time the import has been run.
@@ -63,18 +60,29 @@ verify_first_run <- function(con, log_table_name, log_data) {
   if (nrow(previous_runs) > 0) {
     stop(sprintf("Import has previously been run. Previous run log:
   name:           %s
-  date:           %s
+  start time:     %s
+  end time:       %s
+  duration:       %s
   comment:        %s
   git user.name:  %s
   git user.email: %s
   git branch:     %s
   git hash:       %s",
                  previous_runs$name,
-                 parse_sql_date(con, previous_runs$date),
+                 parse_sql_date(con, previous_runs$start_time),
+                 parse_sql_date(con, previous_runs$end_time),
+                 previous_runs$duration,
                  previous_runs$comment,
                  previous_runs$git_user,
                  previous_runs$git_email,
                  previous_runs$git_branch,
                  previous_runs$git_hash))
   }
+}
+
+get_time <- function() {
+  time <- Sys.time()
+  ## Add tzone attribute so correct time persisted
+  attr(time, "tzone") <- "UTC"
+  time
 }

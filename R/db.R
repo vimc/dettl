@@ -92,19 +92,23 @@ get_default_type <- function(config) {
 
 #' Verify the data adheres to the DB schema.
 #'
-#' Ensure that table is in the DB and has only columns which exist in the DB.
-#' And optionally check that table contains exactly the columns in the DB.
+#' Verifies that
+#' * A table with name `table_name` exists in the DB
+#' * All the columns in `table` exist in the DB table with name `table_name`
+#' * Any `additional_columns` exist in the DB table with name `table_name`
 #'
 #' @param con The active DB connection to check the schema for.
 #' @param table_name The name of the table to check.
 #' @param table The table to check.
+#' @param additional_columns Vector of additional column names to check exist
+#' in DB table.
 #' @param context_info Info to be logged should a check fail.
 #' @param solution_text Text describing possible solution should error occur.
 #'
 #' @keywords internal
 #'
 # nolint start
-verify_table <- function(con,table_name, table, identical_columns = FALSE,
+verify_table <- function(con, table_name, table, additional_columns = NULL,
                          context_info = "", solution_text = "") {
 #nolint end
   if (!DBI::dbExistsTable(con, table_name)) {
@@ -113,20 +117,20 @@ verify_table <- function(con,table_name, table, identical_columns = FALSE,
       context_info, table_name, solution_text
     ))
   }
-  col_names <- DBI::dbListFields(con, table_name)
+  db_col_names <- DBI::dbListFields(con, table_name)
   for (col_name in colnames(table)) {
-    if (!(col_name %in% col_names)) {
+    if (!(col_name %in% db_col_names)) {
       stop(sprintf(
         "%s: Column '%s' in table '%s' but is missing from db schema.",
         context_info, col_name, table_name
       ))
     }
   }
-  if (identical_columns) {
-    for (col_name in col_names) {
-      if (!(col_name %in% colnames(table))) {
+  if (!is.null(additional_columns)) {
+    for (col_name in additional_columns) {
+      if (!(col_name %in% db_col_names)) {
         stop(sprintf(
-          "%s: Column '%s' in table '%s' in DB but is missing from local table.",
+          "%s: Column '%s' is missing from db schema.",
           context_info, col_name, table_name))
       }
     }
