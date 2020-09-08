@@ -1,3 +1,7 @@
+# dettl 0.0.16
+
+* Update dettl_import_log to record start_time, end_time and duration instead of just start_time
+
 # dettl 0.0.15
 
 * Automatic load now orders the transformed data based on pk dependencies from the db

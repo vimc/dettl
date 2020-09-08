@@ -1,6 +1,6 @@
 Package: dettl
 Title: Data extract, transform, test and load
-Version: 0.0.15
+Version: 0.0.16
 Authors@R: 
     person(given = "Robert",
            family = "Ashton",
