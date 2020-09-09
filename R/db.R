@@ -76,12 +76,21 @@ dettl_db_args <- function(path, type = NULL) {
     }
   }
 
-  withr::with_envvar(
-    envir_read(config$path),
-    resolved_args <- vaultr::vault_resolve_secrets(
-      x$args,
-      addr = config$vault_server
-    )
+  withCallingHandlers(
+    withr::with_envvar(
+      envir_read(config$path),
+      resolved_args <- vaultr::vault_resolve_secrets(
+        x$args,
+        addr = config$vault_server
+      )
+    ),
+    error = function(e) {
+      ## Vault errors can be pretty cryptic e.g. see VIMC-4026 so
+      ## provide some context for the error message
+      e$message <- paste0("Failed to retrieve database info from vault:\n    ",
+                          e$message)
+      stop(e)
+    }
   )
   list(driver = driver, args = resolved_args, log_table = x$log_table)
 }
