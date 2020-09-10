@@ -86,11 +86,9 @@ This will create a new directory called `person_information` prepended with the 
 
 If you want to create a new import within a new project then you will need to manually create a new RStudio project and create a `dettl_config.yml` file. You can then proceed as above.
 
-## Developing it
+## Developing the import
 
 ### Extract
-
-## Developing the import
 
 To develop a complete import you need to implement the extract and transform stages.
 
