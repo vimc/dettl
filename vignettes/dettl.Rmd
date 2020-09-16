@@ -134,7 +134,7 @@ print(extracted_data)
 
 ### Transform
 
-Open the created `R/transform.R` file. Again you need to implement the templated `transform` function. Similarly to the extract stage this can delegate to other R functions if any files used are added to the `sources` block in the config. Similarly you should write some tests for the transformed data. Important to note is the form of the returned data should be as a named list of data frames. Where each list item represents a table from the database with name matching the name in the DB schema. And each column in the data frame should match an existing column in the database. After the transform step is run the user specified tests will be run automatically, in addition to these we test that the returned data conforms to the DB schema and fail if it does not do so. For example for our simple people example our transform code could be something like
+Open the created `R/transform.R` file and implement the templated `transform` function. Like the extract stage this can delegate to functions defined in other files providing that the files used are added to the `sources` block in the config. The `transform` function should return data as a named list of data frames where each data frame represents a table from the database. The names of the data frames need to match the names of tables in the database.  You can write some tests the check the transformed data which will be run automatically after the transform step is run. In addition to user specified tests we check that the returned data conforms to the DB schema and fail if it does not do so. For example for our simple people example our transform code could be something like
 
 ```r
 transform <- function(extracted_data) {
@@ -194,7 +194,7 @@ knitr::kable(people, caption = "people")
 knitr::kable(jobs, caption = "jobs")
 ```
 
-where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the automatic load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique IDs to associate the new rows of data with each other. The temporary unique IDs can be anything as they will be updated when the new records are added but using negative numbers is a good way to make clear the separation between temporary ID and real db entries. If you want to link to an existing entry in the database by its primary ID then use that exact ID as the field value.
 
 Note that the default automatic load will only append to existing tables, if you need to create new tables see [create mode](#create_mode). 
 
@@ -370,7 +370,7 @@ Create mode imports will skip some of the checks append imports do e.g. checks t
 
 ### I want to write a custom load
 
-Dettl allows writing a custom load if the automatic load does not achieve desired effect. You might want to use a custom load if you want to run an `UPDATE` query on the database. To do this update the `dettl.yml` for the report to use a user defined load
+Dettl allows writing a custom load if the automatic load does not achieve the desired effect. You might want to use a custom load if you want to run an `UPDATE` query on the database. To do this update the `dettl.yml` for the report to use a user defined load
 
 ```yaml
 load:
@@ -387,8 +387,7 @@ load <- function(transformed_data, con) {
 }
 ```
 
-Note that the containing file must be in the list of sources for the import.
-Expect that this stage is only really a set of update queries to be run on the database implemented in R.
+Note that the containing file must be in the list of sources for the import. Note also that if you are using a custom load dettl won't automatically fix key references for you and you will need to manage this manually. Do not specify numerical IDs where the database would normally do that with a serial. Leave the IDs out and let the database generate those and if you require the IDs in another place then use a sql query with `RETURNING id` to [fetch back the assigned serial IDs](https://www.postgresql.org/docs/12/dml-returning.html).
 
 ### I want to use the automatic load but make additional changes to the database
 
