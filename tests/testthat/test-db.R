@@ -24,6 +24,11 @@ test_that("dettl DB args can be read from yaml config", {
     dettl_db_args(path, "missing"),
     "Cannot find config for database missing."
   )
+
+  err <- function(args, addr) stop("vault error")
+  mockery::stub(dettl_db_args, "vaultr::vault_resolve_secrets", err)
+  expect_error(dettl_db_args(path, "example"),
+               "Failed to retrieve database info from vault:\n    vault error")
 })
 
 test_that("db type will default to first configured db if NULL", {
