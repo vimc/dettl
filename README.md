@@ -9,6 +9,21 @@ Data extract, transform, test and load.
 
 Disinfect your workflow.
 
+## Installation
+
+Install via drat
+
+```
+drat:::add("vimc")
+install.packages("dettl")
+```
+
+or using `remotes`
+
+```
+remotes::install_github("vimc/dettl")
+```
+
 ## Using dettl
 
 `dettl` requires a log table to exist in the target database for an import to be run. Run `dettl::dettl_db_create_log_table` to create the log table. This executes the relevant query at `inst/sql/` for create the log table. The name of the table can be changed and configured via the import `dettl_config.yml` but the fields must remain the same.
