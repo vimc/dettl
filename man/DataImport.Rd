@@ -158,7 +158,7 @@ the import run in the database.}
 changes will be rolled back. Defaults to FALSE.}
 
 \item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
-date with remote git repo.}
+date with remote git repo. FALSE by default.}
 }
 \if{html}{\out{</div>}}
 }

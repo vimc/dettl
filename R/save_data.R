@@ -7,6 +7,8 @@
 #' @param file File path at which to save the data.
 #' @param stage The stage or stages to save. 'extract' and/or 'transform'
 #'
+#' @export
+#'
 #' @examples
 #' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
@@ -16,11 +18,11 @@
 #' import$extract()
 #' import$transform()
 #' t <- tempfile()
-#' dettl:::dettl_save(import, t, "extract")
+#' dettl::dettl_save(import, t, "extract")
 #' t2 <- tempfile()
-#' dettl:::dettl_save(import, t2, "transform")
+#' dettl::dettl_save(import, t2, "transform")
 #' t3 <- tempfile()
-#' dettl:::dettl_save(import, t3, c("extract", "transform"))
+#' dettl::dettl_save(import, t3, c("extract", "transform"))
 dettl_save <- function(import, file, stage) {
   if (!inherits(import, "DataImport")) {
     stop(sprintf("Can't save %s data for non-DataImport object.",
