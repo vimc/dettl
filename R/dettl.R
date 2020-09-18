@@ -1,4 +1,4 @@
-#' Manage data import.
+#' Manage R based data import.
 #'
 #' This object should not be initialised directly. Use \code{\link{dettl}} to
 #' create the object.
@@ -20,14 +20,13 @@
 #' import$load()
 #'
 # nolint start
-DataImport <- R6::R6Class(
+RImport <- R6::R6Class(
 # nolint end
-  "DataImport",
+  "RImport",
+  inherit = Import,
   cloneable = FALSE,
 
   private = list(
-    con = NULL,
-    transaction_active = FALSE,
     extract_ = NULL,
     transform_ = NULL,
     load_ = NULL,
@@ -41,30 +40,8 @@ DataImport <- R6::R6Class(
     test_queries = NULL,
     extracted_data = NULL,
     transformed_data = NULL,
-    log_table = NULL,
     confirm = NULL,
-    require_branch = NULL,
-    db_name = NULL,
     mode = NULL,
-    load_in_transaction = TRUE,
-
-    #' @description
-    #' Tidy up open connections, rolling back any active transactions
-    close_connection = function() {
-      if (private$transaction_active) {
-        message("Rolling back active transaction")
-        self$rollback_transaction()
-      }
-      ## Connection will always be null on first call to reload
-      if (!is.null(private$con)) {
-        tryCatch(
-          DBI::dbDisconnect(private$con),
-          error = function(e) {
-            message("While disconnecting from db, ignored error:\n", e$message)
-          }
-        )
-      }
-    },
 
     invalidate_extracted_data = function() {
       private$extracted_data <- NULL
@@ -78,19 +55,15 @@ DataImport <- R6::R6Class(
   ),
 
   public = list(
-    #' @field path Path to directory containing import object
-    path = NULL,
 
     #' @description
-    #' Create DataImport object - shouldn't be called directly. Use
+    #' Create RImport object - shouldn't be called directly. Use
     #' \code{\link{dettl}} to create the object
     #' @param path Path to directory containing import object
     #' @param db_name Database from dettl config to create import object for
-    #' @return A new `DataImport` object
+    #' @return A new `RImport` object
     initialize = function(path, db_name) {
-      self$path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-      private$db_name <- db_name
-      lockBinding("path", self)
+      super$initialize(path, db_name)
       self$reload()
     },
 
@@ -100,32 +73,27 @@ DataImport <- R6::R6Class(
     reload = function() {
       private$invalidate_extracted_data()
       private$invalidate_transformed_data()
-      dettl_config <- read_config(self$path)
-      private$mode <- dettl_config$dettl$mode
-      private$load_in_transaction <- dettl_config$dettl$transaction
-      if (dettl_config$load$automatic) {
+
+      super$reload()
+
+      private$mode <- private$import_config$dettl$mode
+      private$confirm <- private$repo_config$db[[private$db_name]]$confirm
+
+      if (private$import_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
       } else {
-        load_func <- dettl_config$load$func
+        load_func <- private$import_config$load$func
       }
-      cfg <- dettl_config(self$path)
-
-      db_name <- private$db_name %||% get_default_type(cfg)
-      private$close_connection()
-      private$con <- db_connect(db_name, self$path)
-      private$extract_ <- dettl_config$extract$func
-      private$extract_test_ <- dettl_config$extract$test
-      private$transform_ <- dettl_config$transform$func
-      private$transform_test_ <- dettl_config$transform$test
+      private$extract_ <- private$import_config$extract$func
+      private$extract_test_ <- private$import_config$extract$test
+      private$transform_ <- private$import_config$transform$func
+      private$transform_test_ <- private$import_config$transform$test
       private$load_ <- load_func
-      private$load_pre_ <- dettl_config$load$pre
-      private$load_post_ <- dettl_config$load$post
-      private$load_test_ <- dettl_config$load$test
-      private$test_queries <- dettl_config$load$verification_queries
-
-      private$log_table <- db_get_log_table(db_name, self$path)
-      private$confirm <- cfg$db[[db_name]]$confirm
-      private$require_branch <- cfg$db[[db_name]]$require_branch
+      private$load_pre_ <- private$import_config$load$pre
+      private$load_post_ <- private$import_config$load$post
+      private$load_test_ <- private$import_config$load$test
+      private$test_queries <- private$import_config$load$verification_queries
+      lockBinding("path", self)
     },
 
     #' @description
@@ -245,13 +213,6 @@ DataImport <- R6::R6Class(
     },
 
     #' @description
-    #' Get the database connection being used by the import. Used for testing.
-    #' @return The DBI connection
-    get_connection = function() {
-      private$con
-    },
-
-    #' @description
     #' Get the extracted data created by the extract step
     #' @return The extracted data
     get_extracted_data = function() {
@@ -263,35 +224,6 @@ DataImport <- R6::R6Class(
     #' @return The transformed data
     get_transformed_data = function() {
       private$transformed_data
-    },
-
-    #' @description
-    #' Get the name of the log table for a particular import. This is the name
-    #' of the log table configured in the dettl config
-    #' @return Log table name
-    get_log_table = function() {
-      private$log_table
-    },
-
-    #' @description
-    #' Start a transaction
-    begin_transaction = function() {
-      DBI::dbBegin(private$con)
-      private$transaction_active <- TRUE
-    },
-
-    #' @description
-    #' Rollback a transaction
-    rollback_transaction = function() {
-      DBI::dbRollback(private$con)
-      private$transaction_active <- FALSE
-    },
-
-    #' @description
-    #' Commit a transaction
-    commit_transaction = function() {
-      DBI::dbCommit(private$con)
-      private$transaction_active <- FALSE
     }
   )
 )

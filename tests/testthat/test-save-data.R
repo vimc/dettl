@@ -55,7 +55,7 @@ test_that("transformed data can be saved", {
 test_that("trying to save data with non data import object fails", {
   t <- temp_file()
   expect_error(dettl_save("test", t, "transform"),
-               "Can't save transform data for non-DataImport object.")
+               "Can't save transform data for non-RImport object.")
 })
 
 test_that("save data can create new file", {

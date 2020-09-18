@@ -1,13 +1,12 @@
-context("data-import-object")
+context("import-object")
 
 test_that("format", {
   path <- prepare_test_import()
   import <- dettl(file.path(path, "example/"), "test")
   private <- environment(import$initialize)$private
-  expect_equal(import$format(FALSE)[[1]], "<dettl: DataImport>")
+  expect_equal(import$format(FALSE)[[1]], "<dettl: RImport>")
   expect_equal(import$format(TRUE), "Data import object")
 })
-
 
 test_that("format works for functions with many args", {
   ## We're arbitraily choosing to use run_load func here as it has
@@ -28,5 +27,12 @@ test_that("help: base class", {
   mockery::stub(import$help, "utils::help", mock_help)
   import$help()
   args <- mockery::mock_args(mock_help)[[1]]
-  expect_equal(args, list("DataImport", package = "dettl"))
+  expect_equal(args, list("RImport", package = "dettl"))
+})
+
+test_that("object cannot be created for unknown import mode", {
+  mockery::stub(dettl, "get_mode", "test")
+  expect_error(dettl("path", "db"),
+               paste0("Can't initialise import for unknown mode got \"test\", ",
+               "mode must be one of \"create\" or \"append\"."))
 })

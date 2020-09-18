@@ -5,11 +5,24 @@
 #' configured via the \code{dettl_config.yml}. If name is left blank this will
 #' default to using the first db configured.
 #'
-#' @return A DataImport object.
+#' @return An Import object.
 #' @export
 #'
 dettl <- function(path, db_name = NULL) {
-  DataImport$new(path, db_name)
+  mode <- get_mode(path)
+  if (!(mode %in% c("create", "append"))) {
+    stop(sprintf(paste0("Can't initialise import for unknown mode got \"%s\",",
+                        " mode must be one of \"create\" or \"append\"."),
+                 mode))
+  }
+  RImport$new(path, db_name)
+}
+
+get_mode <- function(path) {
+  config <- read_config(path)
+  mode <- config$dettl$mode
+  assert_scalar_character(mode, "import mode")
+  mode
 }
 
 #' Run specified stages of an import
