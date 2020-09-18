@@ -200,8 +200,9 @@ test_that("run import checks git state before import is run", {
   import <- dettl(file.path(path, "example/"), db_name = "test")
   import$extract()
   import$transform()
-  expect_error(import$load(),
-               sprintf("Can't run load as repository has unstaged changes. Update git or run in dry-run mode."))
+  expect_error(import$load(), sprintf(paste0(
+    "Can't run load as repository has unstaged changes. Update git or run",
+    " in dry-run mode.")))
 
   ## Import can be run in dry-run mode still
   import_load <- import$load(dry_run = TRUE)
@@ -258,13 +259,15 @@ test_that("run import asks to confirm run if configured", {
 
   res <- with_mock("dettl:::dettl_config" = mock_confim_config,
                    "askYesNo" = mock_yes_answer, {
-                     import <- dettl(file.path(path, "example/"), db_name = "test")
+                     import <- dettl(file.path(path, "example/"),
+                                     db_name = "test")
                      import$extract()
                      import$transform()
                      res <- evaluate_promise(fn(import))
                      expect_true(res$result)
                      mockery::expect_called(mock_yes_answer, 1)
-                     expect_match(res$messages, "Running load .*example", all = FALSE)
+                     expect_match(res$messages, "Running load .*example",
+                                  all = FALSE)
                    })
 })
 
@@ -364,7 +367,7 @@ test_that("load can be run in one call", {
                expected_data)
 })
 
-test_that("calling to run transform when extract hasn't been done will run both", {
+test_that("call run transform when extract hasn't been done will run both", {
   path <- prepare_test_import()
 
   ## Turn off reporting when running import so import tests do not print
