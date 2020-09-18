@@ -20,8 +20,10 @@ test_that("foreign key constraints can be initialised and accessed", {
       "serial" = c("id", "nid")
     )
   )
-  mock_get_fk_constraints <- mockery::mock(constraints)
-  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+  mock_get_fk_constraints <- mockery::mock(NULL)
+  mock_parse_constraints <- mockery::mock(constraints)
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints,
+            "dettl:::parse_constraints" = mock_parse_constraints, {
     keys <- ForeignKeyConstraints$new("con")
   })
 
@@ -95,7 +97,9 @@ test_that("foreign key constraints can be initialised and accessed", {
 
 test_that("empty key constraints returns appropriate messages", {
   mock_get_fk_constraints <- mockery::mock(list())
-  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints, {
+  mock_parse_constraints <- mockery::mock(list())
+  with_mock("dettl:::get_fk_constraints" = mock_get_fk_constraints,
+            "dettl:::parse_constraints" = mock_parse_constraints, {
     keys <- ForeignKeyConstraints$new("con")
   })
   expect_false(keys$used_as_foreign_key("test"))

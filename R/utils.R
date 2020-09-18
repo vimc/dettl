@@ -2,6 +2,18 @@
   if (is.null(a)) b else a
 }
 
+`%?%` <- function(x, y) {
+  list(x = x, y = y)
+}
+
+`%:%` <- function(xy, z) {
+  if (xy$x) {
+    xy$y
+  } else {
+    z
+  }
+}
+
 yaml_load <- function(string) {
   ## More restrictive true/false handling.  Only accept if it maps to
   ## full (true|yes) / (false|no):
@@ -72,8 +84,8 @@ is_relative_path <- function(path) {
 
 ## Originally in cyphr:
 find_file_descend <- function(target, start = ".", limit = "/") {
-  root <- normalizePath(limit, winslash = '/', mustWork = TRUE)
-  start <- normalizePath(start, winslash = '/', mustWork = TRUE)
+  root <- normalizePath(limit, winslash = "/", mustWork = TRUE)
+  start <- normalizePath(start, winslash = "/", mustWork = TRUE)
 
   f <- function(path) {
     if (file.exists(file.path(path, target))) {
@@ -82,7 +94,7 @@ find_file_descend <- function(target, start = ".", limit = "/") {
     if (normalizePath(path, mustWork = TRUE) == root) {
       return(NULL)
     }
-    parent <- normalizePath(file.path(path, ".."), winslash = '/')
+    parent <- normalizePath(file.path(path, ".."), winslash = "/")
     if (parent == path) {
       return(NULL)
     }
@@ -90,7 +102,7 @@ find_file_descend <- function(target, start = ".", limit = "/") {
   }
   ret <- f(start)
   if (!(is.null(ret))) {
-    ret <- normalizePath(ret, winslash = '/', mustWork = TRUE)
+    ret <- normalizePath(ret, winslash = "/", mustWork = TRUE)
   }
   ret
 }
@@ -195,7 +207,6 @@ file_has_canonical_case <- function(filename) {
 file_canonical_case <- function(filename) {
   dat <- file_split_base(filename, TRUE)
   base <- dat$base
-  path <- dat$path
   absolute <- dat$absolute
 
   for (p in dat$path) {
@@ -230,7 +241,7 @@ zip_dir <- function(path, dest = paste0(basename(path), ".zip")) {
   if (code != 0) {
     stop("error running zip")
   }
-  normalizePath(dest, winslash = '/')
+  normalizePath(dest, winslash = "/")
 }
 
 dettl_file <- function(...) {
@@ -242,9 +253,9 @@ data_frame <- function(...) {
 }
 
 temp_dir <- function(...) {
-  gsub('\\\\', "/", tempdir(...))
+  gsub("\\\\", "/", tempdir(...))
 }
 
 temp_file <- function(...) {
-  gsub('\\\\',"/", tempfile(...))
+  gsub("\\\\", "/", tempfile(...))
 }

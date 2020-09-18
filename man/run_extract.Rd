@@ -4,7 +4,7 @@
 \alias{run_extract}
 \title{Run extract step.}
 \usage{
-run_extract(con, extract, path, extract_test)
+run_extract(con, extract, path)
 }
 \arguments{
 \item{con}{The active DB connection.}
@@ -12,16 +12,12 @@ run_extract(con, extract, path, extract_test)
 \item{extract}{Extract function loaded from config.}
 
 \item{path}{Path to the project directory, for locating the transform tests}
-
-\item{extract_test}{Optional path to the extract tests. Relative to path
-argument.}
 }
 \value{
 The extracted data.
 }
 \description{
 Step is responsible for reading data from local files and DB needed for
-the transform step and running any configured user defined tests on the
-extracted data.
+the transform step.
 }
 \keyword{internal}

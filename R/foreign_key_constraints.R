@@ -2,12 +2,15 @@ ForeignKeyConstraints <- R6::R6Class(
   "ForeignKeyConstraints",
 
   private = list(
-    constraints = NULL
+    constraints = NULL,
+    constraint_table = NULL
   ),
 
   public = list(
+
     initialize = function(con) {
-      private$constraints <- get_fk_constraints(con)
+      private$constraint_table <- get_fk_constraints(con)
+      private$constraints <- parse_constraints(private$constraint_table)
     },
 
     used_as_foreign_key = function(name) {
@@ -61,6 +64,13 @@ ForeignKeyConstraints <- R6::R6Class(
         }
       }
       is_serial && is_used_as_constraint
+    },
+
+    get_upload_order = function(data) {
+      non_empty_columns <- get_non_empty_columns(data)
+      dependencies <- get_network_dependencies(private$constraint_table,
+                                               names(data), non_empty_columns)
+      topological_order(dependencies)
     }
   )
 )

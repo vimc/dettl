@@ -2,11 +2,17 @@
 % Please edit documentation in R/dettl_runner.R
 \name{dettl_run}
 \alias{dettl_run}
-\title{Run an import}
+\title{Run specified stages of an import}
 \usage{
-dettl_run(import, db_name = NULL, stage = c("extract", "transform"),
-  comment = NULL, save = FALSE, dry_run = FALSE,
-  allow_dirty_git = FALSE)
+dettl_run(
+  import,
+  db_name = NULL,
+  stage = c("extract", "transform"),
+  comment = NULL,
+  save = FALSE,
+  dry_run = FALSE,
+  allow_dirty_git = FALSE
+)
 }
 \arguments{
 \item{import}{Either path to the import directory or output from a previous

@@ -4,8 +4,14 @@
 \alias{verify_table}
 \title{Verify the data adheres to the DB schema.}
 \usage{
-verify_table(con, table_name, table, identical_columns = FALSE,
-  context_info = "", solution_text = "")
+verify_table(
+  con,
+  table_name,
+  table,
+  additional_columns = NULL,
+  context_info = "",
+  solution_text = ""
+)
 }
 \arguments{
 \item{con}{The active DB connection to check the schema for.}
@@ -14,12 +20,17 @@ verify_table(con, table_name, table, identical_columns = FALSE,
 
 \item{table}{The table to check.}
 
+\item{additional_columns}{Vector of additional column names to check exist
+in DB table.}
+
 \item{context_info}{Info to be logged should a check fail.}
 
 \item{solution_text}{Text describing possible solution should error occur.}
 }
 \description{
-Ensure that table is in the DB and has only columns which exist in the DB.
-And optionally check that table contains exactly the columns in the DB.
+Verifies that
+* A table with name `table_name` exists in the DB
+* All the columns in `table` exist in the DB table with name `table_name`
+* Any `additional_columns` exist in the DB table with name `table_name`
 }
 \keyword{internal}

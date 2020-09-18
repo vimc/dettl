@@ -4,10 +4,16 @@
 \alias{prepare_test_import}
 \title{Prepare example import inside a git repo}
 \usage{
-prepare_test_import(example_dir = "example",
-  dettl_config = "dettl_config.yml", create_db = TRUE,
-  add_data = FALSE, add_job_table = FALSE, add_log_table = TRUE,
-  add_fk_data = FALSE, add_cyclic_fks = FALSE)
+prepare_test_import(
+  example_dir = "example",
+  dettl_config = "dettl_config.yml",
+  create_db = TRUE,
+  add_data = FALSE,
+  add_job_table = FALSE,
+  add_log_table = TRUE,
+  add_fk_data = FALSE,
+  add_cyclic_fks = FALSE
+)
 }
 \arguments{
 \item{example_dir}{The example directory to copy to temp.}
@@ -18,7 +24,8 @@ prepare_test_import(example_dir = "example",
 
 \item{add_data}{If TRUE data is bootstrapped to people table in test DB.}
 
-\item{add_job_table}{If TRUE also bootstrap job table related to people table.}
+\item{add_job_table}{If TRUE also bootstrap job table related to people
+table.}
 
 \item{add_log_table}{If TRUE then also bootstrap log table.}
 

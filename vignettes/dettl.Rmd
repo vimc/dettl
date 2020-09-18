@@ -31,9 +31,11 @@ ETL is a pattern for general copying of data from one or more sources to another
 
 **Load** - Step is responsible for loading the transformed data into the destination database. A set of post-load tests can be defined which will be run after the data is loaded into the database. If any of the tests fail the DB update will roll back, otherwise changes are committed.
 
-## File structure
+## Repository setup
 
-To define an import a directory structure as follows is required
+Dettl requires a config at the top level of a repository called `dettl_config.yml` which describes database connection information. Individual imports are then organised in separate subdirectories and must contain a config file `dettl.yml` which contains information relating to the import mode, files to be sourced and tests to be run. These subdirectories will be created automatically by using `dettl_new`.
+
+A typical repository might look like
 
 ```
 project_directory
@@ -45,9 +47,9 @@ project_directory
 |── dettl_config.yml
 ```
 
-Configuration files are required at 2 levels
+## dettl_config.yml
 
-* `dettl_config.yml` - Configuration at the project level used to configure DB connection information for any database which you wish to import to for each import subdirectory. Note that you must specify the `log_table` for each database. This is the table which import runs will be logged to.
+This needs to be setup manually and contains configuration at the project level used to configure DB connection information for any database which you wish to import to. Note that you must specify a `log_table` where run information is written after each import. See below for an example setup.
 
 ```yaml
 db:
@@ -67,72 +69,35 @@ db:
     log_table: dettl_import_log
 ```
 
-* `dettl.yml` - Configuration at the individual import level used to say what functions should be used for each stage and what R files should be sourced. Also used to configure the test files required. 
-
-Taking a closer look at the structure of an individual import directory we expect something like.
-```
-import_directory
-|── dettl.yml
-|   R
-|   |── extract.R
-|   |── transform.R
-|   |── load.R
-|── data
-|   |── source_file_1.csv
-|   |── source_file_2.csv
-|   |── ...
-|── tests
-|   |── test_extract.R
-|   |── test_transform.R
-|   |── test_load.R
-```
-Which will then be tied together to form the import using the `dettl.yml` config file e.g.
-
-```yaml
-sources:
-  - R/extract.R
-  - R/transform.R
-  - R/load.R
-
-extract:
-  func: extract
-  test: R/test_extract.R
-
-transform:
-  func: transform
-  test: R/test_transform.R
-
-load:
-  func: load
-  test: R/test_load.R
-```
-
-The import at a minimum needs code to define 3 functions one for each stage of the extract, transform and load.
-
 ## Creating a new ETL import
 
-If you want to create a new import within an existing project this can be done by opening the project as an RStudio project and using `dettl_new()`. Note that the use of `withr::with_dir(tempdir(), ...)` in the example below is because this is running in a vignette and the code is an example. This is not necessary when using `dettl` in a real environment.
+If you want to create a new import within an existing project this can be done by opening the project as an RStudio project and using `dettl_new()`. 
 
-```{r}
-import_name <- withr::with_dir(tempdir(), 
-  dettl::dettl_new("person_information")
-)
+```
+import_name <- dettl::dettl_new("person_information")
 ```
 
-This will create a new directory called `person_information` prepended with the current date containing the default `dettl.yml` config and 3 `R` files for you to fill in to the the extract, transform and load and 3 files for testing after each stage of the import.
+This will create a new directory called `person_information` prepended with the current date containing:
+* the default `dettl.yml` config - by default setup to run in append mode using automatic load
+* an R file `R/extract.R` containing a template extract function
+* an R file `R/transform.R` containing a template transform function
+* an R file `R/verification_queries.R` containing test queries for load stage
+* 3 test files `tests/test_extract.R`, `tests/test_transform.R`, `tests/test_load.R` containing testthat templates for testing after each stage of the import
 
 If you want to create a new import within a new project then you will need to manually create a new RStudio project and create a `dettl_config.yml` file. You can then proceed as above.
 
 ## Developing the import
 
-To develop a complete import you need to implement the extract, transform and load stages.
+### Extract
+
+To develop a complete import you need to implement the extract and transform stages.
 
 Open the created `R/extract.R` file and implement the templated `extract` function. This can delegate to other R functions written elsewhere. If you add any other R files they will need to be added to the list of `sources` in the `dettl.yml`. The extract code should just read data the required data into memory and do no more. For our simple example we want to read from a csv.
 
 ```r
-extract <- function(path, con) {
+extract <- function(con) {
   raw_data <- list()
-  raw_data$people <- read.csv(file.path(path, "data/people.csv"), stringsAsFactors = FALSE)
+  raw_data$people <- read.csv("data/people.csv", stringsAsFactors = FALSE)
   raw_data
 }
 ```
@@ -167,7 +132,9 @@ The extracted data can be inspected to ensure it looks as expected.
 print(extracted_data)
 ```
 
-Secondly open the created `R/transform.R` file. Again you need to implement the templated `transform` function. Similarly to the extract stage this can delegate to other R functions if any files used are added to the `sources` block in the config. Similarly you should write some tests for the transformed data. Important to note is the form of the returned data should be as a named list of data frames. Where each list item represents a table from the database with name matching the name in the DB schema. And each column in the data frame should match an existing column in the database. After the transform step is run the user specified tests will be run automatically, in addition to these we test that the returned data conforms to the DB schema and fail if it does not do so. For example for our simple people example our transform code could be something like
+### Transform
+
+Open the created `R/transform.R` file and implement the templated `transform` function. Like the extract stage this can delegate to functions defined in other files providing that the files used are added to the `sources` block in the config. The `transform` function should return data as a named list of data frames where each data frame represents a table from the database. The names of the data frames need to match the names of tables in the database.  You can write some tests the check the transformed data which will be run automatically after the transform step is run. In addition to user specified tests we check that the returned data conforms to the DB schema and fail if it does not do so. For example for our simple people example our transform code could be something like
 
 ```r
 transform <- function(extracted_data) {
@@ -199,7 +166,37 @@ The transformed data can be inspected to ensure it looks as expected.
 print(transformed_data)
 ```
 
-The final stage to implement is the load stage. Note that you can use an automatic load stage. This will append the `transformed_data` to existing tables in the database respecting any foreign key constraints configured via the `dettl.yml`. See section below for details about [automatic load](#dettl_auto_load). To implement this open the `R/load.R` file. An automatically generated implementation will already be there for you, this simply takes each data frame in the transformed data list and appends those rows to the relevant table in the database. If something more complicated is required this can be replaced. Expect that this stage is only really a set of update queries to be run on the database implemented in R.
+### Load {#dettl_auto_load}
+
+By default dettl will use an automatic load step to write data to the database. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the automatic load step requires defining that the automatic load should be used in the load block of `dettl.yml` e.g.
+
+```yml
+load:
+  automatic: TRUE
+  verification_queries: test_queries
+  test: R/test_load.R
+```
+
+The automatic load will load data respecting primary key constraints which are read automatically from the database. For example if we want to load data where we have `transformed_data` taking the form
+
+```{r echo = FALSE}
+people <- data.frame(c(1,2),
+                     c("Alice", "Bob"),
+                     c(25, 45),
+                     c(175, 187),
+                     stringsAsFactors = FALSE)
+colnames(people) <- c("id", "name", "age", "height")
+jobs <- data.frame(c(1, 2),
+                   c("researcher", "developer"),
+                   stringsAsFactors = FALSE)
+colnames(jobs) <- c("person", "job")
+knitr::kable(people, caption = "people")
+knitr::kable(jobs, caption = "jobs")
+```
+
+where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique IDs to associate the new rows of data with each other. The temporary unique IDs can be anything as they will be updated when the new records are added but using negative numbers is a good way to make clear the separation between temporary ID and real db entries. If you want to link to an existing entry in the database by its primary ID then use that exact ID as the field value.
+
+Note that the default automatic load will only append to existing tables, if you need to create new tables see [create mode](#create_mode). 
 
 The important implementation for this stage is the testing. The load stage will be run in a transaction then the tests will be run. If any of the tests fail the transaction will be rolled back, otherwise it will be committed. You can write two types of test here, the first simplest is using the active connection to the database to query the loaded data and test the output. For example
 
@@ -398,35 +395,106 @@ This will rollback any changes which have been made to the database before the c
 options(testthat.default_reporter = default_reporter)
 ```
 
-## Automatic load stage {#dettl_auto_load}
 
-`dettl` has an automatic implementation for the load stage of the import. At its most simple this will just take the named list of `transformed_data` and append each of these data frames to the table in the database with matching name. To use the automatic load step requires defining that the automatic load should be used in the load block of `dettl.yml` e.g.
+## Other stuff
 
-```yml
+### I want to write an import which creates a table {#create_mode}
+
+If you want to create a table during your import you need to switch the import mode. This is done in the `dettl.yml` configuration
+
+```
+mode: create
+```
+
+Create mode imports will skip some of the checks append imports do e.g. checks that the transformed data matches tables in the DB schema. The automatic load can still be used and will create each of the tables in the transformed data. Note that create and appending to tables cannot be mixed within an import.
+
+### I want to write a custom load
+
+Dettl allows writing a custom load if the automatic load does not achieve the desired effect. You might want to use a custom load if you want to run an `UPDATE` query on the database. To do this update the `dettl.yml` for the report to use a user defined load
+
+```yaml
 load:
-  automatic: TRUE
+  func: load
   verification_queries: test_queries
   test: R/test_load.R
 ```
 
-Using an automatic load means that the configured `sources` in the `dettl.yml` no longer need to define a `load` function. A file containing tests for the load stage is still required.
+then add a function matching the name specified in the config, in our example this is just `load` which takes the transformed data and a DB connection e.g.
 
-The automatic load will load data respecting primary key constraints which are read automatically from the database. For example if we want to load data where we have `transformed_data` taking the form
-
-```{r echo = FALSE}
-people <- data.frame(c(1,2),
-                     c("Alice", "Bob"),
-                     c(25, 45),
-                     c(175, 187),
-                     stringsAsFactors = FALSE)
-colnames(people) <- c("id", "name", "age", "height")
-jobs <- data.frame(c(1, 2),
-                   c("researcher", "developer"),
-                   stringsAsFactors = FALSE)
-colnames(jobs) <- c("person", "job")
-knitr::kable(people, caption = "people")
-knitr::kable(jobs, caption = "jobs")
+```R
+load <- function(transformed_data, con) {
+  ## Do something
+}
 ```
 
-where `id` is the primary key of table `people` which is used as a foreign key for the `person` column of table `jobs`. To support linking between these tables in the transformed data use temporary unique ids to associate the new rows of data with each other. The tables themselves may already have entries with these primary keys used so when the automatic load is run the primary keys are updated when a new record is added. If you want to link to an existing entry in the database by its primary id then use that exact id as the field value.
+Note that the containing file must be in the list of sources for the import. Note also that if you are using a custom load dettl won't automatically fix key references for you and you will need to manage this manually. Do not specify numerical IDs where the database would normally do that with a serial. Leave the IDs out and let the database generate those and if you require the IDs in another place then use a sql query with `RETURNING id` to [fetch back the assigned serial IDs](https://www.postgresql.org/docs/12/dml-returning.html).
 
+### I want to use the automatic load but make additional changes to the database
+
+You can define two additional actions to the load step, `pre_load` and `post_load`. This might be used e.g. to create an index after the data has been added by the automatic load. These can be used by updating the `dettl.yml` config to be
+
+```yaml
+load:
+  pre: pre_load
+  automatic: TRUE
+  post: post_load
+  verification_queries: test_queries
+  test: R/test_load.R
+```
+
+defining functions `pre_load` and `post_load` which take the `transformed_data` and a DB connection e.g.
+
+```R
+pre_load <- function(transformed_data, con) {
+  ## Do something
+}
+post_load <- function(transformed_data, con) {
+  ## Do something
+}
+```
+
+Note that the containing file must be in the list of sources for the import.
+
+### What about cycles?
+
+If you have cycles in your database, for example something which looks like
+
+```{r cycle_example, echo=FALSE, out.width = '100%'}
+knitr::include_graphics("images/cycle_example.png")
+```
+
+Then the automatic load can resolve these dependencies if at least one of them is nullable.
+
+e.g. if we want to upload data like
+
+```{r echo = FALSE}
+data <- list(
+  A = data.frame(
+    id = c(1, 2),
+    b = c(1, 2)
+  ),
+  B = data.frame(
+    id = c(1, 2),
+    a = c(NA, NA)
+  ))
+print(data)
+```
+
+this would work. The automatic load would determine that we have a dependency of `A` on `B` and of `B` on `A` but it would ignore the dependency from `B` on `A` because the column in the `B` table has `NA` values. It would upload `B` first which would pass successfully if column `a` of table `B` is nullable and then would successfully upload table `A`. 
+
+If we had something like
+
+```{r echo = FALSE}
+data <- list(
+  A = data.frame(
+    id = c(1, 2),
+    b = c(1, 2)
+  ),
+  B = data.frame(
+    id = c(1, 2),
+    a = c(1, 2)
+  ))
+print(data)
+```
+
+This would fail because the automatic load cannot determine the order that the data should be uploaded in.

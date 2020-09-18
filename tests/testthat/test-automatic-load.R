@@ -11,7 +11,7 @@ test_that("child tables can be updated", {
   col3 <- c(6, 7, 8)
   child_table <- data_frame(col3, col1_child)
 
-  col4 <- c(4,3,2)
+  col4 <- c(4, 3, 2)
   col5 <- c(TRUE, FALSE, FALSE)
   other_table <- data_frame(col4, col5)
 
@@ -21,10 +21,10 @@ test_that("child tables can be updated", {
     other_table = other_table
   )
 
-  table_key_pair = list("child_table" = "col1_child")
+  table_key_pair <- list("child_table" = "col1_child")
 
-  old_key_values = c(2, 3, 5)
-  new_key_values = c(20, 30, 50)
+  old_key_values <- c(2, 3, 5)
+  new_key_values <- c(20, 30, 50)
 
   updated_tables <- update_child_tables(tables, table_key_pair, old_key_values,
                                         new_key_values, "parent_table")
@@ -51,9 +51,9 @@ test_that("automatic load supports 2 referenced fields within same table", {
   expect_equal(referenced_keys, c("id", "nid"))
 
   ## Create test data
-  referenced_table <- data_frame(id = c(1,2), nid = c(1,2))
-  id_constraint <- data_frame(name = c("idRef1", "idRef2"), ref = c(1,2))
-  nid_constraint <- data_frame(name = c("nidRef1", "nidRef2"), ref = c(2,1))
+  referenced_table <- data_frame(id = c(1, 2), nid = c(1, 2))
+  id_constraint <- data_frame(name = c("idRef1", "idRef2"), ref = c(1, 2))
+  nid_constraint <- data_frame(name = c("nidRef1", "nidRef2"), ref = c(2, 1))
 
   tables <- list(
     referenced_table = referenced_table,
@@ -78,7 +78,7 @@ test_that("postgres automatic load works as expected", {
   on.exit(DBI::dbDisconnect(con), add = TRUE)
 
   ## Create test data
-  region <- data_frame(id = c(5,6), name = c("France", "Paris"))
+  region <- data_frame(id = c(5, 6), name = c("France", "Paris"))
   street <- data_frame(name = "Test Avenue")
   address <- data_frame(street = "Test Avenue", region = 5)
 
@@ -89,10 +89,13 @@ test_that("postgres automatic load works as expected", {
   )
 
   ## Do load and check uploaded data
-  dettl_auto_load(tables, con)
+  expect_message(
+    dettl_auto_load(tables, con),
+    "Updating region (adding 2 rows)",
+    fixed = TRUE)
 
   ## Create expected data
-  db_region <- data_frame(id = c(1,2,3,4),
+  db_region <- data_frame(id = c(1, 2, 3, 4),
                           name = c("UK", "London", "France", "Paris"),
                           parent = c(NA, 1, NA, NA))
   db_street <- data_frame(name = c("Commercial Road", "The Street",
@@ -112,7 +115,7 @@ test_that("postgres automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   db_region <- data_frame(
-    id = c(1,2,3,4,5,6),
+    id = c(1, 2, 3, 4, 5, 6),
     name = c("UK", "London", "France", "Paris", "France", "Paris"),
     parent = c(NA, 1, NA, NA, NA, NA))
   region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
@@ -128,7 +131,7 @@ test_that("sqlite automatic load works as expected", {
   con <- dbi_db_connect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
 
   ## Create test data
-  region <- data_frame(id = c(5,6), name = c("France", "Paris"))
+  region <- data_frame(id = c(5, 6), name = c("France", "Paris"))
   street <- data_frame(name = "Test Avenue")
   address <- data_frame(street = "Test Avenue", region = 5)
 
@@ -142,7 +145,7 @@ test_that("sqlite automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   ## Create expected data
-  db_region <- data_frame(id = c(1,2,3,4),
+  db_region <- data_frame(id = c(1, 2, 3, 4),
                           name = c("UK", "London", "France", "Paris"),
                           parent = c(NA, 1, NA, NA))
   db_street <- data_frame(name = c("Commercial Road", "The Street",
@@ -162,7 +165,7 @@ test_that("sqlite automatic load works as expected", {
   dettl_auto_load(tables, con)
 
   db_region <- data_frame(
-    id = c(1,2,3,4,5,6),
+    id = c(1, 2, 3, 4, 5, 6),
     name = c("UK", "London", "France", "Paris", "France", "Paris"),
     parent = c(NA, 1, NA, NA, NA, NA))
   region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
@@ -271,6 +274,29 @@ test_that("postgres automatic load works with cyclic fks", {
 
 })
 
+
+test_that("trying to upload cycle with no NA columns throws an error", {
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db(add_cyclic_fks = TRUE)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## Create test data
+  model <- data_frame(id = c("one", "two"),
+                      current_version = c(4, 5))
+  model_version <- data_frame(id = c(4, 5), model = c("one", "two"))
+
+  tables <- list(
+    model = model,
+    model_version = model_version
+  )
+
+  expect_error(dettl_auto_load(tables, con),
+"A cyclic dependency detected for model_version, model:
+  model_version: depends on model
+  model: depends on model_version
+Please write a custom load")
+})
+
 test_that("map values works as expected", {
   data <- c(1, 3, 2, 2)
   old <- c(1, 2, 3)
@@ -357,8 +383,62 @@ test_that("automatic load supports upload without specifying referenced keys", {
 
   ## then PK must be specified
   expect_error(dettl_auto_load(tables, con),
-               paste0("Can't uploaded data, referenced key 'id' of table ",
+               paste0("Can't upload data, referenced key 'id' of table ",
                       "'region' is missing but is referenced by foreign key ",
                       "constraint used in data."))
 
+})
+
+test_that("automatic load sets order for tables being uploaded", {
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db(add_fk_data = TRUE)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## Create test data
+  region <- data_frame(id = c(5, 6), name = c("France", "Paris"))
+  street <- data_frame(name = "Test Avenue")
+  address <- data_frame(street = "Test Avenue", region = 5)
+
+  tables <- list(
+    address = address,
+    region = region,
+    street = street
+  )
+
+  ## Do load and check uploaded data
+  expect_message(
+    dettl_auto_load(tables, con),
+    "Updating region (adding 2 rows)",
+    fixed = TRUE)
+
+  ## Create expected data
+  db_region <- data_frame(id = c(1, 2, 3, 4),
+                          name = c("UK", "London", "France", "Paris"),
+                          parent = c(NA, 1, NA, NA))
+  db_street <- data_frame(name = c("Commercial Road", "The Street",
+                                   "Test Avenue"))
+  db_address <- data_frame(street = c("The Street", "Test Avenue"),
+                           region = c(2, 3))
+
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+  street_table <- DBI::dbGetQuery(con, "SELECT * FROM street")
+  address_table <- DBI::dbGetQuery(con, "SELECT * FROM address")
+  expect_equal(region_table, db_region)
+  expect_equal(street_table, db_street)
+  expect_equal(address_table, db_address)
+
+  ## Trying to upload with same serial PK again works
+  tables <- list(region = region)
+  dettl_auto_load(tables, con)
+
+  db_region <- data_frame(
+    id = c(1, 2, 3, 4, 5, 6),
+    name = c("UK", "London", "France", "Paris", "France", "Paris"),
+    parent = c(NA, 1, NA, NA, NA, NA))
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM region")
+  expect_equal(region_table, db_region)
+
+  ## Trying to upload with same non-serial PK again fails
+  tables <- list(street = street)
+  expect_error(dettl_auto_load(tables, con), class = "dettl_data_write_error")
 })

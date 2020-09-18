@@ -2,7 +2,7 @@
 % Please edit documentation in R/automatic_load.R
 \name{dettl_auto_load}
 \alias{dettl_auto_load}
-\title{Automatic load function.}
+\title{Automatic load function for append mode imports.}
 \usage{
 dettl_auto_load(transformed_data, con)
 }

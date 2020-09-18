@@ -12,8 +12,6 @@ dettl <- function(path, db_name = NULL) {
   DataImport$new(path, db_name)
 }
 
-#' Run an import
-#'
 #' Run specified stages of an import
 #'
 #' @param import Either path to the import directory or output from a previous

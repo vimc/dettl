@@ -1,3 +1,3 @@
-extract <- function(path, con) {
-  raw_data <- list()
+extract <- function(con) {
+  list()
 }

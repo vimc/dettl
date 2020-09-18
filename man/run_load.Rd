@@ -4,15 +4,27 @@
 \alias{run_load}
 \title{Run the load step ensuring tests pass before db changes are committed.}
 \usage{
-run_load(con, load, extracted_data, transformed_data, test_queries, path,
-  test_file, dry_run, log_table, comment)
+run_load(
+  con,
+  load,
+  extracted_data,
+  transformed_data,
+  test_queries,
+  pre_load,
+  post_load,
+  path,
+  test_file,
+  log_table,
+  comment
+)
 }
 \arguments{
 \item{con}{Connection to the database.}
 
 \item{load}{The load function for making the DB changes.}
 
-\item{extracted_data}{Extracted data if needed for testing, otherwise can be NULL.}
+\item{extracted_data}{Extracted data if needed for testing, otherwise can be
+NULL.}
 
 \item{transformed_data}{List of data frames representing the data to be
 loaded to the DB.}
@@ -24,10 +36,6 @@ and after the load is run. Used within the tests to check changes to the DB.}
 
 \item{test_file}{Path to file containing the testthat tests for verifying the
 DB changes.}
-
-\item{dry_run}{If TRUE then any database changes are rolled back when the
-import completes. i.e. the load stage can be run and tests executed but the
-db will be rolled back.}
 
 \item{comment}{An optional comment to add to the import log table for this
 run.}

@@ -1,4 +1,5 @@
-run_load_tests <- function(path, before, after, extracted_data, transformed_data, con,
+run_load_tests <- function(path, before, after, extracted_data,
+                           transformed_data, con,
                            reporter = testthat::default_reporter()) {
   env <- new.env(parent = .GlobalEnv)
   env$before <- before
@@ -6,7 +7,7 @@ run_load_tests <- function(path, before, after, extracted_data, transformed_data
   env$extracted_data <- extracted_data
   env$transformed_data <- transformed_data
   env$con <- con
-  test_results <- testthat::test_file(path, env = env, reporter = reporter)
+  testthat::test_file(path, env = env, reporter = reporter)
 }
 
 run_extract_tests <- function(path, extracted_data, con,
@@ -14,7 +15,7 @@ run_extract_tests <- function(path, extracted_data, con,
   env <- new.env(parent = .GlobalEnv)
   env$extracted_data <- extracted_data
   env$con <- con
-  test_results <- testthat::test_file(path, env = env, reporter = reporter)
+  testthat::test_file(path, env = env, reporter = reporter)
 }
 
 run_transform_tests <- function(path, transformed_data, extracted_data, con,
@@ -23,7 +24,7 @@ run_transform_tests <- function(path, transformed_data, extracted_data, con,
   env$transformed_data <- transformed_data
   env$extracted_data <- extracted_data
   env$con <- con
-  test_results <- testthat::test_file(path, env = env, reporter = reporter)
+  testthat::test_file(path, env = env, reporter = reporter)
 }
 
 ## return if all tests are successful w/o error

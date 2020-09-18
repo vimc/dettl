@@ -6,4 +6,7 @@
 ^images$
 ^docs$
 ^\.vault$
-^man-roxygen$
+\ZCX/
+^\.lintr$
+^docker$
+^.travis.yml$

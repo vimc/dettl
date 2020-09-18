@@ -53,7 +53,7 @@ test_that("dettl works as expected", {
 
   ## transform data is available
   expect_equal(length(transformed_data), 1)
-  expect_equal(transformed_data$people, expected_data[c(1,2), ])
+  expect_equal(transformed_data$people, expected_data[c(1, 2), ])
 
   ## and DB is still empty
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
@@ -63,7 +63,7 @@ test_that("dettl works as expected", {
 
   ## then database contains correct data
   expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
-               expected_data[c(1,2), ])
+               expected_data[c(1, 2), ])
 
 })
 
@@ -71,7 +71,7 @@ test_that("import can be created using a default db", {
   path <- prepare_test_import()
   import <- dettl(file.path(path, "example/"))
   con <- import$get_connection()
-  fs_dbname <- gsub('\\\\', '/', con@dbname)
+  fs_dbname <- gsub("\\\\", "/", con@dbname)
   expect_equal(normalizePath(fs_dbname),
                normalizePath(file.path(path, "test.sqlite")))
 })
@@ -94,7 +94,8 @@ test_that("run import runs a full import process", {
                               c(25, 43),
                               c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
-  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"), expected_data)
+  expect_equal(DBI::dbGetQuery(con, "SELECT name, age, height from people"),
+               expected_data)
 })
 
 test_that("run step rolls back when tests fail", {
@@ -129,7 +130,7 @@ test_that("load cannot be run until transform stage has been run", {
   import <- dettl(file.path(path, "example/"), db_name = "test")
 
   expect_error(import$load(),
-               "Cannot run tests as no data has been transformed.")
+               "Cannot run load as no data has been transformed.")
 })
 
 test_that("trying to create import for db missing from config fails", {
@@ -161,7 +162,7 @@ test_that("a dry run of the import can be executed", {
                               c(175, 187))
   colnames(expected_data) <- c("name", "age", "height")
   expect_equal(length(transformed_data), 1)
-  expect_equal(transformed_data$people, expected_data[c(1,2), ])
+  expect_equal(transformed_data$people, expected_data[c(1, 2), ])
   expect_equal(DBI::dbGetQuery(con, "SELECT count(*) from people")[1, 1], 0)
 
   ## when load is run as a dry run
@@ -225,7 +226,7 @@ test_that("run import asks to confirm run if configured", {
   config$db[["test"]]$confirm <- TRUE
   mock_confim_config <- mockery::mock(config, cycle = TRUE)
   mock_no_answer <- mockery::mock(FALSE, cycle = TRUE)
-  mock_NA_answer <- mockery::mock(NA, cycle = TRUE)
+  mock_na_answer <- mockery::mock(NA, cycle = TRUE)
   mock_yes_answer <- mockery::mock(TRUE, cycle = TRUE)
 
   ## Set up promise for checking returned messages
@@ -245,13 +246,13 @@ test_that("run import asks to confirm run if configured", {
             })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
-            "askYesNo" = mock_NA_answer, {
+            "askYesNo" = mock_na_answer, {
               import <- dettl(file.path(path, "example/"), db_name = "test")
               import$extract()
               import$transform()
               res <- evaluate_promise(fn(import))
               expect_false(res$result)
-              mockery::expect_called(mock_NA_answer, 1)
+              mockery::expect_called(mock_na_answer, 1)
               expect_equal(res$messages, "Not uploading to database.\n")
             })
 
@@ -487,4 +488,74 @@ test_that("running extract and transform with save all outputs", {
   trans_jobs <- readxl::read_excel(save_file, sheet = "transformed_jobs")
   expect_equal(colnames(trans_jobs), c("person", "job"))
   expect_equal(nrow(trans_jobs), 2)
+})
+
+test_that("can get extracted data if tests fail", {
+  path <- prepare_test_import("example_failing_extract_test")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example_failing_extract_test/"))
+  expect_error(import$extract(),
+               "Not all extract tests passed. Fix tests before proceeding.")
+
+  extracted_data <- import$get_extracted_data()
+  expect_true(!is.null(extracted_data))
+
+  ## Trying to run transform after failed extract test throws error
+  expect_error(import$transform(),
+               "Cannot run transform as extract tests failed.")
+})
+
+test_that("can get transformed data if tests fail", {
+  path <- prepare_test_import("example_failing_transform_test")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example_failing_transform_test/"))
+  import$extract()
+  expect_error(import$transform(),
+               "Not all transform tests passed. Fix tests before proceeding.")
+
+  transformed_data <- import$get_transformed_data()
+  expect_true(!is.null(transformed_data))
+
+  ## Trying to run load after failed transform tests throws error
+  expect_error(import$load(), "Cannot run load as transform tests failed.")
+})
+
+test_that("re-running extract invalidates transformed data", {
+  path <- prepare_test_import("example")
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  import <- dettl(file.path(path, "example/"))
+  import$extract()
+  import$transform()
+
+  expect_false(is.null(import$get_transformed_data()))
+
+  import$extract()
+  expect_true(is.null(import$get_transformed_data()))
+
+  ## Reloading invalidates all data
+  import$transform()
+  expect_false(is.null(import$get_extracted_data()))
+  expect_false(is.null(import$get_transformed_data()))
+
+  import$reload()
+  expect_true(is.null(import$get_extracted_data()))
+  expect_true(is.null(import$get_transformed_data()))
 })

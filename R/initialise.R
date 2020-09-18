@@ -12,10 +12,9 @@
 #'   add_log_table = FALSE
 #' )
 #' dettl::dettl_create_log_table(file.path(path, "person_information"), "test")
-#'
 dettl_create_log_table <- function(path, db_name) {
   ## Get the connection info
-  path <- normalizePath(path, winslash = '/', mustWork = TRUE)
+  path <- normalizePath(path, winslash = "/", mustWork = TRUE)
   con <- db_connect(db_name, path)
   on.exit(DBI::dbDisconnect(con))
   ## Create the table

@@ -1,3 +1,34 @@
+# dettl 0.0.16
+
+* Update dettl_import_log to record start_time, end_time and duration instead of just start_time
+
+# dettl 0.0.15
+
+* Automatic load now orders the transformed data based on pk dependencies from the db
+* Update template upload to use automatic load
+
+# dettl 0.0.14
+
+* Make extracted/transformed data available even if tests for that stage fail
+
+# dettl 0.0.13
+
+* Set working directory to transform & load stages to be the import directory (working dir now consistent over extract, transform and load)
+* Allow running the load stage outside of a transaction (if dry_run = TRUE then it will still be run inside a transaction)
+
+# dettl 0.0.12
+
+* Remove path arg from extract stage - this will break previous imports
+* Always run the extract stage from path of the root of the import directory - all paths should be relative to this this fixes the bug where you needed to be in the same directory as root of the import to run it.
+
+# dettl 0.0.11
+
+* The automatic load functions provide information about their progress while they run (VIMC-3432)
+
+# dettl 0.0.10
+
+* Add "mode" option to dettl config, by default mode is "append". If use "create" then import can only create new tables and not append to existing ones. (VIMC-3426)
+
 # dettl 0.0.9
 
 * The import object's sources can be reloaded with `$reload()`, allowing refreshing of source code and repairing a Postgres connection with a failed transaction (VIMC-3035, partly fixes VIMC-3154)

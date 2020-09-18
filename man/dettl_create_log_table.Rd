@@ -22,5 +22,4 @@ path <- dettl:::prepare_test_import(
   add_log_table = FALSE
 )
 dettl::dettl_create_log_table(file.path(path, "person_information"), "test")
-
 }

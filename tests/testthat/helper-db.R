@@ -8,7 +8,11 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
   host <- "localhost"
   dettl_test_postgres_connection(dbname, user, host)
   con <- get_postgres_connection(dbname, user, host)
+
   ## Make sure we have a fresh "people" table if one existed already
+  ## Suppres NOTICE type messages from postgres - this switch persists
+  ## for as long as a session
+  DBI::dbExecute(con, "set client_min_messages to WARNING")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS people CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS jobs CASCADE")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS region CASCADE")
@@ -83,7 +87,7 @@ add_postgres_multiple_referenced_fks <- function(con) {
 
 dettl_test_postgres_connection <- function(dbname, user, host) {
   tryCatch(
-    get_postgres_connection(dbname, user, host),
+    DBI::dbDisconnect(get_postgres_connection(dbname, user, host)),
     error = function(e) testthat::skip(sprintf(
     "Failed to open db connection to postgres db %s with user %s and host %s.",
     dbname, user, host))
@@ -115,4 +119,17 @@ get_local_connection <- function() {
   dbi_db_connect(RSQLite::SQLite(), ":memory:")
 }
 
-
+get_connections <- function(con) {
+  DBI::dbGetQuery(con,
+                  "SELECT
+  pid AS process_id,
+  usename AS username,
+  datname AS database_name,
+  client_addr AS client_address,
+  application_name,
+  backend_start,
+  state,
+  state_change
+FROM pg_stat_activity
+ORDER BY backend_start;")
+}
