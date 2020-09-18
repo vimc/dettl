@@ -1,3 +1,7 @@
+#' Generic import object.
+#'
+#' This shouldn't be initialised directly - this object manages transactions
+#' and the db connection and should be extended to implement actual imports.
 Import <- R6::R6Class(
   "Import",
   cloneable = FALSE,

@@ -213,6 +213,54 @@ RImport <- R6::R6Class(
     },
 
     #' @description
+    #' Run multiple stages of the data import
+    #' @param stage The stage or stages of the import to be run.
+    #' @param comment Optional comment to be written to db log table when
+    #' import is run.
+    #' @param save Path and name to save data from each stage at, if TRUE then
+    #' will save to a tempfile.
+    #' @param dry_run If TRUE then any changes to the database will be rolled
+    #' back.
+    #' @param allow_dirty_git If TRUE then skips check that the import is up
+    #' to date
+    run = function(stage = c("extract", "transform"),
+                   comment = NULL, save = FALSE,
+                   dry_run = FALSE, allow_dirty_git = FALSE) {
+      if ("extract" %in% stage) {
+        self$extract()
+      }
+      if ("transform" %in% stage) {
+        if (is.null(self$get_extracted_data())) {
+          self$extract()
+        }
+        self$transform()
+      }
+      if ("load" %in% stage) {
+        if (is.null(self$get_transformed_data())) {
+          stop("Can't run load as transform stage has not been run.")
+        }
+        self$load(comment, dry_run, allow_dirty_git)
+      }
+
+      if (!isFALSE(save)) {
+        if (isTRUE(save)) {
+          save <- tempfile(fileext = ".xlsx")
+        }
+        dettl_save(self, save, stage)
+      }
+
+      output <- list(
+        import = self,
+        data = list(
+          extract = self$get_extracted_data(),
+          transform = self$get_transformed_data()
+        )
+      )
+      class(output) <- "import"
+      output
+    },
+
+    #' @description
     #' Get the extracted data created by the extract step
     #' @return The extracted data
     get_extracted_data = function() {

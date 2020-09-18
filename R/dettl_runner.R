@@ -65,38 +65,7 @@ dettl_run <- function(import, db_name = NULL, stage = c("extract", "transform"),
                       comment = NULL, save = FALSE,
                       dry_run = FALSE, allow_dirty_git = FALSE) {
   import_object <- get_import_object(import, db_name)
-  if ("extract" %in% stage) {
-    import_object$extract()
-  }
-  if ("transform" %in% stage) {
-    if (is.null(import_object$get_extracted_data())) {
-      import_object$extract()
-    }
-    import_object$transform()
-  }
-  if ("load" %in% stage) {
-    if (is.null(import_object$get_transformed_data())) {
-      stop("Can't run load as transform stage has not been run.")
-    }
-    import_object$load(comment, dry_run, allow_dirty_git)
-  }
-
-  if (!isFALSE(save)) {
-    if (isTRUE(save)) {
-      save <- tempfile(fileext = ".xlsx")
-    }
-    dettl_save(import_object, save, stage)
-  }
-
-  output <- list(
-    import = import_object,
-    data = list(
-      extract = import_object$get_extracted_data(),
-      transform = import_object$get_transformed_data()
-    )
-  )
-  class(output) <- "import"
-  output
+  import_object$run(stage, comment, save, dry_run, allow_dirty_git)
 }
 
 get_import_object <- function(import, db_name) {
