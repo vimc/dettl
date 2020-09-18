@@ -1,3 +1,11 @@
+# dettl 0.0.17
+
+* Add `dettl_run` function which can run multiple stages, can save output, run with path or import object
+* Remove `dettl_run_extract`, `dettl_run_load`, `dettl_run_transform`
+* Switch `force` arg on run to `allow_dirty_git` to be more clear about what its effect
+* Rename `dettl_db_create_log_table` to `dettl_create_log_table`
+* Remove exporting of `prepare_test_import`
+
 # dettl 0.0.16
 
 * Update dettl_import_log to record start_time, end_time and duration instead of just start_time
