@@ -17,7 +17,7 @@ testthat::test_that("import fails if log table misconfigured", {
              test_queries, pre_load = NULL, post_load = NULL, path = test_dir,
              test_file = test_file, log_table = "table log",
              comment = "Test comment"),
-    "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_db_create_log_table first."
+    "Cannot import data: Table 'table log' is missing from db schema. Please run dettl::dettl_create_log_table first."
   )
 
   invisible(DBI::dbExecute(con,

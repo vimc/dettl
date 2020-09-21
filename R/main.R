@@ -6,16 +6,16 @@ Options:
   --db-name=NAME     Name of the database to use
   --comment=COMMENT  Comment to add with the import
   --dry-run          Do the dry run only
-  --force            Allow dirty git
+  --allow-dirty-git  Allow dirty git
   --root=PATH        Path to dettl root"
 
   res <- docopt_parse(usage, args)
   list(root = res[["root"]],
-       args = list(path = res[["path"]],
+       args = list(import = res[["path"]],
                    db_name = res[["db_name"]],
                    comment = res[["comment"]],
                    dry_run = res[["dry_run"]],
-                   force = res[["force"]]))
+                   allow_dirty_git = res[["allow_dirty_git"]]))
 }
 
 
@@ -25,7 +25,8 @@ main <- function(args = commandArgs(TRUE)) {
     owd <- setwd(dat$root)
     on.exit(setwd(owd))
   }
-  do.call(dettl_run_load, dat$args)
+  dat$args$stage <- c("extract", "transform", "load")
+  do.call(dettl_run, dat$args)
 }
 
 docopt_parse <- function(usage, args) {

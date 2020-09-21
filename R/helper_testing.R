@@ -204,10 +204,8 @@ add_cyclic_fk_tables <- function(con) {
 #' key constraints.
 #' constraints for testing automatic reading of foreign key constraints from db.
 #'
-#' @export
-#'
 #' @examples
-#' dettl::prepare_test_import(
+#' dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )

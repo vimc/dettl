@@ -9,7 +9,7 @@
 #' stage by stage and inspect the data after each stage.
 #'
 #' @examples
-#' path <- dettl::prepare_test_import(
+#' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl"))
 #' import_path <- file.path(path, "person_information")
@@ -176,9 +176,9 @@ DataImport <- R6::R6Class(
     #' the import run in the database.
     #' @param dry_run Whether to run in dry run mode. If TRUE then any database
     #' changes will be rolled back. Defaults to FALSE.
-    #' @param force If TRUE then checks that repo is up to date with git remote
-    #' will be skipped. Defautls to FALSE.
-    load = function(comment = NULL, dry_run = FALSE, force = FALSE) {
+    #' @param allow_dirty_git If TRUE then skips check that the import is up to
+    #' date with remote git repo. FALSE by default.
+    load = function(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE) {
       if (is.null(private$transformed_data)) {
         stop("Cannot run load as no data has been transformed.")
       }
@@ -203,7 +203,7 @@ DataImport <- R6::R6Class(
         }
       }
       message(sprintf("Running load %s", self$path))
-      if (!force && !dry_run && !git_repo_is_clean(self$path)) {
+      if (!allow_dirty_git && !dry_run && !git_repo_is_clean(self$path)) {
         stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
       }
 

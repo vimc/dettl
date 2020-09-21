@@ -12,77 +12,88 @@ dettl <- function(path, db_name = NULL) {
   DataImport$new(path, db_name)
 }
 
-#' Run extract stage of an import
+#' Run specified stages of an import
 #'
-#' @param path Path to the import directory.
+#' @param import Either path to the import directory or output from a previous
+#' call to this function.
 #' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will
-#' default to using the first db configured.
-#'
-#' @return The extracted data.
-#' @export
-#'
-#' @examples
-#' path <- dettl::prepare_test_import(
-#'   system.file("examples", "person_information", package = "dettl"),
-#'   system.file("examples", "dettl_config.yml", package = "dettl")
-#' )
-#' dettl::dettl_run_extract(file.path(path, "person_information/"))
-dettl_run_extract <- function(path, db_name = NULL) {
-  import <- dettl(path, db_name)
-  import$extract()
-}
-
-#' Run up to and including the transform stage of an import
-#'
-#' @param path Path to the import directory.
-#' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will
-#' default to using the first db configured.
-#'
-#' @return The transformed data.
-#' @export
-#'
-#' @examples
-#' path <- dettl::prepare_test_import(
-#'   system.file("examples", "person_information", package = "dettl"),
-#'   system.file("examples", "dettl_config.yml", package = "dettl")
-#' )
-#' dettl::dettl_run_transform(file.path(path, "person_information/"))
-dettl_run_transform <- function(path, db_name = NULL) {
-  import <- dettl(path, db_name)
-  import$extract()
-  import$transform()
-}
-
-#' Run up to and including the load stage of an import
-#'
-#' This will run all stages and make updates to the database unless run in
-#' dry_run mode.
-#'
-#' @param path Path to the import directory.
-#' @param db_name The name of the db to connect to. Connection info must be
-#' configured via the `dettl_config.yml`. If name is left blank this will
-#' default to using the first db configured.
+#' configured via the `dettl_config.yml`. If name is left blank this will default
+#' to using the first db configured.
+#' @param stage The stage or stages of the import to be run.
 #' @param comment Optional comment to be written to db log table when import is
 #' run.
+#' @param save Path and name to save data from each stage at, if TRUE then will
+#' save to a tempfile.
 #' @param dry_run If TRUE then any changes to the database will be rolled back.
-#' @param force If TRUE then checks the import is up to date with remote git
-#' repo will be skipped.
+#' @param allow_dirty_git If TRUE then skips check that the import is up to date
+#' with remote git repo.
+#' @return List containing the import object and data from each completed stage.
+#' Can call dettl_run on this returned list again to execute subsequent stages.
 #'
 #' @export
 #'
 #' @examples
-#' path <- dettl::prepare_test_import(
+#' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl")
 #' )
-#' dettl::dettl_run_load(file.path(path, "person_information/"), "test",
+#' dettl::dettl_run(file.path(path, "person_information/"), "test",
 #'   comment = "Example import")
-dettl_run_load <- function(path, db_name = NULL, comment = NULL,
-                           dry_run = FALSE, force = FALSE) {
-  import <- dettl(path, db_name)
-  import$extract()
-  import$transform()
-  import$load(comment, dry_run, force)
+#' dettl::dettl_run(file.path(path, "person_information/"), "test",
+#'   comment = "Example import",
+#'   save = tempfile())
+#' import <- dettl::dettl_run(file.path(path, "person_information/"),
+#'   "test", stage = "extract")
+#' dettl::dettl_run(import, stage = "transform")
+#' dettl::dettl_run(file.path(path, "person_information/"), "test",
+#'   stage = c("extract", "transform", "load"),
+#'   comment = "Example import")
+dettl_run <- function(import, db_name = NULL, stage = c("extract", "transform"),
+                      comment = NULL, save = FALSE,
+                      dry_run = FALSE, allow_dirty_git = FALSE) {
+  import_object <- get_import_object(import, db_name)
+  if ("extract" %in% stage) {
+    import_object$extract()
+  }
+  if ("transform" %in% stage) {
+    if (is.null(import_object$get_extracted_data())) {
+      import_object$extract()
+    }
+    import_object$transform()
+  }
+  if ("load" %in% stage) {
+    if (is.null(import_object$get_transformed_data())) {
+      stop("Can't run load as transform stage has not been run.")
+    }
+    import_object$load(comment, dry_run, allow_dirty_git)
+  }
+
+  if (!isFALSE(save)) {
+    if (isTRUE(save)) {
+      save <- tempfile(fileext = ".xlsx")
+    }
+    dettl_save(import_object, save, stage)
+  }
+
+  output <- list(
+    import = import_object,
+    data = list(
+      extract = import_object$get_extracted_data(),
+      transform = import_object$get_transformed_data()
+    )
+  )
+  class(output) <- "import"
+  output
+}
+
+get_import_object <- function(import, db_name) {
+  UseMethod("get_import_object")
+}
+
+get_import_object.character <- function(import, db_name) {
+  dettl(import, db_name)
+}
+
+get_import_object.import <- function(import, db_name) {
+  import$import
 }

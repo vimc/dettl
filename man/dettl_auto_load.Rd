@@ -28,7 +28,7 @@ special edge cases which we need to add some custom handling for before
 or after running the automatic load.
 }
 \examples{
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl")
 )

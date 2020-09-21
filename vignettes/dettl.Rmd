@@ -116,7 +116,7 @@ After completing the implementation of the extract stage you can run just that s
 
 
 ```{r include = FALSE}
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")
@@ -246,29 +246,69 @@ The import can be run in one of two ways. You can either run the import up to a 
 
 ### Run functions
 
-To use the run functions to run an import up to a specified stage you need to know the path to the import and the name of the database you want to use for the import. You can leave the `db_name` field blank to use the first database configured in the `dettl_config.yml` file. The extract function returns the extracted data.
+To use the run functions to run an import up to a specified stage you need to know the path to the import and the name of the database you want to use for the import. You can leave the `db_name` field blank to use the first database configured in the `dettl_config.yml` file.
 
 ```{r include = FALSE}
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")
 ```
 
 ```{r}
-extracted_data <- dettl::dettl_run_extract(import_path, db_name = "test")
+import <- dettl::dettl_run(import_path, db_name = "test", stage = "extract")
 ```
 
-The transform function runs the extract stage and then the transform stage and returns the transformed data.
+This returns a list containing the import object which you can work further with and returns a list of processed data. You can see the extracted data at
 
 ```{r}
-transformed_data <- dettl::dettl_run_transform(import_path, db_name = "test")
+import$data$extract
 ```
 
-You can run the import end to end using `dettl_run_load`. This will make changes to the database unless run in `dry_run` mode.
+To execute the transform stage, call the same run function with `stage = "transform"`. This returns the same list as from the extract stage. You can call the function either using the path to import and the db to import to or using the object returned from extract run.
 
 ```{r}
-dettl::dettl_run_load(import_path, db_name = "test")
+import <- dettl::dettl_run(import, stage = "transform")
+```
+
+You can inspect the transformed data using
+
+```{r}
+import$data$transform
+```
+
+You can run the load stage using the returned import object.
+
+```{r}
+dettl::dettl_run(import, stage = "load")
+```
+
+You can run multiple stages together or the whole import end-to-end using `dettl_run`. This will make changes to the database unless run in `dry_run` mode.
+
+```{r include = FALSE}
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+```
+
+```{r}
+dettl::dettl_run(import_path, db_name = "test", stage = c("extract", "transform", "load"))
+```
+
+```{r include = FALSE}
+path <- dettl:::prepare_test_import(
+  system.file("examples", "person_information", package = "dettl"),
+  system.file("examples", "dettl_config.yml", package = "dettl"))
+import_path <- file.path(path, "person_information")
+```
+
+You can also save the output data as an xlsx from the stages being run. This can save to a specified file or to a temporary file if pass `save = TRUE`
+
+```{r}
+temp_file <- tempfile()
+dettl::dettl_run(import_path, db_name = "test", stage = c("extract", "transform"), save = temp_file)
+readxl::excel_sheets(temp_file)
 ```
 
 ### Working with import object
@@ -276,7 +316,7 @@ dettl::dettl_run_load(import_path, db_name = "test")
 To run the import using the object first create a new import object using the name of the directory containing the import you want to run. Again note that the `import_path` here is the path to import directory.
 
 ```{r include = FALSE}
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")
@@ -300,7 +340,7 @@ You can run the import up to just a specific point to view the output if desired
 
 ```{r include = FALSE}
 ## Get a clean DB for running import a second time
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")
@@ -336,7 +376,7 @@ The import can be run in `dry_run` which will be useful for development.
 
 ```{r include = FALSE}
 ## Get a clean DB for running dry run import
-path <- dettl::prepare_test_import(
+path <- dettl:::prepare_test_import(
   system.file("examples", "person_information", package = "dettl"),
   system.file("examples", "dettl_config.yml", package = "dettl"))
 import_path <- file.path(path, "person_information")

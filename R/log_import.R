@@ -36,7 +36,7 @@ verify_log_table <- function(con, log_table_name, log_data) {
                additional_columns = c("start_time", "end_time", "duration"),
                context_info = "Cannot import data",
                solution_text =
-                 "Please run dettl::dettl_db_create_log_table first.")
+                 "Please run dettl::dettl_create_log_table first.")
 }
 
 #' Verify that this is the first time the import has been run.

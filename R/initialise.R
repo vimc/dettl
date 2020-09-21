@@ -6,15 +6,13 @@
 #'
 #' @export
 #' @examples
-#' path <- dettl::prepare_test_import(
+#' path <- dettl:::prepare_test_import(
 #'   system.file("examples", "person_information", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl"),
 #'   add_log_table = FALSE
 #' )
-#' dettl::dettl_db_create_log_table(file.path(path, "person_information"),
-#' "test")
-#'
-dettl_db_create_log_table <- function(path, db_name) {
+#' dettl::dettl_create_log_table(file.path(path, "person_information"), "test")
+dettl_create_log_table <- function(path, db_name) {
   ## Get the connection info
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
   con <- db_connect(db_name, path)
