@@ -20,7 +20,7 @@ test_that("format works for functions with many args", {
 })
 
 
-test_that("help: base class", {
+test_that("help: RImport", {
   path <- prepare_test_import()
   import <- dettl(file.path(path, "example/"), "test")
   mock_help <- mockery::mock(NULL)
@@ -35,4 +35,22 @@ test_that("object cannot be created for unknown import mode", {
   expect_error(dettl("path", "db"),
                paste0("Can't initialise import for unknown mode got \"test\", ",
                "mode must be one of \"create\" or \"append\"."))
+})
+
+test_that("format generic import", {
+  path <- prepare_test_import()
+  import <- Import$new(file.path(path, "example/"), "test")
+  private <- environment(import$initialize)$private
+  expect_equal(import$format(FALSE)[[1]], "<dettl: Import>")
+  expect_equal(import$format(TRUE), "Data import object")
+})
+
+test_that("help: generic import", {
+  path <- prepare_test_import()
+  import <- Import$new(file.path(path, "example/"), "test")
+  mock_help <- mockery::mock(NULL)
+  mockery::stub(import$help, "utils::help", mock_help)
+  import$help()
+  args <- mockery::mock_args(mock_help)[[1]]
+  expect_equal(args, list("Import", package = "dettl"))
 })
