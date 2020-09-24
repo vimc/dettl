@@ -81,6 +81,10 @@ Import <- R6::R6Class(
     #' * If require_branch set in cfg that import is for that branch
     #' * If confirm TRUE asks users to confirm action will modify db
     #' * If git is dirty, checks that user has explicitly said that is okay
+    #' @param dry_run Whether to run in dry run mode. If TRUE then any database
+    #' changes will be rolled back. Defaults to FALSE.
+    #' @param allow_dirty_git If TRUE then skips check that the import is up to
+    #' date with remote git repo. FALSE by default.
     pre_modify_checks = function(dry_run, allow_dirty_git) {
       if (!is.null(private$require_branch)) {
         if (git_branch(self$path) != private$require_branch) {

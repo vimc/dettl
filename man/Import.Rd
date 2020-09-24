@@ -83,6 +83,17 @@ Run checks that db can be modified, this checks that:
 \if{html}{\out{<div class="r">}}\preformatted{Import$pre_modify_checks(dry_run, allow_dirty_git)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dry_run}}{Whether to run in dry run mode. If TRUE then any database
+changes will be rolled back. Defaults to FALSE.}
+
+\item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
+date with remote git repo. FALSE by default.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-format"></a>}}

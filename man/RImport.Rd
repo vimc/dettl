@@ -144,10 +144,22 @@ Run the transform stage of the data import
 \if{html}{\out{<a id="method-pre_modify_checks"></a>}}
 \if{latex}{\out{\hypertarget{method-pre_modify_checks}{}}}
 \subsection{Method \code{pre_modify_checks()}}{
+Run suite of checks to verify that db can be modified
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RImport$pre_modify_checks(dry_run, allow_dirty_git)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dry_run}}{Whether to run in dry run mode. If TRUE then any database
+changes will be rolled back. Defaults to FALSE.}
+
+\item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
+date with remote git repo. FALSE by default.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-load"></a>}}
