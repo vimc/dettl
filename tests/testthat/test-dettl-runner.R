@@ -201,7 +201,7 @@ test_that("run import checks git state before import is run", {
   import$extract()
   import$transform()
   expect_error(import$load(), sprintf(paste0(
-    "Can't run load as repository has unstaged changes. Update git or run",
+    "Can't run as repository has unstaged changes. Update git or run",
     " in dry-run mode.")))
 
   ## Import can be run in dry-run mode still
@@ -367,34 +367,12 @@ test_that("load can be run in one call", {
                expected_data)
 })
 
-test_that("call run transform when extract hasn't been done will run both", {
+test_that("call run transform when extract hasn't been done will error", {
   path <- prepare_test_import()
 
-  ## Turn off reporting when running import so import tests do not print
-  ## to avoid cluttering up test output.
-  default_reporter <- testthat::default_reporter()
-  options(testthat.default_reporter = "silent")
-  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
-
-  import <- dettl_run(file.path(path, "example/"), db_name = "test",
-                      stage = "transform")
-
-  ## Extracted data has been generated
-  expected_data <- data_frame(c("Alice", "Bob", "Clive"),
-                              c(25, 43, 76),
-                              c(175, 187, 163))
-  colnames(expected_data) <- c("name", "age", "height")
-  expect_equal(length(import$data$extract), 1)
-  expect_equal(import$data$extract$people, expected_data)
-
-  ## Trasformed data exists
-  expected_transform_data <- data_frame(c("Alice", "Bob"),
-                                        c(25, 43),
-                                        c(175, 187))
-  colnames(expected_transform_data) <- c("name", "age", "height")
-
-  expect_equal(length(import$data$transform), 1)
-  expect_equal(import$data$transform$people, expected_transform_data)
+  expect_error(dettl_run(file.path(path, "example/"), db_name = "test",
+                      stage = "transform"),
+               "Cannot run transform as no data has been extracted")
 })
 
 test_that("calling to run load when transform not complete returns error", {
@@ -408,7 +386,7 @@ test_that("calling to run load when transform not complete returns error", {
 
   expect_error(
     dettl_run(file.path(path, "example/"), db_name = "test", stage = "load"),
-    "Can't run load as transform stage has not been run.")
+    "Cannot run load as no data has been transformed.")
 
 })
 

@@ -40,8 +40,6 @@ RImport <- R6::R6Class(
     test_queries = NULL,
     extracted_data = NULL,
     transformed_data = NULL,
-    confirm = NULL,
-    mode = NULL,
 
     invalidate_extracted_data = function() {
       private$extracted_data <- NULL
@@ -75,9 +73,6 @@ RImport <- R6::R6Class(
       private$invalidate_transformed_data()
 
       super$reload()
-
-      private$mode <- private$import_config$dettl$mode
-      private$confirm <- private$repo_config$db[[private$db_name]]$confirm
 
       if (private$import_config$load$automatic) {
         load_func <- get_auto_load_function(private$mode)
@@ -138,6 +133,16 @@ RImport <- R6::R6Class(
       invisible(private$transformed_data)
     },
 
+    pre_modify_checks = function(dry_run, allow_dirty_git) {
+      if (is.null(private$transformed_data)) {
+        stop("Cannot run load as no data has been transformed.")
+      }
+      if (!private$transform_passed) {
+        stop("Cannot run load as transform tests failed.")
+      }
+      super$pre_modify_checks(dry_run, allow_dirty_git)
+    },
+
     #' @description
     #' Run the load stage of the data import
     #' @param comment Optional comment which will be persisted in the log of
@@ -147,35 +152,13 @@ RImport <- R6::R6Class(
     #' @param allow_dirty_git If TRUE then skips check that the import is up to
     #' date with remote git repo. FALSE by default.
     load = function(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE) {
-      if (is.null(private$transformed_data)) {
-        stop("Cannot run load as no data has been transformed.")
-      }
-      if (!private$transform_passed) {
-        stop("Cannot run load as transform tests failed.")
-      }
-      if (!is.null(private$require_branch)) {
-        if (git_branch(self$path) != private$require_branch) {
-          stop(sprintf("This import can only be run from the '%s' branch",
-                       private$require_branch), call. = FALSE)
-        }
-      }
-      if (private$confirm) {
-        confirmed <- askYesNo(
-          sprintf(
-            "About to upload to database '%s' are you sure you want to proceed?",
-            private$db_name),
-          default = FALSE)
-        if (is.na(confirmed) || !confirmed) {
-          message("Not uploading to database.")
-          return(invisible(FALSE))
-        }
+      checks_passed <- self$pre_modify_checks(dry_run, allow_dirty_git)
+      if (isFALSE(checks_passed)) {
+        return(invisible(FALSE))
       }
       message(sprintf("Running load %s", self$path))
-      if (!allow_dirty_git && !dry_run && !git_repo_is_clean(self$path)) {
-        stop("Can't run load as repository has unstaged changes. Update git or run in dry-run mode.")
-      }
 
-      use_transaction <- private$load_in_transaction || dry_run
+      use_transaction <- private$modify_in_transaction || dry_run
       if (use_transaction) {
         self$begin_transaction()
       }
@@ -230,15 +213,9 @@ RImport <- R6::R6Class(
         self$extract()
       }
       if ("transform" %in% stage) {
-        if (is.null(self$get_extracted_data())) {
-          self$extract()
-        }
         self$transform()
       }
       if ("load" %in% stage) {
-        if (is.null(self$get_transformed_data())) {
-          stop("Can't run load as transform stage has not been run.")
-        }
         self$load(comment, dry_run, allow_dirty_git)
       }
 

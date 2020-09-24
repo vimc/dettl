@@ -7,14 +7,18 @@ Import <- R6::R6Class(
   cloneable = FALSE,
 
   private = list(
+    db_name = NULL,
     con = NULL,
     transaction_active = FALSE,
-    db_name = NULL,
-    load_in_transaction = TRUE,
-    require_branch = NULL,
+    modify_in_transaction = TRUE,
     log_table = NULL,
+
+    ## Import options
+    mode = NULL,
     import_config = NULL,
     repo_config = NULL,
+    confirm = NULL,
+    require_branch = NULL,
 
     #' @description
     #' Tidy up open connections, rolling back any active transactions
@@ -55,7 +59,7 @@ Import <- R6::R6Class(
     #' Postgres connection.
     reload = function() {
       private$import_config <- read_config(self$path)
-      private$load_in_transaction <- private$import_config$dettl$transaction
+      private$modify_in_transaction <- private$import_config$dettl$transaction
       private$repo_config <- dettl_config(self$path)
 
       private$db_name <- private$db_name %||%
@@ -66,6 +70,40 @@ Import <- R6::R6Class(
       private$log_table <- db_get_log_table(private$db_name, self$path)
       private$require_branch <-
         private$repo_config$db[[private$db_name]]$require_branch
+
+      private$mode <- private$import_config$dettl$mode
+
+      private$confirm <- private$repo_config$db[[private$db_name]]$confirm
+    },
+
+    #' @description
+    #' Run checks that db can be modified, this checks that:
+    #' * If require_branch set in cfg that import is for that branch
+    #' * If confirm TRUE asks users to confirm action will modify db
+    #' * If git is dirty, checks that user has explicitly said that is okay
+    pre_modify_checks = function(dry_run, allow_dirty_git) {
+      if (!is.null(private$require_branch)) {
+        if (git_branch(self$path) != private$require_branch) {
+          stop(sprintf("This import can only be run from the '%s' branch",
+                       private$require_branch), call. = FALSE)
+        }
+      }
+      if (private$confirm) {
+        confirmed <- askYesNo(
+          sprintf(
+            "About to upload to database '%s' are you sure you want to proceed?",
+            private$db_name),
+          default = FALSE)
+        if (is.na(confirmed) || !confirmed) {
+          message("Not uploading to database.")
+          return(invisible(FALSE))
+        }
+      }
+      if (!allow_dirty_git && !dry_run && !git_repo_is_clean(self$path)) {
+        stop("Can't run as repository has unstaged changes. Update git or run in dry-run mode.")
+      }
+
+      invisible(TRUE)
     },
 
     #' @description
