@@ -49,6 +49,27 @@ RImport <- R6::R6Class(
     invalidate_transformed_data = function() {
       private$transformed_data <- NULL
       private$transform_passed <- FALSE
+    },
+
+    pre_load = function() {
+      private$load_pre_(private$transformed_data, private$con)
+    },
+
+    post_load = function() {
+      private$load_post_(private$transformed_data, private$con)
+    },
+
+    test_queries = function() {
+      private$test_queries(private$con)
+    },
+
+    load = function() {
+      private$load_(private$transformed_data, private$con)
+    },
+
+    test_import = function(before, after) {
+      run_load_tests(private$load_test_, before, after, private$extracted_data,
+                     private$transformed_data, private$con)
     }
   ),
 
@@ -85,7 +106,13 @@ RImport <- R6::R6Class(
       private$transform_test_ <- private$import_config$transform$test
       private$load_ <- load_func
       private$load_pre_ <- private$import_config$load$pre
+      if (!is.null(private$load_pre_)) {
+        private$has_pre_load <- TRUE
+      }
       private$load_post_ <- private$import_config$load$post
+      if (!is.null(private$load_post_)) {
+        private$has_post_load <- TRUE
+      }
       private$load_test_ <- private$import_config$load$test
       private$test_queries <- private$import_config$load$verification_queries
       lockBinding("path", self)
@@ -176,16 +203,13 @@ RImport <- R6::R6Class(
                   "not in a transaction"
                 }))
       withCallingHandlers({
-        log_data <- run_load(private$con, private$load_, private$extracted_data,
-                             private$transformed_data, private$test_queries,
-                             private$load_pre_, private$load_post_, self$path,
-                             private$load_test_, private$log_table, comment)
+        self$do_import(comment)
         if (dry_run) {
           self$rollback_transaction()
           message("All tests passed, rolling back dry run import.")
         } else {
           message("All tests passed, commiting changes to database.")
-          write_log(private$con, private$log_table, log_data)
+          self$log$write_log()
           if (use_transaction) {
             self$commit_transaction()
           }
@@ -258,3 +282,4 @@ RImport <- R6::R6Class(
     }
   )
 )
+
