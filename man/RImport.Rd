@@ -41,6 +41,7 @@ import$load()
 \item \href{#method-help}{\code{RImport$help()}}
 \item \href{#method-extract}{\code{RImport$extract()}}
 \item \href{#method-transform}{\code{RImport$transform()}}
+\item \href{#method-pre_modify_checks}{\code{RImport$pre_modify_checks()}}
 \item \href{#method-load}{\code{RImport$load()}}
 \item \href{#method-run}{\code{RImport$run()}}
 \item \href{#method-get_extracted_data}{\code{RImport$get_extracted_data()}}
@@ -136,6 +137,15 @@ Run the extract stage of the data import
 Run the transform stage of the data import
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RImport$transform()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-pre_modify_checks"></a>}}
+\if{latex}{\out{\hypertarget{method-pre_modify_checks}{}}}
+\subsection{Method \code{pre_modify_checks()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RImport$pre_modify_checks(dry_run, allow_dirty_git)}\if{html}{\out{</div>}}
 }
 
 }
