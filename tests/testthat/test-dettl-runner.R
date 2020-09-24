@@ -540,3 +540,36 @@ test_that("re-running extract invalidates transformed data", {
   expect_true(is.null(import$get_extracted_data()))
   expect_true(is.null(import$get_transformed_data()))
 })
+
+test_that("run import fails if not on required branch", {
+  path <- prepare_test_import()
+
+  ## Turn off reporting when running import so import tests do not print
+  ## to avoid cluttering up test output.
+  default_reporter <- testthat::default_reporter()
+  options(testthat.default_reporter = "silent")
+  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
+
+  ## Mock dettl_config return
+  config <- dettl_config(file.path(path, "example/"))
+  config$db[["test"]]$require_branch <- "other"
+  mock_cfg <- mockery::mock(config, cycle = TRUE)
+
+  with_mock("dettl:::dettl_config" = mock_cfg, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    expect_error(import$load(),
+                 "This import can only be run from the 'other' branch")
+  })
+
+  ## Passes when on correct branch
+  config$db[["test"]]$require_branch <- "master"
+  mock_cfg <- mockery::mock(config, cycle = TRUE)
+  with_mock("dettl:::dettl_config" = mock_cfg, {
+    import <- dettl(file.path(path, "example/"), db_name = "test")
+    import$extract()
+    import$transform()
+    expect_true(import$load())
+  })
+})
