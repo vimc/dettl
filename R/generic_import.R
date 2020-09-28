@@ -184,9 +184,9 @@ Import <- R6::R6Class(
     },
 
     #' @description
-    #' Run the load step ensuring tests pass before db changes are committed.
+    #' Run the import step ensuring tests pass before db changes are committed.
     #'
-    #' Runs the load function on the DB within a transaction. Then run a set of
+    #' Runs the import on the DB within a transaction. Then run a set of
     #' tests on the DB and rollback the changes if any should fail.
     #'
     #' @param comment An optional comment to add to the import log table for this
@@ -194,7 +194,7 @@ Import <- R6::R6Class(
     #'
     #' @keywords internal
     #'
-    do_import <- function(comment) {
+    run_import = function(comment) {
       self$log <- ImportLog$new(private$con, private$log_table, private$path,
                                 comment)
       self$log$start_timer()

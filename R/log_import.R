@@ -8,15 +8,7 @@ ImportLog <- R6::R6Class(
     log_data = NULL,
     log_table = NULL,
 
-    initialize = function(con, log_table, path, comment) {
-      self$con <- con
-      self$log_table = log_table
-      self$log_data <- private$build_log_data(path, comment)
-      private$verify_log_table()
-      private$verify_first_run()
-    },
-
-    get_time <- function() {
+    get_time = function() {
       time <- Sys.time()
       ## Add tzone attribute so correct time persisted
       attr(time, "tzone") <- "UTC"
@@ -32,7 +24,7 @@ ImportLog <- R6::R6Class(
     #' @return The prepared data for the log table. This is the name
     #' of the import, the date, comment and git information including
     #' user name, user email, current branch and hash of HEAD.
-    build_log_data <- function(import_path, comment) {
+    build_log_data = function(import_path, comment) {
       if (is.null(comment)) {
         comment <- NA_character_
       }
@@ -44,7 +36,7 @@ ImportLog <- R6::R6Class(
                  git_hash = git_hash(import_path))
     },
 
-    verify_log_table <- function() {
+    verify_log_table = function() {
       verify_table(private$con, private$log_table, private$log_data,
                    additional_columns = c("start_time", "end_time", "duration"),
                    context_info = "Cannot import data",
@@ -59,7 +51,7 @@ ImportLog <- R6::R6Class(
     #' so then stop with a human understandable message.
     #'
     #' @return Throws an error if an import with the same name has already been run
-    verify_first_run <- function() {
+    verify_first_run = function() {
       previous_runs <- DBI::dbGetQuery(
         private$con,
         sprintf("SELECT * FROM %s WHERE name = $1", private$log_table),
@@ -90,9 +82,18 @@ ImportLog <- R6::R6Class(
   ),
 
   public = list(
+
+    initialize = function(con, log_table, path, comment) {
+      self$con <- con
+      self$log_table <- log_table
+      self$log_data <- private$build_log_data(path, comment)
+      private$verify_log_table()
+      private$verify_first_run()
+    },
+
     start_timer = function() {
       private$log_data$start_time <- private$get_time()
-    }
+    },
 
     stop_timer = function() {
       private$log_data$end_time <- private$get_time()
@@ -100,11 +101,11 @@ ImportLog <- R6::R6Class(
       private$log_data$duration <- round(
         as.numeric(private$log_data$end_time) -
           as.numeric(private$log_data$start_time), digits = 3)
-    }
+    },
 
     #' @description
     #' Write the log data to the database.
-    write_log <- function() {
+    write_log = function() {
       DBI::dbAppendTable(private$con, private$log_table, private$log_data)
     }
   )

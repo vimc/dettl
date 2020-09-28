@@ -37,7 +37,7 @@ RImport <- R6::R6Class(
     extract_passed = FALSE,
     transform_passed = FALSE,
     load_test_ = NULL,
-    test_queries = NULL,
+    test_queries_ = NULL,
     extracted_data = NULL,
     transformed_data = NULL,
 
@@ -60,7 +60,7 @@ RImport <- R6::R6Class(
     },
 
     test_queries = function() {
-      private$test_queries(private$con)
+      private$test_queries_(private$con)
     },
 
     load = function() {
@@ -114,7 +114,7 @@ RImport <- R6::R6Class(
         private$has_post_load <- TRUE
       }
       private$load_test_ <- private$import_config$load$test
-      private$test_queries <- private$import_config$load$verification_queries
+      private$test_queries_ <- private$import_config$load$verification_queries
       lockBinding("path", self)
     },
 
@@ -236,7 +236,7 @@ RImport <- R6::R6Class(
     #' back.
     #' @param allow_dirty_git If TRUE then skips check that the import is up
     #' to date
-    run = function(stage = c("extract", "transform"),
+    run_import = function(stage = c("extract", "transform"),
                    comment = NULL, save = FALSE,
                    dry_run = FALSE, allow_dirty_git = FALSE) {
       if ("extract" %in% stage) {
