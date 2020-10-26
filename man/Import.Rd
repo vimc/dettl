@@ -12,6 +12,7 @@ Generic import object.
 This shouldn't be initialised directly - this object manages transactions
 and the db connection and should be extended to implement actual imports.
 }
+\keyword{internal}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -22,25 +23,84 @@ and the db connection and should be extended to implement actual imports.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Import$new()}}
-\item \href{#method-reload}{\code{Import$reload()}}
-\item \href{#method-pre_modify_checks}{\code{Import$pre_modify_checks()}}
-\item \href{#method-format}{\code{Import$format()}}
-\item \href{#method-help}{\code{Import$help()}}
 \item \href{#method-get_connection}{\code{Import$get_connection()}}
-\item \href{#method-get_log_table}{\code{Import$get_log_table()}}
 \item \href{#method-begin_transaction}{\code{Import$begin_transaction()}}
 \item \href{#method-rollback_transaction}{\code{Import$rollback_transaction()}}
 \item \href{#method-commit_transaction}{\code{Import$commit_transaction()}}
+\item \href{#method-get_log_table}{\code{Import$get_log_table()}}
+\item \href{#method-new}{\code{Import$new()}}
+\item \href{#method-reload}{\code{Import$reload()}}
+\item \href{#method-pre_modify_checks}{\code{Import$pre_modify_checks()}}
+\item \href{#method-load}{\code{Import$load()}}
+\item \href{#method-run_import}{\code{Import$run_import()}}
+\item \href{#method-format}{\code{Import$format()}}
+\item \href{#method-help}{\code{Import$help()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_connection"></a>}}
+\if{latex}{\out{\hypertarget{method-get_connection}{}}}
+\subsection{Method \code{get_connection()}}{
+Tidy up open connections, rolling back any active transactions
+
+
+Get the database connection being used by the import. Used for testing.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$get_connection()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The DBI connection
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-begin_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-begin_transaction}{}}}
+\subsection{Method \code{begin_transaction()}}{
+Start a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$begin_transaction()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rollback_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-rollback_transaction}{}}}
+\subsection{Method \code{rollback_transaction()}}{
+Rollback a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$rollback_transaction()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-commit_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-commit_transaction}{}}}
+\subsection{Method \code{commit_transaction()}}{
+Commit a transaction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$commit_transaction()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_log_table"></a>}}
+\if{latex}{\out{\hypertarget{method-get_log_table}{}}}
+\subsection{Method \code{get_log_table()}}{
+Get the name of the log table for a particular import. This is the name
+of the log table configured in the dettl config
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$get_log_table()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Log table name
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Tidy up open connections, rolling back any active transactions
-
-
 Create Import object - shouldn't be called directly. Use
 \code{\link{dettl}} to create the object
 \subsection{Usage}{
@@ -96,6 +156,59 @@ date with remote git repo. FALSE by default.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-load"></a>}}
+\if{latex}{\out{\hypertarget{method-load}{}}}
+\subsection{Method \code{load()}}{
+Run the import step ensuring tests pass before db changes are committed.
+
+Runs the import on the DB within a transaction. Then run a set of
+tests on the DB and rollback the changes if any should fail.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$load(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{comment}}{An optional comment to add to the import log table for this
+run.}
+
+\item{\code{dry_run}}{Whether to run in dry run mode. If TRUE then any database
+changes will be rolled back. Defaults to FALSE.}
+
+\item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
+date with remote git repo. FALSE by default.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-run_import"></a>}}
+\if{latex}{\out{\hypertarget{method-run_import}{}}}
+\subsection{Method \code{run_import()}}{
+For generic import this is just running the load step,
+expect this gets overridden in subclasses.
+.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$run_import(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{comment}}{An optional comment to add to the import log table for this
+run.}
+
+\item{\code{dry_run}}{Whether to run in dry run mode. If TRUE then any database
+changes will be rolled back. Defaults to FALSE.}
+
+\item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
+date with remote git repo. FALSE by default.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-format"></a>}}
 \if{latex}{\out{\hypertarget{method-format}{}}}
 \subsection{Method \code{format()}}{
@@ -119,63 +232,6 @@ Custom formatter for pretty printing object summary.
 Print help page for the object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Import$help()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_connection"></a>}}
-\if{latex}{\out{\hypertarget{method-get_connection}{}}}
-\subsection{Method \code{get_connection()}}{
-Get the database connection being used by the import. Used for testing.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$get_connection()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The DBI connection
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_log_table"></a>}}
-\if{latex}{\out{\hypertarget{method-get_log_table}{}}}
-\subsection{Method \code{get_log_table()}}{
-Get the name of the log table for a particular import. This is the name
-of the log table configured in the dettl config
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$get_log_table()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Log table name
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-begin_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-begin_transaction}{}}}
-\subsection{Method \code{begin_transaction()}}{
-Start a transaction
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$begin_transaction()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-rollback_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-rollback_transaction}{}}}
-\subsection{Method \code{rollback_transaction()}}{
-Rollback a transaction
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$rollback_transaction()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-commit_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-commit_transaction}{}}}
-\subsection{Method \code{commit_transaction()}}{
-Commit a transaction
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$commit_transaction()}\if{html}{\out{</div>}}
 }
 
 }
