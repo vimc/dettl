@@ -11,12 +11,13 @@ test_that("format", {
 test_that("format works for functions with many args", {
   ## We're arbitraily choosing to use run_load func here as it has
   ## many arguments
-  call <- capture_args(run_load, "run_load", width = 50)
+  call <- capture_args(dettl_run, "dettl_run", width = 50)
   expect_equal(call,
-"    run_load(con, load, extracted_data,
-        transformed_data, test_queries,
-        pre_load, post_load, path,
-        test_file, log_table, comment)")
+"    dettl_run(import, db_name = NULL,
+        comment = NULL, dry_run = FALSE,
+        allow_dirty_git = FALSE,
+        stage = c(\"extract\", \"transform\"),
+        save = FALSE)")
 })
 
 

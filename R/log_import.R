@@ -1,64 +1,106 @@
-#' Write the log data to the database.
-#'
-#' @param con Connection to the database to be written to.
-#' @param log_table The name of the table to write to.
-#' @param log_data The log data to be written to the DB.
-#'
-#' @keywords internal
-write_log <- function(con, log_table, log_data) {
-  DBI::dbAppendTable(con, log_table, log_data)
-}
+ImportLog <- R6::R6Class(
+  # nolint end
+  "ImportLog",
+  cloneable = FALSE,
 
-#' Build the data to be written to the import log
-#'
-#' @param import_path Path to the import process directory.
-#' @param comment An optional comment for this import run.
-#'
-#' @return The prepared data for the log table. This is the name
-#' of the import, the date, comment and git information including
-#' user name, user email, current branch and hash of HEAD.
-#'
-#' @keywords internal
-build_log_data <- function(import_path, comment) {
-  if (is.null(comment)) {
-    comment <- NA_character_
-  }
-  import_log <- data_frame(name = basename(import_path),
-                           comment = comment,
-                           git_user = git_user(import_path),
-                           git_email = git_email(import_path),
-                           git_branch = git_branch(import_path),
-                           git_hash = git_hash(import_path))
-}
+  private = list(
+    con = NULL,
+    log_table = NULL,
+    timer_start = NULL,
 
-verify_log_table <- function(con, log_table_name, log_data) {
-  verify_table(con, log_table_name, log_data,
-               additional_columns = c("start_time", "end_time", "duration"),
-               context_info = "Cannot import data",
-               solution_text =
-                 "Please run dettl::dettl_create_log_table first.")
-}
+    get_time = function() {
+      time <- Sys.time()
+      ## Add tzone attribute so correct time persisted
+      attr(time, "tzone") <- "UTC"
+      time
+    },
 
-#' Verify that this is the first time the import has been run.
-#'
-#' Check whether an import with the same name has been run already. If
-#' so then stop with a human understandable message.
-#'
-#' @param con Connection to the DB to be imported to.
-#' @param log_table_name The name of the log table to search for records.
-#' @param log_data The data which will be written to the log table should
-#' the import run.
-#'
-#' @return Throws an error if an import with the same name has already been run
-#'
-#' @keywords internal
-verify_first_run <- function(con, log_table_name, log_data) {
-  previous_runs <- DBI::dbGetQuery(
-    con,
-    sprintf("SELECT * FROM %s WHERE name = $1", log_table_name),
-    log_data$name)
-  if (nrow(previous_runs) > 0) {
-    stop(sprintf("Import has previously been run. Previous run log:
+    #' @description
+    #' Build the data to be written to the import log
+    #'
+    #' @param import_path Path to the import process directory.
+    #' @param comment An optional comment for this import run.
+    #'
+    #' @return The prepared data for the log table. This is the name
+    #' of the import, the date, comment and git information including
+    #' user name, user email, current branch and hash of HEAD.
+    build_log_data = function(import_path, comment) {
+      if (is.null(comment)) {
+        comment <- NA_character_
+      }
+      data_frame(name = basename(import_path),
+                 comment = comment,
+                 git_user = git_user(import_path),
+                 git_email = git_email(import_path),
+                 git_branch = git_branch(import_path),
+                 git_hash = git_hash(import_path))
+    },
+
+    verify_log_table = function() {
+      verify_table(private$con, private$log_table, self$log_data,
+                   additional_columns = c("start_time", "end_time", "duration"),
+                   context_info = "Cannot import data",
+                   solution_text =
+                     "Please run dettl::dettl_create_log_table first.")
+    }
+
+  ),
+
+  public = list(
+    log_data = NULL,
+
+    initialize = function(con, log_table, path) {
+      private$con <- con
+      private$log_table <- log_table
+      self$log_data <- private$build_log_data(path, NULL)
+      private$verify_log_table()
+      self$verify_first_run()
+    },
+
+    set_comment = function(comment) {
+      self$log_data$comment <- comment
+    },
+
+    start_timer = function() {
+      private$timer_start <- private$get_time()
+      if (is.null(self$log_data$start_time)) {
+        self$log_data$start_time <- private$timer_start
+      }
+    },
+
+    stop_timer = function() {
+      self$log_data$end_time <- private$get_time()
+      ## Save the duration in seconds rounded to at most precise the time in ms
+      this_duration <- round(
+        as.numeric(self$log_data$end_time) -
+          as.numeric(private$timer_start), digits = 3)
+      if (is.null(self$log_data$duration)) {
+        self$log_data$duration <- 0
+      }
+      self$log_data$duration <- self$log_data$duration + this_duration
+    },
+
+    #' @description
+    #' Write the log data to the database.
+    write_log = function() {
+      invisible(DBI::dbAppendTable(private$con, private$log_table,
+                                   self$log_data))
+    },
+
+    #' @description
+    #' Verify that this is the first time the import has been run.
+    #'
+    #' Check whether an import with the same name has been run already. If
+    #' so then stop with a human understandable message.
+    #'
+    #' @return Throws an error if an import with the same name has already been run
+    verify_first_run = function() {
+      previous_runs <- DBI::dbGetQuery(
+        private$con,
+        sprintf("SELECT * FROM %s WHERE name = $1", private$log_table),
+        self$log_data$name)
+      if (nrow(previous_runs) > 0) {
+        stop(sprintf("Import has previously been run. Previous run log:
   name:           %s
   start time:     %s
   end time:       %s
@@ -68,21 +110,16 @@ verify_first_run <- function(con, log_table_name, log_data) {
   git user.email: %s
   git branch:     %s
   git hash:       %s",
-                 previous_runs$name,
-                 parse_sql_date(con, previous_runs$start_time),
-                 parse_sql_date(con, previous_runs$end_time),
-                 previous_runs$duration,
-                 previous_runs$comment,
-                 previous_runs$git_user,
-                 previous_runs$git_email,
-                 previous_runs$git_branch,
-                 previous_runs$git_hash))
-  }
-}
-
-get_time <- function() {
-  time <- Sys.time()
-  ## Add tzone attribute so correct time persisted
-  attr(time, "tzone") <- "UTC"
-  time
-}
+                     previous_runs$name,
+                     parse_sql_date(private$con, previous_runs$start_time),
+                     parse_sql_date(private$con, previous_runs$end_time),
+                     previous_runs$duration,
+                     previous_runs$comment,
+                     previous_runs$git_user,
+                     previous_runs$git_email,
+                     previous_runs$git_branch,
+                     previous_runs$git_hash))
+      }
+    }
+  )
+)

@@ -243,7 +243,7 @@ test_that("run import asks to confirm run if configured", {
               res <- evaluate_promise(fn(import))
               expect_false(res$result)
               mockery::expect_called(mock_no_answer, 1)
-              expect_equal(res$messages, "Not uploading to database.\n")
+              expect_equal(res$messages[[3]], "Not uploading to database.\n")
             })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -254,7 +254,7 @@ test_that("run import asks to confirm run if configured", {
               res <- evaluate_promise(fn(import))
               expect_false(res$result)
               mockery::expect_called(mock_na_answer, 1)
-              expect_equal(res$messages, "Not uploading to database.\n")
+              expect_equal(res$messages[[3]], "Not uploading to database.\n")
             })
 
   res <- with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -310,18 +310,14 @@ test_that("extract can be run from path", {
                               c(175, 187, 163))
   colnames(expected_data) <- c("name", "age", "height")
 
-  expect_equal(length(import$data$extract), 1)
-  expect_equal(import$data$extract$people, expected_data)
+  expect_equal(length(import$get_extracted_data()), 1)
+  expect_equal(import$get_extracted_data()$people, expected_data)
 
   ## There is no transformed data
-  expect_equal(import$data$transform, NULL)
+  expect_equal(import$get_transformed_data(), NULL)
 
-  ## Can run on returned import object
-  import <- dettl_run(import, stage = "transform")
-
-  ## Extracted data is unchanged
-  expect_equal(length(import$data$extract), 1)
-  expect_equal(import$data$extract$people, expected_data)
+  import <- dettl_run(file.path(path, "example/"),
+                      stage = c("extract", "transform"))
 
   ## Trasformed data exists
   expected_transform_data <- data_frame(c("Alice", "Bob"),
@@ -329,11 +325,12 @@ test_that("extract can be run from path", {
                                         c(175, 187))
   colnames(expected_transform_data) <- c("name", "age", "height")
 
-  expect_equal(length(import$data$transform), 1)
-  expect_equal(import$data$transform$people, expected_transform_data)
+  expect_equal(length(import$get_transformed_data()), 1)
+  expect_equal(import$get_transformed_data()$people, expected_transform_data)
 
   ## Data can be loaded
-  dettl_run(import, stage = "load")
+  dettl_run(file.path(path, "example/"),
+            stage = c("extract", "transform", "load"))
 
   expected_load_data <- data_frame(c("Alice", "Bob"),
                                    c(25, 43),
@@ -419,18 +416,20 @@ test_that("dettl_run can save data", {
   expect_equal(colnames(extr_jobs), c("person", "job"))
   expect_equal(nrow(extr_jobs), 3)
 
-  ## Can run on returned import object
   save_file <- tempfile(fileext = ".xlsx")
-  import <- dettl_run(import, stage = "transform", save = save_file)
+  import <- dettl_run(file.path(path, "example_automatic_load/"),
+                      db_name = "test", stage = c("extract", "transform"),
+                      save = save_file)
 
   ## Query save file
   expect_equal(readxl::excel_sheets(save_file),
-               c("people", "jobs"))
+               c("extracted_people", "extracted_jobs",
+                 "transformed_people", "transformed_jobs"))
 
-  trans_people <- readxl::read_excel(save_file, sheet = "people")
+  trans_people <- readxl::read_excel(save_file, sheet = "transformed_people")
   expect_equal(colnames(trans_people), c("id", "name", "age", "height"))
   expect_equal(nrow(trans_people), 2)
-  trans_jobs <- readxl::read_excel(save_file, sheet = "jobs")
+  trans_jobs <- readxl::read_excel(save_file, sheet = "transformed_jobs")
   expect_equal(colnames(trans_jobs), c("person", "job"))
   expect_equal(nrow(trans_jobs), 2)
 })
