@@ -6,6 +6,7 @@ ImportLog <- R6::R6Class(
   private = list(
     con = NULL,
     log_table = NULL,
+    timer_start = NULL,
 
     get_time = function() {
       time <- Sys.time()
@@ -41,6 +42,49 @@ ImportLog <- R6::R6Class(
                    context_info = "Cannot import data",
                    solution_text =
                      "Please run dettl::dettl_create_log_table first.")
+    }
+
+  ),
+
+  public = list(
+    log_data = NULL,
+
+    initialize = function(con, log_table, path) {
+      private$con <- con
+      private$log_table <- log_table
+      self$log_data <- private$build_log_data(path, NULL)
+      private$verify_log_table()
+      self$verify_first_run()
+    },
+
+    set_comment = function(comment) {
+      self$log_data$comment <- comment
+    },
+
+    start_timer = function() {
+      private$timer_start <- private$get_time()
+      if (is.null(self$log_data$start_time)) {
+        self$log_data$start_time <- private$timer_start
+      }
+    },
+
+    stop_timer = function() {
+      self$log_data$end_time <- private$get_time()
+      ## Save the duration in seconds rounded to at most precise the time in ms
+      this_duration <- round(
+        as.numeric(self$log_data$end_time) -
+          as.numeric(private$timer_start), digits = 3)
+      if (is.null(self$log_data$duration)) {
+        self$log_data$duration <- 0
+      }
+      self$log_data$duration <- self$log_data$duration + this_duration
+    },
+
+    #' @description
+    #' Write the log data to the database.
+    write_log = function() {
+      invisible(DBI::dbAppendTable(private$con, private$log_table,
+                                   self$log_data))
     },
 
     #' @description
@@ -76,38 +120,6 @@ ImportLog <- R6::R6Class(
                      previous_runs$git_branch,
                      previous_runs$git_hash))
       }
-    }
-
-  ),
-
-  public = list(
-    log_data = NULL,
-
-    initialize = function(con, log_table, path, comment) {
-      private$con <- con
-      private$log_table <- log_table
-      self$log_data <- private$build_log_data(path, comment)
-      private$verify_log_table()
-      private$verify_first_run()
-    },
-
-    start_timer = function() {
-      self$log_data$start_time <- private$get_time()
-    },
-
-    stop_timer = function() {
-      self$log_data$end_time <- private$get_time()
-      ## Save the duration in seconds rounded to at most precise the time in ms
-      self$log_data$duration <- round(
-        as.numeric(self$log_data$end_time) -
-          as.numeric(self$log_data$start_time), digits = 3)
-    },
-
-    #' @description
-    #' Write the log data to the database.
-    write_log = function() {
-      invisible(DBI::dbAppendTable(private$con, private$log_table,
-                                   self$log_data))
     }
   )
 )

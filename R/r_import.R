@@ -124,12 +124,14 @@ RImport <- R6::R6Class(
     #' Run the extract stage of the data import
     extract = function() {
       message(sprintf("Running extract %s", self$path))
+      private$log$start_timer()
       private$invalidate_transformed_data()
       private$extracted_data <- run_extract(private$con, private$extract_,
                                             self$path)
       private$extract_passed <- test_extract(private$con, self$path,
                                              private$extract_test_,
                                              private$extracted_data)
+      private$log$stop_timer()
       invisible(private$extracted_data)
     },
 
@@ -137,6 +139,7 @@ RImport <- R6::R6Class(
     #' Run the transform stage of the data import
     transform = function() {
       message(sprintf("Running transform %s", self$path))
+      private$log$start_timer()
       private$transformed_data <- run_transform(private$transform_,
                                                 private$extracted_data,
                                                 private$extract_passed,
@@ -146,6 +149,7 @@ RImport <- R6::R6Class(
                                                  private$transform_test_,
                                                  private$transformed_data,
                                                  private$extracted_data)
+      private$log$stop_timer()
       invisible(private$transformed_data)
     },
 

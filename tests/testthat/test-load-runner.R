@@ -5,18 +5,11 @@ testthat::test_that("import fails if log table misconfigured", {
   path <- prepare_test_import(dettl_config =
                                 file.path(config_path, "dettl_config.yml"))
 
-  default_reporter <- testthat::default_reporter()
-  options(testthat.default_reporter = "Silent")
-  on.exit(options(testthat.default_reporter = default_reporter), add = TRUE)
-
-  import <- dettl(file.path(path, "example/"), "example")
-  import$extract()
-  import$transform()
-  expect_error(import$load(), paste0(
+  expect_error(dettl(file.path(path, "example/"), "example"), paste0(
     "Cannot import data: Table 'table_log' is missing from db schema. ",
     "Please run dettl::dettl_create_log_table first."))
 
-  con <- import$get_connection()
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.path(path, "test.sqlite"))
   invisible(DBI::dbExecute(con,
     "CREATE TABLE table_log (
       name   TEXT,
@@ -28,7 +21,7 @@ testthat::test_that("import fails if log table misconfigured", {
     )"
   ))
   expect_error(
-    import$load(),
+    dettl(file.path(path, "example/"), "example"),
     "Cannot import data: Column 'start_time' is missing from db schema.")
 
 })

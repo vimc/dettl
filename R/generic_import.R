@@ -129,6 +129,7 @@ Import <- R6::R6Class(
       private$con <- db_connect(private$db_name, self$path)
 
       private$log_table <- db_get_log_table(private$db_name, self$path)
+      private$log <- ImportLog$new(private$con, private$log_table, self$path)
       private$require_branch <-
         private$repo_config$db[[private$db_name]]$require_branch
 
@@ -167,6 +168,7 @@ Import <- R6::R6Class(
         stop(paste0("Can't run as repository has unstaged changes. Update ",
                     "git or run in dry-run mode."))
       }
+      private$log$verify_first_run()
       invisible(TRUE)
     },
 
@@ -204,8 +206,7 @@ Import <- R6::R6Class(
         if (isFALSE(checks_passed)) {
           return(invisible(FALSE))
         }
-        private$log <- ImportLog$new(private$con, private$log_table, self$path,
-                                  comment)
+        private$log$set_comment(comment)
         private$log$start_timer()
         withr::with_dir(self$path, {
           message("\t- Running test queries before making any changes")

@@ -6,7 +6,8 @@ test_that("log data is persisted", {
   on.exit(DBI::dbDisconnect(sqlite_con), add = TRUE)
 
   log <- ImportLog$new(sqlite_con, "dettl_import_log",
-                       file.path(path, "example"), "test comment")
+                       file.path(path, "example"))
+  log$set_comment("test comment")
   log$write_log()
   sqlite_data <- DBI::dbGetQuery(sqlite_con, "SELECT * FROM dettl_import_log")
   expect_true(nrow(sqlite_data) == 1)
@@ -27,7 +28,8 @@ test_that("postgres log data is persisted", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   log <- ImportLog$new(postgres_con, "dettl_import_log",
-                       file.path(path, "example"), "test comment")
+                       file.path(path, "example"))
+  log$set_comment("test comment")
   log$write_log()
   postgres_data <- DBI::dbGetQuery(postgres_con,
                                    "SELECT * FROM dettl_import_log")
@@ -52,9 +54,11 @@ test_that("sqlite and postgres dates can be parsed and agree", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   sqlite_log <- ImportLog$new(sqlite_con, "dettl_import_log",
-                              file.path(path, "example"), "test comment")
+                              file.path(path, "example"))
+  sqlite_log$set_comment("test comment")
   postgres_log <- ImportLog$new(postgres_con, "dettl_import_log",
-                                file.path(path, "example"), "test comment")
+                                file.path(path, "example"))
+  postgres_log$set_comment("test comment")
   sqlite_log$start_timer()
   postgres_log$start_timer()
   sqlite_log$write_log()
@@ -88,9 +92,9 @@ test_that("a NULL comment can be persisted", {
   on.exit(DBI::dbDisconnect(postgres_con), add = TRUE)
 
   sqlite_log <- ImportLog$new(sqlite_con, "dettl_import_log",
-                              file.path(path, "example"), NULL)
+                              file.path(path, "example"))
   postgres_log <- ImportLog$new(postgres_con, "dettl_import_log",
-                                file.path(path, "example"), NULL)
+                                file.path(path, "example"))
   sqlite_log$write_log()
   postgres_log$write_log()
 
@@ -99,4 +103,31 @@ test_that("a NULL comment can be persisted", {
                         "SELECT comment FROM dettl_import_log")[1, ]
   expect_true(is.na(sl))
   expect_true(is.na(pg))
+})
+
+test_that("timer can be stopped and restarted", {
+  path <- prepare_test_import()
+  con <- db_connect("test", path)
+  log <- ImportLog$new(con, "dettl_import_log", file.path(path, "example"))
+  log$start_timer()
+  Sys.sleep(1)
+  log$stop_timer()
+  start <- log$log_data$start_time
+  end <- log$log_data$end_time
+  duration <- log$log_data$duration
+  expect_true(!is.null(start))
+  expect_true(!is.null(end))
+  expect_true(duration >= 1)
+  expect_true(duration < 2)
+
+  log$start_timer()
+  Sys.sleep(1)
+  log$stop_timer()
+  ## Start time keeps the initial start time
+  expect_equal(log$log_data$start_time, start)
+  ## End time gets updated
+  expect_true(log$log_data$end_time != end)
+  ## Duration is sum of separate times
+  new_duration <- log$log_data$duration
+  expect_true(new_duration >= 2)
 })
