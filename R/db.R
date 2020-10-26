@@ -1,3 +1,71 @@
+Connection <- R6::R6Class(
+  "Connection",
+  cloneable = FALSE,
+
+  private = list(
+    db_name = NULL,
+    path = NULL,
+    con = NULL,
+    transaction_active = FALSE,
+
+    #' @description
+    #' Tidy up open connections, rolling back any active transactions
+    close_connection = function() {
+      if (private$transaction_active) {
+        message("Rolling back active transaction")
+        self$rollback_transaction()
+      }
+      ## Connection will always be null on first call to reload
+      if (!is.null(private$con)) {
+        tryCatch(
+          DBI::dbDisconnect(private$con),
+          error = function(e) {
+            message("While disconnecting from db, ignored error:\n", e$message)
+          }
+        )
+      }
+    }
+
+  ),
+
+  public = list(
+
+    connect = function(db_name, path) {
+      private$close_connection()
+      private$con <- db_connect(db_name, path)
+    },
+
+    #' @description
+    #' Get the database connection being used by the import. Used for testing.
+    #' @return The DBI connection
+    get_connection = function() {
+      private$con
+    },
+
+    #' @description
+    #' Start a transaction
+    begin_transaction = function() {
+      DBI::dbBegin(private$con)
+      private$transaction_active <- TRUE
+    },
+
+    #' @description
+    #' Rollback a transaction
+    rollback_transaction = function() {
+      DBI::dbRollback(private$con)
+      private$transaction_active <- FALSE
+    },
+
+    #' @description
+    #' Commit a transaction
+    commit_transaction = function() {
+      DBI::dbCommit(private$con)
+      private$transaction_active <- FALSE
+    }
+  )
+)
+
+
 #' Connect to the database configured via yaml.
 #'
 #' Uses \code{\link[DBI]{dbConnect}} to connect to a DBMS. If this uses

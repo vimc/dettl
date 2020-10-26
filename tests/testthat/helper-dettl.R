@@ -32,3 +32,8 @@ TestDataImport <- R6::R6Class(
     }
   )
 )
+
+mock_private <- function(obj, to_mock, value) {
+  unlockBinding(to_mock, obj$.__enclos_env__$private)
+  obj$.__enclos_env__$private[[to_mock]] <- value
+}

@@ -243,7 +243,7 @@ test_that("run import asks to confirm run if configured", {
               res <- evaluate_promise(fn(import))
               expect_false(res$result)
               mockery::expect_called(mock_no_answer, 1)
-              expect_equal(res$messages, "Not uploading to database.\n")
+              expect_equal(res$messages[[3]], "Not uploading to database.\n")
             })
 
   with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -254,7 +254,7 @@ test_that("run import asks to confirm run if configured", {
               res <- evaluate_promise(fn(import))
               expect_false(res$result)
               mockery::expect_called(mock_na_answer, 1)
-              expect_equal(res$messages, "Not uploading to database.\n")
+              expect_equal(res$messages[[3]], "Not uploading to database.\n")
             })
 
   res <- with_mock("dettl:::dettl_config" = mock_confim_config,
@@ -310,18 +310,18 @@ test_that("extract can be run from path", {
                               c(175, 187, 163))
   colnames(expected_data) <- c("name", "age", "height")
 
-  expect_equal(length(import$data$extract), 1)
-  expect_equal(import$data$extract$people, expected_data)
+  expect_equal(length(import$get_extracted_data()), 1)
+  expect_equal(import$get_extracted_data()$people, expected_data)
 
   ## There is no transformed data
-  expect_equal(import$data$transform, NULL)
+  expect_equal(import$get_transformed_data(), NULL)
 
   ## Can run on returned import object
   import <- dettl_run(import, stage = "transform")
 
   ## Extracted data is unchanged
-  expect_equal(length(import$data$extract), 1)
-  expect_equal(import$data$extract$people, expected_data)
+  expect_equal(length(import$get_extracted_data()), 1)
+  expect_equal(import$get_extracted_data()$people, expected_data)
 
   ## Trasformed data exists
   expected_transform_data <- data_frame(c("Alice", "Bob"),
@@ -329,8 +329,8 @@ test_that("extract can be run from path", {
                                         c(175, 187))
   colnames(expected_transform_data) <- c("name", "age", "height")
 
-  expect_equal(length(import$data$transform), 1)
-  expect_equal(import$data$transform$people, expected_transform_data)
+  expect_equal(length(import$get_transformed_data()), 1)
+  expect_equal(import$get_transformed_data()$people, expected_transform_data)
 
   ## Data can be loaded
   dettl_run(import, stage = "load")
@@ -573,3 +573,4 @@ test_that("run import fails if not on required branch", {
     expect_true(import$load())
   })
 })
+

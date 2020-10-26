@@ -5,7 +5,6 @@ ImportLog <- R6::R6Class(
 
   private = list(
     con = NULL,
-    log_data = NULL,
     log_table = NULL,
 
     get_time = function() {
@@ -37,7 +36,7 @@ ImportLog <- R6::R6Class(
     },
 
     verify_log_table = function() {
-      verify_table(private$con, private$log_table, private$log_data,
+      verify_table(private$con, private$log_table, self$log_data,
                    additional_columns = c("start_time", "end_time", "duration"),
                    context_info = "Cannot import data",
                    solution_text =
@@ -55,7 +54,7 @@ ImportLog <- R6::R6Class(
       previous_runs <- DBI::dbGetQuery(
         private$con,
         sprintf("SELECT * FROM %s WHERE name = $1", private$log_table),
-        private$log_data$name)
+        self$log_data$name)
       if (nrow(previous_runs) > 0) {
         stop(sprintf("Import has previously been run. Previous run log:
   name:           %s
@@ -82,31 +81,33 @@ ImportLog <- R6::R6Class(
   ),
 
   public = list(
+    log_data = NULL,
 
     initialize = function(con, log_table, path, comment) {
-      self$con <- con
-      self$log_table <- log_table
+      private$con <- con
+      private$log_table <- log_table
       self$log_data <- private$build_log_data(path, comment)
       private$verify_log_table()
       private$verify_first_run()
     },
 
     start_timer = function() {
-      private$log_data$start_time <- private$get_time()
+      self$log_data$start_time <- private$get_time()
     },
 
     stop_timer = function() {
-      private$log_data$end_time <- private$get_time()
+      self$log_data$end_time <- private$get_time()
       ## Save the duration in seconds rounded to at most precise the time in ms
-      private$log_data$duration <- round(
-        as.numeric(private$log_data$end_time) -
-          as.numeric(private$log_data$start_time), digits = 3)
+      self$log_data$duration <- round(
+        as.numeric(self$log_data$end_time) -
+          as.numeric(self$log_data$start_time), digits = 3)
     },
 
     #' @description
     #' Write the log data to the database.
     write_log = function() {
-      DBI::dbAppendTable(private$con, private$log_table, private$log_data)
+      invisible(DBI::dbAppendTable(private$con, private$log_table,
+                                   self$log_data))
     }
   )
 )

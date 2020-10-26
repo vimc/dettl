@@ -61,11 +61,11 @@ get_mode <- function(path) {
 #' dettl::dettl_run(file.path(path, "person_information/"), "test",
 #'   stage = c("extract", "transform", "load"),
 #'   comment = "Example import")
-dettl_run <- function(import, db_name = NULL, stage = c("extract", "transform"),
-                      comment = NULL, save = FALSE,
-                      dry_run = FALSE, allow_dirty_git = FALSE) {
+dettl_run <- function(import, db_name = NULL, comment = NULL,
+                      dry_run = FALSE, allow_dirty_git = FALSE,
+                      stage = c("extract", "transform"), save = FALSE) {
   import_object <- get_import_object(import, db_name)
-  import_object$run(stage, comment, save, dry_run, allow_dirty_git)
+  import_object$run_import(comment, dry_run, allow_dirty_git, stage, save)
 }
 
 get_import_object <- function(import, db_name) {
@@ -76,6 +76,6 @@ get_import_object.character <- function(import, db_name) {
   dettl(import, db_name)
 }
 
-get_import_object.import <- function(import, db_name) {
-  import$import
+get_import_object.Import <- function(import, db_name) {
+  import
 }
