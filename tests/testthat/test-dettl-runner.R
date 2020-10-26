@@ -572,4 +572,3 @@ test_that("run import fails if not on required branch", {
     expect_true(import$load())
   })
 })
-
