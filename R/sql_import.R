@@ -32,17 +32,6 @@ SqlImport <- R6::R6Class(
   public = list(
 
     #' @description
-    #' Create RImport object - shouldn't be called directly. Use
-    #' \code{\link{dettl}} to create the object
-    #' @param path Path to directory containing import object
-    #' @param db_name Database from dettl config to create import object for
-    #' @return A new `RImport` object
-    initialize = function(path, db_name) {
-      super$initialize(path, db_name)
-      self$reload()
-    },
-
-    #' @description
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
@@ -53,20 +42,6 @@ SqlImport <- R6::R6Class(
       private$sql <- readSqlfromfile()
 
       private$test_queries <- private$import_config$load$verification_queries
-      lockBinding("path", self)
-    },
-
-    #' @description
-    #' Custom formatter for pretty printing object summary.
-    #' @param brief If TRUE then print a brief summary.
-    format = function(brief = FALSE) {
-      data_import_format(self, brief, class(self)[[1L]])
-    },
-
-    #' @description
-    #' Print help page for the object
-    help = function() {
-      utils::help(class(self)[[1L]], package = "dettl")
     },
 
     #' @description
@@ -122,6 +97,19 @@ SqlImport <- R6::R6Class(
       )
       class(output) <- "import"
       output
+    },
+
+    #' @description
+    #' Custom formatter for pretty printing object summary.
+    #' @param brief If TRUE then print a brief summary.
+    format = function(brief = FALSE) {
+      data_import_format(self, brief, class(self)[[1L]])
+    },
+
+    #' @description
+    #' Print help page for the object
+    help = function() {
+      utils::help(class(self)[[1L]], package = "dettl")
     }
   )
 )

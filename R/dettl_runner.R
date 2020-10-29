@@ -10,12 +10,17 @@
 #'
 dettl <- function(path, db_name = NULL) {
   mode <- get_mode(path)
-  if (!(mode %in% c("create", "append"))) {
+  if ((mode %in% c("create", "append"))) {
+    import <- RImport$new(path, db_name)
+  } else if (mode == "sql") {
+    import <- SqlImport$new(path, db_name)
+  } else {
     stop(sprintf(paste0("Can't initialise import for unknown mode got \"%s\",",
-                        " mode must be one of \"create\" or \"append\"."),
+                        " mode must be one of \"create\" or \"append\" ",
+                        "or \"sql\"."),
                  mode))
   }
-  RImport$new(path, db_name)
+  import
 }
 
 get_mode <- function(path) {
