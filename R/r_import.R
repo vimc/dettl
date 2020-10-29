@@ -190,16 +190,7 @@ RImport <- R6::R6Class(
                           allow_dirty_git = FALSE,
                           stage = c("extract", "transform"),
                           save = FALSE) {
-      if ("extract" %in% stage) {
-        self$extract()
-      }
-      if ("transform" %in% stage) {
-        self$transform()
-      }
-      if ("load" %in% stage) {
-        super$load(comment, dry_run, allow_dirty_git)
-      }
-
+      super$run_import(comment, dry_run, allow_dirty_git, stage)
       if (!isFALSE(save)) {
         if (isTRUE(save)) {
           save <- tempfile(fileext = ".xlsx")

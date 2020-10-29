@@ -145,6 +145,22 @@ Import <- R6::R6Class(
     },
 
     #' @description
+    #' Run the extract stage of the data import - does nothing for generic
+    #' override in subclass if required.
+    extract = function() {
+      message("No extract function defined for this import, skipping step")
+      invisible(NULL)
+    },
+
+    #' @description
+    #' Run the extract stage of the data import - does nothing for generic
+    #' override in subclass if required.
+    transform = function() {
+      message("No extract function defined for this import, skipping step")
+      invisible(NULL)
+    },
+
+    #' @description
     #' Run checks that db can be modified, this checks that:
     #' * If require_branch set in cfg that import is for that branch
     #' * If confirm TRUE asks users to confirm action will modify db
@@ -273,8 +289,18 @@ Import <- R6::R6Class(
     #' @keywords internal
     #'
     run_import = function(comment = NULL, dry_run = FALSE,
-                          allow_dirty_git = FALSE) {
-      self$load(comment, dry_run, allow_dirty_git)
+                          allow_dirty_git = FALSE,
+                          stage = c("extract", "transorm")) {
+      if ("extract" %in% stage) {
+        self$extract()
+      }
+      if ("transform" %in% stage) {
+        self$transform()
+      }
+      if ("load" %in% stage) {
+        self$load(comment, dry_run, allow_dirty_git)
+      }
+      invisible(self)
     },
 
     #' @description
