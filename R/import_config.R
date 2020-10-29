@@ -48,6 +48,7 @@ read_r_config <- function(path) {
   )
   info <- add_missing_function_fields(info, names(function_fields))
   required <- c(names(function_fields), "sources")
+  filename <- file.path(path, "dettl.yml")
   check_fields(info, filename, required, "dettl")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
