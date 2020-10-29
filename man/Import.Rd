@@ -30,6 +30,9 @@ and the db connection and should be extended to implement actual imports.
 \item \href{#method-get_log_table}{\code{Import$get_log_table()}}
 \item \href{#method-new}{\code{Import$new()}}
 \item \href{#method-reload}{\code{Import$reload()}}
+\item \href{#method-read_config}{\code{Import$read_config()}}
+\item \href{#method-extract}{\code{Import$extract()}}
+\item \href{#method-transform}{\code{Import$transform()}}
 \item \href{#method-pre_modify_checks}{\code{Import$pre_modify_checks()}}
 \item \href{#method-load}{\code{Import$load()}}
 \item \href{#method-run_import}{\code{Import$run_import()}}
@@ -132,6 +135,38 @@ Postgres connection.
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_config"></a>}}
+\if{latex}{\out{\hypertarget{method-read_config}{}}}
+\subsection{Method \code{read_config()}}{
+Abstract impl should be overridden by subclass
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$read_config(path)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-extract"></a>}}
+\if{latex}{\out{\hypertarget{method-extract}{}}}
+\subsection{Method \code{extract()}}{
+Run the extract stage of the data import - does nothing for generic
+override in subclass if required.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$extract()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-transform}{}}}
+\subsection{Method \code{transform()}}{
+Run the extract stage of the data import - does nothing for generic
+override in subclass if required.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Import$transform()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-pre_modify_checks"></a>}}
 \if{latex}{\out{\hypertarget{method-pre_modify_checks}{}}}
 \subsection{Method \code{pre_modify_checks()}}{
@@ -190,7 +225,12 @@ For generic import this is just running the load step,
 expect this gets overridden in subclasses.
 .
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$run_import(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Import$run_import(
+  comment = NULL,
+  dry_run = FALSE,
+  allow_dirty_git = FALSE,
+  stage = c("extract", "transorm")
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
