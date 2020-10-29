@@ -107,6 +107,12 @@ RImport <- R6::R6Class(
     },
 
     #' @description
+    #' Read and parse config from path.
+    read_config = function() {
+      private$import_config <- read_r_config(self$path)
+    },
+
+    #' @description
     #' Get the extracted data created by the extract step
     #' @return The extracted data
     get_extracted_data = function() {

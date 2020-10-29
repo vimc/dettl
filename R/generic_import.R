@@ -119,7 +119,7 @@ Import <- R6::R6Class(
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
-      private$import_config <- read_config(self$path)
+      self$read_config()
       private$modify_in_transaction <- private$import_config$dettl$transaction
       private$repo_config <- dettl_config(self$path)
 
@@ -136,6 +136,12 @@ Import <- R6::R6Class(
       private$mode <- private$import_config$dettl$mode
 
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
+    },
+
+    #' @description
+    #' Abstract impl should be overridden by subclass
+    read_config = function(path) {
+      NULL
     },
 
     #' @description
