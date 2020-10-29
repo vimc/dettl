@@ -119,7 +119,7 @@ Import <- R6::R6Class(
     #' Reload the objects sources to refresh source code or repair a broken
     #' Postgres connection.
     reload = function() {
-      private$import_config <- read_config(self$path)
+      self$read_config()
       private$modify_in_transaction <- private$import_config$dettl$transaction
       private$repo_config <- dettl_config(self$path)
 
@@ -136,6 +136,28 @@ Import <- R6::R6Class(
       private$mode <- private$import_config$dettl$mode
 
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
+    },
+
+    #' @description
+    #' Abstract impl should be overridden by subclass
+    read_config = function(path) {
+      NULL
+    },
+
+    #' @description
+    #' Run the extract stage of the data import - does nothing for generic
+    #' override in subclass if required.
+    extract = function() {
+      message("No extract function defined for this import, skipping step")
+      invisible(NULL)
+    },
+
+    #' @description
+    #' Run the extract stage of the data import - does nothing for generic
+    #' override in subclass if required.
+    transform = function() {
+      message("No extract function defined for this import, skipping step")
+      invisible(NULL)
     },
 
     #' @description
@@ -267,8 +289,18 @@ Import <- R6::R6Class(
     #' @keywords internal
     #'
     run_import = function(comment = NULL, dry_run = FALSE,
-                          allow_dirty_git = FALSE) {
-      self$load(comment, dry_run, allow_dirty_git)
+                          allow_dirty_git = FALSE,
+                          stage = c("extract", "transorm")) {
+      if ("extract" %in% stage) {
+        self$extract()
+      }
+      if ("transform" %in% stage) {
+        self$transform()
+      }
+      if ("load" %in% stage) {
+        self$load(comment, dry_run, allow_dirty_git)
+      }
+      invisible(self)
     },
 
     #' @description

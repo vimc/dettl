@@ -107,6 +107,12 @@ RImport <- R6::R6Class(
     },
 
     #' @description
+    #' Read and parse config from path.
+    read_config = function() {
+      private$import_config <- read_r_config(self$path)
+    },
+
+    #' @description
     #' Get the extracted data created by the extract step
     #' @return The extracted data
     get_extracted_data = function() {
@@ -184,16 +190,7 @@ RImport <- R6::R6Class(
                           allow_dirty_git = FALSE,
                           stage = c("extract", "transform"),
                           save = FALSE) {
-      if ("extract" %in% stage) {
-        self$extract()
-      }
-      if ("transform" %in% stage) {
-        self$transform()
-      }
-      if ("load" %in% stage) {
-        super$load(comment, dry_run, allow_dirty_git)
-      }
-
+      super$run_import(comment, dry_run, allow_dirty_git, stage)
       if (!isFALSE(save)) {
         if (isTRUE(save)) {
           save <- tempfile(fileext = ".xlsx")

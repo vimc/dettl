@@ -24,7 +24,7 @@ dettl <- function(path, db_name = NULL) {
 }
 
 get_mode <- function(path) {
-  config <- read_config(path)
+  config <- read_config_yml(path)
   mode <- config$dettl$mode
   assert_scalar_character(mode, "import mode")
   mode

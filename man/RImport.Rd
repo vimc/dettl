@@ -36,6 +36,7 @@ import$load()
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-reload}{\code{RImport$reload()}}
+\item \href{#method-read_config}{\code{RImport$read_config()}}
 \item \href{#method-get_extracted_data}{\code{RImport$get_extracted_data()}}
 \item \href{#method-get_transformed_data}{\code{RImport$get_transformed_data()}}
 \item \href{#method-extract}{\code{RImport$extract()}}
@@ -67,6 +68,16 @@ Reload the objects sources to refresh source code or repair a broken
 Postgres connection.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RImport$reload()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_config"></a>}}
+\if{latex}{\out{\hypertarget{method-read_config}{}}}
+\subsection{Method \code{read_config()}}{
+Read and parse config from path.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RImport$read_config()}\if{html}{\out{</div>}}
 }
 
 }
