@@ -140,7 +140,7 @@ Import <- R6::R6Class(
 
     #' @description
     #' Abstract impl should be overridden by subclass
-    read_config = function(path) {
+    read_config = function() {
       NULL
     },
 
@@ -285,6 +285,7 @@ Import <- R6::R6Class(
     #' changes will be rolled back. Defaults to FALSE.
     #' @param allow_dirty_git If TRUE then skips check that the import is up to
     #' date with remote git repo. FALSE by default.
+    #' @param stage The stage or stages of the import to be run.
     #'
     #' @keywords internal
     #'
