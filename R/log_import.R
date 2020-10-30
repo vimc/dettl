@@ -61,7 +61,7 @@ ImportLog <- R6::R6Class(
     #' importing to db.
     #'
     #' Initialises log data and verifies that import can be logged. Set
-    #' a comment for the log using \code{\link{set_comment}}
+    #' a comment for the log using \code{{set_comment}
     #'
     #' @param con Connection to db to add log record to
     #' @param log_table Name of the import log table

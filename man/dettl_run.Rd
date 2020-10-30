@@ -30,9 +30,6 @@ run.}
 with remote git repo.}
 
 \item{stage}{The stage or stages of the import to be run.}
-
-\item{...}{Additional args passed to run_import for a specific import type
-see \code{\link{RImport$run_import()}}}
 }
 \value{
 The import object
