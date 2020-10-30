@@ -43,7 +43,7 @@ get_mode <- function(path) {
 #' @param allow_dirty_git If TRUE then skips check that the import is up to date
 #' with remote git repo.
 #' @param ... Additional args passed to run_import for a specific import type
-#' see \code{{RImport$run_import()}
+#' see \code{RImport$run_import()}
 #' @return The import object
 #'
 #' @export
