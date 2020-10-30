@@ -140,7 +140,7 @@ Postgres connection.
 \subsection{Method \code{read_config()}}{
 Abstract impl should be overridden by subclass
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Import$read_config(path)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Import$read_config()}\if{html}{\out{</div>}}
 }
 
 }
@@ -244,6 +244,8 @@ changes will be rolled back. Defaults to FALSE.}
 
 \item{\code{allow_dirty_git}}{If TRUE then skips check that the import is up to
 date with remote git repo. FALSE by default.}
+
+\item{\code{stage}}{The stage or stages of the import to be run.}
 }
 \if{html}{\out{</div>}}
 }

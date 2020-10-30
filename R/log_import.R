@@ -1,3 +1,9 @@
+#' Generate log data and manage recording timings for an import
+#'
+#' Class to help help manage initialising log data, managing recording
+#' time for log to run and importing row to the log table.
+#'
+#' @keywords internal
 ImportLog <- R6::R6Class(
   # nolint end
   "ImportLog",
@@ -47,8 +53,19 @@ ImportLog <- R6::R6Class(
   ),
 
   public = list(
+    #' @field log_data The current log data
     log_data = NULL,
 
+    #' @description
+    #' Create import log instance for managing creating log data and
+    #' importing to db.
+    #'
+    #' Initialises log data and verifies that import can be logged. Set
+    #' a comment for the log using \code{\link{set_comment}}
+    #'
+    #' @param con Connection to db to add log record to
+    #' @param log_table Name of the import log table
+    #' @param path Path to import being run
     initialize = function(con, log_table, path) {
       private$con <- con
       private$log_table <- log_table
@@ -57,10 +74,16 @@ ImportLog <- R6::R6Class(
       self$verify_first_run()
     },
 
+    #' @description
+    #' Set the comment on the log data
+    #'
+    #' @param comment The comment to be stored with this import.
     set_comment = function(comment) {
       self$log_data$comment <- comment
     },
 
+    #' @description
+    #' Start the import log timer
     start_timer = function() {
       private$timer_start <- private$get_time()
       if (is.null(self$log_data$start_time)) {
@@ -68,6 +91,9 @@ ImportLog <- R6::R6Class(
       }
     },
 
+    #' @description
+    #' Stop the import log timer, adding duration to the total recorded
+    #' duration.
     stop_timer = function() {
       self$log_data$end_time <- private$get_time()
       ## Save the duration in seconds rounded to at most precise the time in ms

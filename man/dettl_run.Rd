@@ -11,7 +11,7 @@ dettl_run(
   dry_run = FALSE,
   allow_dirty_git = FALSE,
   stage = c("extract", "transform"),
-  save = FALSE
+  ...
 )
 }
 \arguments{
@@ -31,8 +31,8 @@ with remote git repo.}
 
 \item{stage}{The stage or stages of the import to be run.}
 
-\item{save}{Path and name to save data from each stage at, if TRUE then will
-save to a tempfile.}
+\item{...}{Additional args passed to run_import for a specific import type
+see \code{\link{RImport$run_import()}}}
 }
 \value{
 The import object

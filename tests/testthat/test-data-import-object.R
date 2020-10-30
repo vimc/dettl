@@ -17,7 +17,7 @@ test_that("format works for functions with many args", {
         comment = NULL, dry_run = FALSE,
         allow_dirty_git = FALSE,
         stage = c(\"extract\", \"transform\"),
-        save = FALSE)")
+        ...)")
 })
 
 
