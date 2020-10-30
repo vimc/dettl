@@ -39,11 +39,12 @@ get_mode <- function(path) {
 #' @param stage The stage or stages of the import to be run.
 #' @param comment Optional comment to be written to db log table when import is
 #' run.
-#' @param save Path and name to save data from each stage at, if TRUE then will
-#' save to a tempfile.
 #' @param dry_run If TRUE then any changes to the database will be rolled back.
 #' @param allow_dirty_git If TRUE then skips check that the import is up to date
 #' with remote git repo.
+#' @param ... Additional args for specific import type,
+#' save Path and name to save data from each stage at, if TRUE then will
+#' save to a tempfile.
 #' @return The import object
 #'
 #' @export
@@ -65,8 +66,8 @@ get_mode <- function(path) {
 #'   comment = "Example import")
 dettl_run <- function(import, db_name = NULL, comment = NULL,
                       dry_run = FALSE, allow_dirty_git = FALSE,
-                      stage = c("extract", "transform"), save = FALSE) {
+                      stage = c("extract", "transform"), ...) {
   assert_character(import)
   import_object <- dettl(import, db_name)
-  import_object$run_import(comment, dry_run, allow_dirty_git, stage, save)
+  import_object$run_import(comment, dry_run, allow_dirty_git, stage, ...)
 }

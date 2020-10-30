@@ -1,5 +1,5 @@
 check_valid_mode <- function(mode) {
-  valid_modes <- c("append", "create")
+  valid_modes <- c("append", "create", "sql")
   mode <- mode %||% "append"
   if (!(mode %in% valid_modes)) {
     stop(sprintf('Invalid mode - mode must be one of %s got "%s".',

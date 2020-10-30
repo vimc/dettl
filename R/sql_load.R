@@ -1,5 +1,4 @@
 get_sql_load <- function(path) {
-  assert_file_exists(path)
   statement <- paste(readLines(path), collapse = "\n")
   function(con) {
     withCallingHandlers(
