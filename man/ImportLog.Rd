@@ -38,7 +38,11 @@ time for log to run and importing row to the log table.
 Build the data to be written to the import log
 
 
+Create import log instance for managing creating log data and
+importing to db.
 
+Initialises log data and verifies that import can be logged. Set
+a comment for the log using \code{set_comment}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ImportLog$new(con, log_table, path)}\if{html}{\out{</div>}}
 }
