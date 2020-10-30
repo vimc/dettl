@@ -403,7 +403,8 @@ options(testthat.default_reporter = default_reporter)
 If you want to create a table during your import you need to switch the import mode. This is done in the `dettl.yml` configuration
 
 ```
-mode: create
+dettl:
+  mode: create
 ```
 
 Create mode imports will skip some of the checks append imports do e.g. checks that the transformed data matches tables in the DB schema. The automatic load can still be used and will create each of the tables in the transformed data. Note that create and appending to tables cannot be mixed within an import.

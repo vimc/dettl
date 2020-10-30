@@ -156,7 +156,7 @@ Import <- R6::R6Class(
     #' Run the extract stage of the data import - does nothing for generic
     #' override in subclass if required.
     transform = function() {
-      message("No extract function defined for this import, skipping step")
+      message("No transform function defined for this import, skipping step")
       invisible(NULL)
     },
 
