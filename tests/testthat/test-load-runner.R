@@ -43,6 +43,7 @@ test_that("transaction is cleaned up if import fails", {
 
 test_that("postgres transaction is cleaned up if import throws error", {
   path <- prepare_test_import()
+  prepare_example_postgres_db()
   import <- dettl(file.path(path, "example/"), "psql_test")
 
   ## Add some bad formed transformed data to trigger an error
