@@ -16,8 +16,10 @@
 #'
 read_config <- function(path) {
   filename <- file.path(path, "dettl.yml")
-  assert_file_exists(path, name = "Import working directory")
-  assert_file_exists(filename, name = "Dettl configuration")
+  assert_file_exists(path, check_case = FALSE,
+                     name = "Import working directory")
+  assert_file_exists(basename(filename), workdir = path,
+                     name = "Dettl configuration")
   info <- yaml_read(filename)
 
   ## If certain fields don't exist in the config then add defaults
