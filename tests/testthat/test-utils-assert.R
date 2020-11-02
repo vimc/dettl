@@ -38,10 +38,12 @@ test_that("assert_is", {
 })
 
 test_that("assert_file_exists", {
+  skip_on_os("windows") # See vimc-4345
   path <- temp_file()
-  expect_error(assert_file_exists(path), "File does not exist")
+  expect_error(assert_file_exists(path, workdir = dirname(path)),
+               "File does not exist")
   writeLines(character(0), path)
-  expect_silent(assert_file_exists(path))
+  expect_silent(assert_file_exists(path, workdir = dirname(path)))
 })
 
 test_that("assert_file_exists: error in case", {

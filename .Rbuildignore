@@ -10,3 +10,4 @@
 ^\.lintr$
 ^docker$
 ^.travis.yml$
+^\.github$

@@ -1,9 +1,11 @@
 # dettl
 
+<!-- badges: start -->
 [![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
-[![Travis-CI Build Status](https://travis-ci.org/vimc/dettl.svg?branch=master)](https://travis-ci.org/vimc/dettl)
+[![R build status](https://github.com/vimc/dettl/workflows/R-CMD-check/badge.svg)](https://github.com/vimc/dettl/actions)
 [![codecov.io](https://codecov.io/github/vimc/dettl/coverage.svg?branch=master)](https://codecov.io/github/vimc/dettl?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/vimc/dettl/badge)](https://www.codefactor.io/repository/github/vimc/dettl)
+<!-- badges: end -->
 
 Data extract, transform, test and load.
 

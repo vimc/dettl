@@ -194,7 +194,7 @@ test_that("zip_dir", {
   t <- temp_file()
   dir.create(t, FALSE)
   zip <- zip_dir(t)
-  expect_equal(zip, paste0(normalizePath(t), ".zip"))
+  expect_equal(zip, paste0(normalizePath(t, "/"), ".zip"))
 
   mockery::stub(zip_dir, "utils::zip", function(...) -1)
   expect_error(zip_dir(temp_file()), "error running zip")

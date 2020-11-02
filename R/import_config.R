@@ -110,8 +110,10 @@ read_sql_config <- function(path) {
 
 read_config_yml <- function(path) {
   filename <- file.path(path, "dettl.yml")
-  assert_file_exists(path, name = "Import working directory")
-  assert_file_exists(filename, name = "Dettl configuration")
+  assert_file_exists(path, check_case = FALSE,
+                     name = "Import working directory")
+  assert_file_exists(filename, check_case = FALSE,
+                     name = "Dettl configuration")
   info <- yaml_read(filename)
   info$dettl$mode <- check_valid_mode(info$dettl$mode)
   info
