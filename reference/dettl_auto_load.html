@@ -78,7 +78,7 @@ referenced key." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dettl</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.17</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@ key and update the previous values to use the returned actual values for the
 referenced key.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dettl_auto_load</span>(<span class='kw'>transformed_data</span>, <span class='kw'>con</span>)</pre>
+    <pre class="usage"><span class='fu'>dettl_auto_load</span><span class='op'>(</span><span class='va'>transformed_data</span>, <span class='va'>con</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,18 +154,18 @@ special edge cases which we need to add some custom handling for before
 or after running the automatic load.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='kw'>dettl</span>::<span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span>(
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package = <span class='st'>"dettl"</span>),
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package = <span class='st'>"dettl"</span>)
-)
-<span class='kw'>import</span> <span class='op'>&lt;-</span> <span class='kw'>dettl</span>::<span class='fu'><a href='dettl.html'>dettl</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>path</span>, <span class='st'>"person_information"</span>), <span class='st'>"test"</span>)
-<span class='kw'>con</span> <span class='op'>&lt;-</span> <span class='kw'>import</span><span class='op'>$</span><span class='fu'>get_connection</span>()
-<span class='kw'>data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"people"</span> = <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  name = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Alice"</span>, <span class='st'>"Bob"</span>),
-  age = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>25</span>, <span class='fl'>43</span>),
-  height = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>175</span>, <span class='fl'>187</span>),
-  stringsAsFactors = <span class='fl'>FALSE</span>))
-<span class='fu'>dettl_auto_load</span>(<span class='kw'>data</span>, <span class='kw'>con</span>)
+    <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>:::</span><span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span><span class='op'>(</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>import</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'><a href='dettl.html'>dettl</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information"</span><span class='op'>)</span>, <span class='st'>"test"</span><span class='op'>)</span>
+<span class='va'>con</span> <span class='op'>&lt;-</span> <span class='va'>import</span><span class='op'>$</span><span class='fu'>get_connection</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='st'>"people"</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Alice"</span>, <span class='st'>"Bob"</span><span class='op'>)</span>,
+  age <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span>, <span class='fl'>43</span><span class='op'>)</span>,
+  height <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>175</span>, <span class='fl'>187</span><span class='op'>)</span>,
+  stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>dettl_auto_load</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>con</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Updating people (adding 2 rows)</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -182,7 +182,7 @@ or after running the automatic load.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

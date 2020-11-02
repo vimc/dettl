@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">dettl</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.17</span>
       </span>
     </div>
 
@@ -68,6 +68,7 @@
 <div id="dettl" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#dettl" class="anchor"></a>dettl</h1></div>
+<!-- badges: start -->
 
 <p>Data extract, transform, test and load.</p>
 <p>Disinfect your workflow.</p>
@@ -83,7 +84,7 @@ install.packages("dettl")</code></pre>
 <div id="using-dettl" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-dettl" class="anchor"></a>Using dettl</h2>
-<p><code>dettl</code> requires a log table to exist in the target database for an import to be run. Run <code><a href="reference/dettl_db_create_log_table.html">dettl::dettl_db_create_log_table</a></code> to create the log table. This executes the relevant query at <code>inst/sql/</code> for create the log table. The name of the table can be changed and configured via the import <code>dettl_config.yml</code> but the fields must remain the same.</p>
+<p><code>dettl</code> requires a log table to exist in the target database for an import to be run. Run <code><a href="reference/dettl_create_log_table.html">dettl::dettl_create_log_table</a></code> to create the log table. This executes the relevant query at <code>inst/sql/</code> for create the log table. The name of the table can be changed and configured via the import <code>dettl_config.yml</code> but the fields must remain the same.</p>
 <p>For details of how to write and run a data import using <code>dettl</code> see package vignettes.</p>
 </div>
 <div id="using-vault" class="section level2">
@@ -126,7 +127,7 @@ install.packages("dettl")</code></pre>
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.repostatus.org/#concept"><img src="https://www.repostatus.org/badges/latest/concept.svg" alt="Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept."></a></li>
-<li><a href="https://travis-ci.org/vimc/dettl"><img src="https://travis-ci.org/vimc/dettl.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://github.com/vimc/dettl/actions"><img src="https://github.com/vimc/dettl/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://codecov.io/github/vimc/dettl?branch=master"><img src="https://codecov.io/github/vimc/dettl/coverage.svg?branch=master" alt="codecov.io"></a></li>
 <li><a href="https://www.codefactor.io/repository/github/vimc/dettl"><img src="https://www.codefactor.io/repository/github/vimc/dettl/badge" alt="CodeFactor"></a></li>
 </ul>
@@ -140,7 +141,7 @@ install.packages("dettl")</code></pre>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -73,7 +73,7 @@ file." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dettl</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.17</span>
       </span>
     </div>
 
@@ -120,7 +120,7 @@ file." />
 file.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dettl_save</span>(<span class='kw'>import</span>, <span class='kw'>file</span>, <span class='kw'>stage</span>)</pre>
+    <pre class="usage"><span class='fu'>dettl_save</span><span class='op'>(</span><span class='va'>import</span>, <span class='va'>file</span>, <span class='va'>stage</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,35 +141,29 @@ file.</p>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='kw'>dettl</span>::<span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span>(
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package = <span class='st'>"dettl"</span>),
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package = <span class='st'>"dettl"</span>)
-)
-<span class='kw'>import</span> <span class='op'>&lt;-</span> <span class='kw'>dettl</span>::<span class='fu'><a href='dettl.html'>dettl</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>path</span>, <span class='st'>"person_information"</span>), <span class='st'>"test"</span>)
-<span class='kw'>import</span><span class='op'>$</span><span class='fu'>extract</span>()
-</div><div class='output co'>#&gt; <span class='message'>Running extract /tmp/RtmpZ9x39S/file5775635a52afe/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BB0000;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
-#&gt; ⠏ |   0       | extract</span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
+    <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>:::</span><span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span><span class='op'>(</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>import</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'><a href='dettl.html'>dettl</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information"</span><span class='op'>)</span>, <span class='st'>"test"</span><span class='op'>)</span>
+<span class='va'>import</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpDH0zqM/file73814105c34/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; OK:       </span><span style='color: #00BB00;'>1</span><span>
-#&gt; Failed:   </span><span style='color: #00BB00;'>0</span><span>
-#&gt; Warnings: </span><span style='color: #00BB00;'>0</span><span>
-#&gt; Skipped:  </span><span style='color: #00BB00;'>0</span><span></div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='input'><span class='kw'>import</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/base/transform.html'>transform</a></span>()
-</div><div class='output co'>#&gt; <span class='message'>Running transform /tmp/RtmpZ9x39S/file5775635a52afe/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BB0000;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
-#&gt; ⠏ |   0       | transform</span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='input'><span class='va'>import</span><span class='op'>$</span><span class='fu'>transform</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpDH0zqM/file73814105c34/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; OK:       </span><span style='color: #00BB00;'>1</span><span>
-#&gt; Failed:   </span><span style='color: #00BB00;'>0</span><span>
-#&gt; Warnings: </span><span style='color: #00BB00;'>0</span><span>
-#&gt; Skipped:  </span><span style='color: #00BB00;'>0</span><span></div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='input'><span class='kw'>t</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
-<span class='kw'>dettl</span>::<span class='fu'>dettl_save</span>(<span class='kw'>import</span>, <span class='kw'>t</span>, <span class='st'>"extract"</span>)
-</div><div class='output co'>#&gt; <span class='message'>Saved extract data to /tmp/RtmpZ9x39S/file5775669078142</span></div><div class='input'><span class='kw'>t2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
-<span class='kw'>dettl</span>::<span class='fu'>dettl_save</span>(<span class='kw'>import</span>, <span class='kw'>t2</span>, <span class='st'>"transform"</span>)
-</div><div class='output co'>#&gt; <span class='message'>Saved transform data to /tmp/RtmpZ9x39S/file5775645d00fce</span></div><div class='input'><span class='kw'>t3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
-<span class='kw'>dettl</span>::<span class='fu'>dettl_save</span>(<span class='kw'>import</span>, <span class='kw'>t3</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"extract"</span>, <span class='st'>"transform"</span>))
-</div><div class='output co'>#&gt; <span class='message'>Saved extract data to /tmp/RtmpZ9x39S/file5775652054deb</span>
-#&gt; <span class='message'>Saved transform data to /tmp/RtmpZ9x39S/file5775652054deb</span></div></span></pre>
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='input'><span class='va'>t</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_save</span><span class='op'>(</span><span class='va'>import</span>, <span class='va'>t</span>, <span class='st'>"extract"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpDH0zqM/file7383e156436</span></div><div class='input'><span class='va'>t2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_save</span><span class='op'>(</span><span class='va'>import</span>, <span class='va'>t2</span>, <span class='st'>"transform"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpDH0zqM/file7387ef25227</span></div><div class='input'><span class='va'>t3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_save</span><span class='op'>(</span><span class='va'>import</span>, <span class='va'>t3</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"extract"</span>, <span class='st'>"transform"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpDH0zqM/file73869d4481b</span>
+#&gt; <span class='message'>Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpDH0zqM/file73869d4481b</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -185,7 +179,7 @@ file.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

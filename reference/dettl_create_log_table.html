@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get the SQL dialect used for a connection. — sql_dialect • dettl</title>
+<title>Initialise the database by creating log table if it doesn't already exist — dettl_create_log_table • dettl</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Get the SQL dialect used for a connection. — sql_dialect" />
-<meta property="og:description" content="Get the SQL dialect used for a connection." />
+<meta property="og:title" content="Initialise the database by creating log table if it doesn't already exist — dettl_create_log_table" />
+<meta property="og:description" content="Initialise the database by creating log table if it doesn't already exist" />
 
 
 
@@ -109,30 +109,40 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get the SQL dialect used for a connection.</h1>
+    <h1>Initialise the database by creating log table if it doesn't already exist</h1>
     
-    <div class="hidden name"><code>sql_dialect.Rd</code></div>
+    <div class="hidden name"><code>dettl_create_log_table.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get the SQL dialect used for a connection.</p>
+    <p>Initialise the database by creating log table if it doesn't already exist</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sql_dialect</span><span class='op'>(</span><span class='va'>con</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dettl_create_log_table</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>db_name</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>con</th>
-      <td><p>The connection to test.</p></td>
+      <th>path</th>
+      <td><p>Path to import directory containing db connection configuration.</p></td>
+    </tr>
+    <tr>
+      <th>db_name</th>
+      <td><p>The name of the db to connect to. Connection info must be
+configured via the <code>dettl_config.yml</code>.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The dialect used, either "sqlite" or "postgres".</p>
-
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>:::</span><span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span><span class='op'>(</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>,
+  add_log_table <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_create_log_table</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information"</span><span class='op'>)</span>, <span class='st'>"test"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Creating log table in DB test.</span></div><div class='output co'>#&gt; [1] 0</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
