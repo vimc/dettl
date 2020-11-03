@@ -56,7 +56,12 @@ testthat::test_that("log table is appended to", {
   expect_true(as.numeric(Sys.time() - 60) < as.numeric(log_data$end_time))
   expect_true(as.numeric(log_data$end_time) < as.numeric(Sys.time()))
   duration <- as.numeric(log_data$end_time) - as.numeric(log_data$start_time)
-  expect_equal(round(duration, digits = 3), log_data$duration)
+  ## Duration includes extract + transform time so check that it is not
+  ## identical but is within a few ms either side
+  load_duration <- round(duration, digits = 3)
+  expect_true(load_duration != log_data$duration)
+  expect_true(load_duration - 0.1 < log_data$duration)
+  expect_true(load_duration + 0.1 > log_data$duration)
   expect_equal(log_data$comment, "Test comment")
   expect_equal(log_data$git_user, "dettl")
   expect_equal(log_data$git_email, "email@example.com")
@@ -89,7 +94,12 @@ testthat::test_that("postgres log table is appended to", {
   expect_true(as.numeric(Sys.time() - 60) < as.numeric(log_data$end_time))
   expect_true(as.numeric(log_data$end_time) < as.numeric(Sys.time()))
   duration <- as.numeric(log_data$end_time) - as.numeric(log_data$start_time)
-  expect_equal(round(duration, digits = 3), log_data$duration)
+  ## Duration includes extract + transform time so check that it is not
+  ## identical but is within a few ms either side
+  load_duration <- round(duration, digits = 3)
+  expect_true(load_duration != log_data$duration)
+  expect_true(load_duration - 0.1 < log_data$duration)
+  expect_true(load_duration + 0.1 > log_data$duration)
   expect_equal(log_data$comment, "Test comment")
   expect_equal(log_data$git_user, "dettl")
   expect_equal(log_data$git_email, "email@example.com")
@@ -110,7 +120,6 @@ test_that("import can only be run once", {
   import$extract()
   import$transform()
   import$load()
-
   expect_error(import$load(),
                "Import has previously been run. Previous run log:
   name:           example

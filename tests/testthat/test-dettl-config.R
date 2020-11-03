@@ -34,6 +34,11 @@ test_that("error is thrown when db config is missing", {
                "Reached root from .. without finding 'dettl_config.yml'")
 })
 
+test_that("reading config throws error if require branch badly formed", {
+  path <- setup_config(require_branch = '["test", "test2"]')
+  expect_error(dettl_config(path), "example:require_branch' must be a scalar")
+})
+
 test_that("vault server details can be read from db config", {
   path <- setup_config(vault_server = "")
   cfg <- dettl_config(path)

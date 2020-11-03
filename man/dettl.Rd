@@ -14,7 +14,7 @@ configured via the \code{dettl_config.yml}. If name is left blank this will
 default to using the first db configured.}
 }
 \value{
-A DataImport object.
+An Import object.
 }
 \description{
 Create an import object using functions defined at specified path

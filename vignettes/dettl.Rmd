@@ -259,28 +259,28 @@ import_path <- file.path(path, "person_information")
 import <- dettl::dettl_run(import_path, db_name = "test", stage = "extract")
 ```
 
-This returns a list containing the import object which you can work further with and returns a list of processed data. You can see the extracted data at
+This returns the import object which you can work further with and returns a list of processed data. You can see the extracted data at
 
 ```{r}
-import$data$extract
+import$get_extracted_data()
 ```
 
-To execute the transform stage, call the same run function with `stage = "transform"`. This returns the same list as from the extract stage. You can call the function either using the path to import and the db to import to or using the object returned from extract run.
+To execute the transform stage, call the same run function with `stage = c("extract", "transform")`. This again returns the import object.
 
 ```{r}
-import <- dettl::dettl_run(import, stage = "transform")
+import <- dettl::dettl_run(import_path, stage = c("extract", "transform"))
 ```
 
 You can inspect the transformed data using
 
 ```{r}
-import$data$transform
+import$get_transformed_data()
 ```
 
-You can run the load stage using the returned import object.
+You can run the load stage
 
 ```{r}
-dettl::dettl_run(import, stage = "load")
+dettl::dettl_run(import_path, stage = c("extract", "transform", "load"))
 ```
 
 You can run multiple stages together or the whole import end-to-end using `dettl_run`. This will make changes to the database unless run in `dry_run` mode.
@@ -403,7 +403,8 @@ options(testthat.default_reporter = default_reporter)
 If you want to create a table during your import you need to switch the import mode. This is done in the `dettl.yml` configuration
 
 ```
-mode: create
+dettl:
+  mode: create
 ```
 
 Create mode imports will skip some of the checks append imports do e.g. checks that the transformed data matches tables in the DB schema. The automatic load can still be used and will create each of the tables in the transformed data. Note that create and appending to tables cannot be mixed within an import.

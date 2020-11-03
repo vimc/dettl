@@ -24,8 +24,8 @@
 #' t3 <- tempfile()
 #' dettl::dettl_save(import, t3, c("extract", "transform"))
 dettl_save <- function(import, file, stage) {
-  if (!inherits(import, "DataImport")) {
-    stop(sprintf("Can't save %s data for non-DataImport object.",
+  if (!inherits(import, "RImport")) {
+    stop(sprintf("Can't save %s data for non-RImport object.",
                  paste(stage, collapse = " and ")))
   }
   dir.create(dirname(file), FALSE, TRUE)

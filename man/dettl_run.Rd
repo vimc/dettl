@@ -7,37 +7,35 @@
 dettl_run(
   import,
   db_name = NULL,
-  stage = c("extract", "transform"),
   comment = NULL,
-  save = FALSE,
   dry_run = FALSE,
-  allow_dirty_git = FALSE
+  allow_dirty_git = FALSE,
+  stage = c("extract", "transform"),
+  ...
 )
 }
 \arguments{
-\item{import}{Either path to the import directory or output from a previous
-call to this function.}
+\item{import}{Path to import directory.}
 
 \item{db_name}{The name of the db to connect to. Connection info must be
 configured via the `dettl_config.yml`. If name is left blank this will default
 to using the first db configured.}
 
-\item{stage}{The stage or stages of the import to be run.}
-
 \item{comment}{Optional comment to be written to db log table when import is
 run.}
-
-\item{save}{Path and name to save data from each stage at, if TRUE then will
-save to a tempfile.}
 
 \item{dry_run}{If TRUE then any changes to the database will be rolled back.}
 
 \item{allow_dirty_git}{If TRUE then skips check that the import is up to date
 with remote git repo.}
+
+\item{stage}{The stage or stages of the import to be run.}
+
+\item{...}{Additional args passed to run_import for a specific import type
+see \code{RImport$run_import()}}
 }
 \value{
-List containing the import object and data from each completed stage.
-Can call dettl_run on this returned list again to execute subsequent stages.
+The import object
 }
 \description{
 Run specified stages of an import
@@ -54,7 +52,6 @@ dettl::dettl_run(file.path(path, "person_information/"), "test",
   save = tempfile())
 import <- dettl::dettl_run(file.path(path, "person_information/"),
   "test", stage = "extract")
-dettl::dettl_run(import, stage = "transform")
 dettl::dettl_run(file.path(path, "person_information/"), "test",
   stage = c("extract", "transform", "load"),
   comment = "Example import")

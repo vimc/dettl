@@ -1,7 +1,4 @@
-#' Get dettl config from path.
-#'
-#' Get the config containing information about location of functions containing
-#' import code.
+#' Get dettl config from path for an R import.
 #'
 #' Sources any references to functions ready for use. Use a default
 #' configuration in the result that any fields are missing. This will use the
@@ -13,15 +10,8 @@
 #' @return The config as a dettl_config object.
 #'
 #' @keywords internal
-#'
-read_config <- function(path) {
-  filename <- file.path(path, "dettl.yml")
-  assert_file_exists(path, check_case = FALSE,
-                     name = "Import working directory")
-  assert_file_exists(basename(filename), workdir = path,
-                     name = "Dettl configuration")
-  info <- yaml_read(filename)
-
+read_r_config <- function(path) {
+  info <- read_config_yml(path)
   ## If certain fields don't exist in the config then add defaults
   info <- validate_load(info)
   function_fields <- list(
@@ -58,15 +48,26 @@ read_config <- function(path) {
   )
   info <- add_missing_function_fields(info, names(function_fields))
   required <- c(names(function_fields), "sources")
+  filename <- file.path(path, "dettl.yml")
   check_fields(info, filename, required, "dettl")
   env <- load_sources(info$sources, path)
   info <- read_function_fields(function_fields, info, env)
   info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
-  info$dettl$mode <- check_valid_mode(info$dettl$mode)
   info$dettl$transaction <-
     is.logical(info$dettl$transaction) %?% info$dettl$transaction %:% TRUE
   class(info) <- "dettl_import_config"
+  info
+}
+
+read_config_yml <- function(path) {
+  filename <- file.path(path, "dettl.yml")
+  assert_file_exists(path, check_case = FALSE,
+                     name = "Import working directory")
+  assert_file_exists(filename, check_case = FALSE,
+                     name = "Dettl configuration")
+  info <- yaml_read(filename)
+  info$dettl$mode <- check_valid_mode(info$dettl$mode)
   info
 }
 
