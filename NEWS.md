@@ -1,3 +1,7 @@
+# dettl 0.0.18
+
+* Add sql only import
+
 # dettl 0.0.17
 
 * Add `dettl_run` function which can run multiple stages, can save output, run with path or import object
