@@ -10,4 +10,5 @@ db:
       dbname: dettl_test_db
       user: postgres
       host: localhost
+      password: password
     log_table: dettl_import_log

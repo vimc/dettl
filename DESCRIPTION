@@ -1,5 +1,5 @@
 Package: dettl
-Title: Data extract, transform, test and load
+Title: Data Extract, Transform, Test and Load
 Version: 0.0.17
 Authors@R: 
     person(given = "Robert",

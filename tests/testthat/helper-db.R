@@ -96,7 +96,7 @@ dettl_test_postgres_connection <- function(dbname, user, host) {
 
 get_postgres_connection <- function(dbname, user, host) {
   DBI::dbConnect(RPostgres::Postgres(), dbname = dbname, user = user,
-                 host = host)
+                 host = host, password = "password")
 }
 
 dbi_db_connect <- function(drv, ...) {
