@@ -25,6 +25,9 @@ Import <- R6::R6Class(
     has_pre_load = FALSE,
     has_post_load = FALSE,
 
+    # nocov start
+    ## Safe to ignore this in coverage as it doesn't and won't ever be run.
+    ## Viewing this as abstract impl of functions which a subclass must define
     pre_load = function() {
       NULL
     },
@@ -32,6 +35,7 @@ Import <- R6::R6Class(
     post_load = function() {
       NULL
     },
+    # nocov end
 
     test_queries = function() {
       NULL
