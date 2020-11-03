@@ -51,9 +51,6 @@ RImport <- R6::R6Class(
       private$transform_passed <- FALSE
     },
 
-    has_pre_load = FALSE,
-    has_post_load = FALSE,
-
     pre_load = function() {
       private$load_pre_(private$transformed_data, private$con)
     },

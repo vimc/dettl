@@ -22,6 +22,9 @@ Import <- R6::R6Class(
 
     log = NULL,
 
+    pre_load = NULL,
+    post_load = NULL,
+
     test_queries = function() {
       NULL
     },
@@ -225,13 +228,13 @@ Import <- R6::R6Class(
         withr::with_dir(self$path, {
           message("\t- Running test queries before making any changes")
           before <- private$test_queries()
-          if (isTRUE(private$has_pre_load)) {
+          if (is.function(private$pre_load)) {
             message("\t- Running pre-load")
             private$pre_load()
           }
           message("\t- Running load step")
           private$do_load()
-          if (isTRUE(private$has_post_load)) {
+          if (is.function(private$post_load)) {
             message("\t- Running post-load")
             private$post_load()
           }
