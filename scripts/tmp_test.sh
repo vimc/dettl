@@ -5,7 +5,8 @@
 con <- DBI::dbConnect(RPostgres::Postgres(),
                       dbname = "dettl_test_db",
                       user = "postgres",
-                      host = "localhost")
+                      host = "localhost",
+                      password = "password")
 DBI::dbDisconnect(con)
 
 ## Connect to vault
