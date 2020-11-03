@@ -76,8 +76,10 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: temp test
-        run: ./scripts/tmp_test.sh
+      - name: Start vault
+        run:
+          vaultr::vault_test_server_install()
+        shell: Rscript {0}
 
       - name: Check
         env:
