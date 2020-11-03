@@ -32,7 +32,7 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       VAULTR_TEST_SERVER_INSTALL: true
       VAULTR_TEST_SERVER_PORT: 18200
-      VAULTR_TEST_SERVER_BIN_PATH: '${{ github.action_path }}/.vault'
+      VAULTR_TEST_SERVER_BIN_PATH: '${{ GITHUB_WORKSPACE }}/.vault'
 
     steps:
       - uses: actions/checkout@v2
