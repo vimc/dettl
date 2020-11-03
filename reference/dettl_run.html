@@ -121,11 +121,11 @@
     <pre class="usage"><span class='fu'>dettl_run</span><span class='op'>(</span>
   <span class='va'>import</span>,
   db_name <span class='op'>=</span> <span class='cn'>NULL</span>,
-  stage <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"extract"</span>, <span class='st'>"transform"</span><span class='op'>)</span>,
   comment <span class='op'>=</span> <span class='cn'>NULL</span>,
-  save <span class='op'>=</span> <span class='cn'>FALSE</span>,
   dry_run <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  allow_dirty_git <span class='op'>=</span> <span class='cn'>FALSE</span>
+  allow_dirty_git <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  stage <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"extract"</span>, <span class='st'>"transform"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -133,8 +133,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>import</th>
-      <td><p>Either path to the import directory or output from a previous
-call to this function.</p></td>
+      <td><p>Path to import directory.</p></td>
     </tr>
     <tr>
       <th>db_name</th>
@@ -143,18 +142,9 @@ configured via the `dettl_config.yml`. If name is left blank this will default
 to using the first db configured.</p></td>
     </tr>
     <tr>
-      <th>stage</th>
-      <td><p>The stage or stages of the import to be run.</p></td>
-    </tr>
-    <tr>
       <th>comment</th>
       <td><p>Optional comment to be written to db log table when import is
 run.</p></td>
-    </tr>
-    <tr>
-      <th>save</th>
-      <td><p>Path and name to save data from each stage at, if TRUE then will
-save to a tempfile.</p></td>
     </tr>
     <tr>
       <th>dry_run</th>
@@ -165,12 +155,20 @@ save to a tempfile.</p></td>
       <td><p>If TRUE then skips check that the import is up to date
 with remote git repo.</p></td>
     </tr>
+    <tr>
+      <th>stage</th>
+      <td><p>The stage or stages of the import to be run.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional args passed to run_import for a specific import type
+see <code>RImport$run_import()</code></p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>List containing the import object and data from each completed stage.
-Can call dettl_run on this returned list again to execute subsequent stages.</p>
+    <p>The import object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>:::</span><span class='fu'><a href='prepare_test_import.html'>prepare_test_import</a></span><span class='op'>(</span>
@@ -179,191 +177,50 @@ Can call dettl_run on this returned list again to execute subsequent stages.</p>
 <span class='op'>)</span>
 <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>, <span class='st'>"test"</span>,
   comment <span class='op'>=</span> <span class='st'>"Example import"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; $import
-#&gt; &lt;dettl: DataImport&gt;
-#&gt;   Commands:
-#&gt;     begin_transaction()
-#&gt;     commit_transaction()
-#&gt;     extract()
-#&gt;     get_connection()
-#&gt;     get_extracted_data()
-#&gt;     get_log_table()
-#&gt;     get_transformed_data()
-#&gt;     help()
-#&gt;     load(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)
-#&gt;     reload()
-#&gt;     rollback_transaction()
-#&gt;     transform()
-#&gt; 
-#&gt; $data
-#&gt; $data$extract
-#&gt; $data$extract$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 3 Clive  76    163
-#&gt; 
-#&gt; 
-#&gt; $data$transform
-#&gt; $data$transform$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 
-#&gt; 
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "import"</div><div class='input'><span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>, <span class='st'>"test"</span>,
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='input'><span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>, <span class='st'>"test"</span>,
   comment <span class='op'>=</span> <span class='st'>"Example import"</span>,
   save <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpckdPvv/file7925a0b1413</span>
-#&gt; <span class='message'>Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpckdPvv/file7925a0b1413</span></div><div class='output co'>#&gt; $import
-#&gt; &lt;dettl: DataImport&gt;
-#&gt;   Commands:
-#&gt;     begin_transaction()
-#&gt;     commit_transaction()
-#&gt;     extract()
-#&gt;     get_connection()
-#&gt;     get_extracted_data()
-#&gt;     get_log_table()
-#&gt;     get_transformed_data()
-#&gt;     help()
-#&gt;     load(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)
-#&gt;     reload()
-#&gt;     rollback_transaction()
-#&gt;     transform()
-#&gt; 
-#&gt; $data
-#&gt; $data$extract
-#&gt; $data$extract$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 3 Clive  76    163
-#&gt; 
-#&gt; 
-#&gt; $data$transform
-#&gt; $data$transform$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 
-#&gt; 
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "import"</div><div class='input'><span class='va'>import</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>,
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpGv76bm/file6171a9b109a</span>
+#&gt; <span class='message'>Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpGv76bm/file6171a9b109a</span></div><div class='input'><span class='va'>import</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>,
   <span class='st'>"test"</span>, stage <span class='op'>=</span> <span class='st'>"extract"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='input'><span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='va'>import</span>, stage <span class='op'>=</span> <span class='st'>"transform"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
-#&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='input'><span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>, <span class='st'>"test"</span>,
+  stage <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"extract"</span>, <span class='st'>"transform"</span>, <span class='st'>"load"</span><span class='op'>)</span>,
+  comment <span class='op'>=</span> <span class='st'>"Example import"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
 #&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]
 #&gt; 
-#&gt; </span><span style='color: #00BB00;'>💅 Your tests are beautiful 💅</span><span></div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; $import
-#&gt; &lt;dettl: DataImport&gt;
-#&gt;   Commands:
-#&gt;     begin_transaction()
-#&gt;     commit_transaction()
-#&gt;     extract()
-#&gt;     get_connection()
-#&gt;     get_extracted_data()
-#&gt;     get_log_table()
-#&gt;     get_transformed_data()
-#&gt;     help()
-#&gt;     load(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)
-#&gt;     reload()
-#&gt;     rollback_transaction()
-#&gt;     transform()
-#&gt; 
-#&gt; $data
-#&gt; $data$extract
-#&gt; $data$extract$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 3 Clive  76    163
-#&gt; 
-#&gt; 
-#&gt; $data$transform
-#&gt; $data$transform$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 
-#&gt; 
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "import"</div><div class='input'><span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'>dettl_run</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='st'>"person_information/"</span><span class='op'>)</span>, <span class='st'>"test"</span>,
-  stage <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"extract"</span>, <span class='st'>"transform"</span>, <span class='st'>"load"</span><span class='op'>)</span>,
-  comment <span class='op'>=</span> <span class='st'>"Example import"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
-#&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
-#&gt; 
-#&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; </span><span style='color: #00BB00;'>💅 Your tests are beautiful 💅</span><span></div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpckdPvv/file79243391abf/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running load in a transaction:</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries before making any changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load step</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries after making changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load tests R/test_load.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='output co'>#&gt; <span class='message'>Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file617367e7ad/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running load in a transaction:</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries before making any changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load step</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries after making changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load tests R/test_load.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | load                                                            ⠏ |   0       | load                                                            </span><span style='color: #00BB00;'>✔</span><span> |   1       | load
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
-#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All tests passed, commiting changes to database.</span></div><div class='output co'>#&gt; $import
-#&gt; &lt;dettl: DataImport&gt;
-#&gt;   Commands:
-#&gt;     begin_transaction()
-#&gt;     commit_transaction()
-#&gt;     extract()
-#&gt;     get_connection()
-#&gt;     get_extracted_data()
-#&gt;     get_log_table()
-#&gt;     get_transformed_data()
-#&gt;     help()
-#&gt;     load(comment = NULL, dry_run = FALSE, allow_dirty_git = FALSE)
-#&gt;     reload()
-#&gt;     rollback_transaction()
-#&gt;     transform()
-#&gt; 
-#&gt; $data
-#&gt; $data$extract
-#&gt; $data$extract$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 3 Clive  76    163
-#&gt; 
-#&gt; 
-#&gt; $data$transform
-#&gt; $data$transform$people
-#&gt;    name age height
-#&gt; 1 Alice  25    175
-#&gt; 2   Bob  43    187
-#&gt; 
-#&gt; 
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "import"</div></span></pre>
+#&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All tests passed, commiting changes to database.</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

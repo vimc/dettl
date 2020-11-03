@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare example import inside a git repo — prepare_test_import • dettl</title>
+<title>Get dettl config from path for an R import. — read_r_config • dettl</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,11 @@
 
 
 
-<meta property="og:title" content="Prepare example import inside a git repo — prepare_test_import" />
-<meta property="og:description" content="Copies an example import to a new temp directory, sets up git for the
-directory and creates a test SQLite DB in the temp directory as test.sqlite." />
+<meta property="og:title" content="Get dettl config from path for an R import. — read_r_config" />
+<meta property="og:description" content="Sources any references to functions ready for use. Use a default
+configuration in the result that any fields are missing. This will use the
+field name as the expected file name and function name. Required fields are
+extract, transform, test_queries, test and load." />
 
 
 
@@ -110,77 +112,33 @@ directory and creates a test SQLite DB in the temp directory as test.sqlite." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare example import inside a git repo</h1>
+    <h1>Get dettl config from path for an R import.</h1>
     
-    <div class="hidden name"><code>prepare_test_import.Rd</code></div>
+    <div class="hidden name"><code>read_r_config.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Copies an example import to a new temp directory, sets up git for the
-directory and creates a test SQLite DB in the temp directory as test.sqlite.</p>
+    <p>Sources any references to functions ready for use. Use a default
+configuration in the result that any fields are missing. This will use the
+field name as the expected file name and function name. Required fields are
+extract, transform, test_queries, test and load.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepare_test_import</span><span class='op'>(</span>
-  example_dir <span class='op'>=</span> <span class='st'>"example"</span>,
-  dettl_config <span class='op'>=</span> <span class='st'>"dettl_config.yml"</span>,
-  create_db <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  add_data <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  add_job_table <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  add_log_table <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  add_fk_data <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  add_cyclic_fks <span class='op'>=</span> <span class='cn'>FALSE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>read_r_config</span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>example_dir</th>
-      <td><p>The example directory to copy to temp.</p></td>
-    </tr>
-    <tr>
-      <th>dettl_config</th>
-      <td><p>Path to the dettl config file.</p></td>
-    </tr>
-    <tr>
-      <th>create_db</th>
-      <td><p>If TRUE then test SQLite db will be created</p></td>
-    </tr>
-    <tr>
-      <th>add_data</th>
-      <td><p>If TRUE data is bootstrapped to people table in test DB.</p></td>
-    </tr>
-    <tr>
-      <th>add_job_table</th>
-      <td><p>If TRUE also bootstrap job table related to people
-table.</p></td>
-    </tr>
-    <tr>
-      <th>add_log_table</th>
-      <td><p>If TRUE then also bootstrap log table.</p></td>
-    </tr>
-    <tr>
-      <th>add_fk_data</th>
-      <td><p>If TRUE then bootstrap three tables with foreign key</p></td>
-    </tr>
-    <tr>
-      <th>add_cyclic_fks</th>
-      <td><p>If TRUE then bootstrap two tables with cyclic foreign
-key constraints.
-constraints for testing automatic reading of foreign key constraints from db.</p></td>
+      <th>path</th>
+      <td><p>Path to directory containing config.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>This should only be called from a test, vignette or roxygen example.</p>
+    <p>The config as a dettl_config object.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>dettl</span><span class='fu'>:::</span><span class='fu'>prepare_test_import</span><span class='op'>(</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"person_information"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>,
-  <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"examples"</span>, <span class='st'>"dettl_config.yml"</span>, package <span class='op'>=</span> <span class='st'>"dettl"</span><span class='op'>)</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpGv76bm/file6175f1973f5"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
