@@ -5,6 +5,7 @@ db:
       dbname: test.sqlite
     log_table: <log_table>
     confirm: <confirm>
+    <require_branch>
   uat:
     driver: RPostgres::Postgres
     args:
