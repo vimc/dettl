@@ -20,17 +20,7 @@ Import <- R6::R6Class(
     confirm = NULL,
     require_branch = NULL,
 
-    has_pre_load = FALSE,
-    has_post_load = FALSE,
     log = NULL,
-
-    pre_load = function() {
-      NULL
-    },
-
-    post_load = function() {
-      NULL
-    },
 
     test_queries = function() {
       NULL
@@ -120,7 +110,9 @@ Import <- R6::R6Class(
     #' Postgres connection.
     reload = function() {
       self$read_config()
-      private$modify_in_transaction <- private$import_config$dettl$transaction
+      if (!is.null(private$import_config$dettl$transaction)) {
+        private$modify_in_transaction <- private$import_config$dettl$transaction
+      }
       private$repo_config <- dettl_config(self$path)
 
       private$db_name <- private$db_name %||%
