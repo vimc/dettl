@@ -74,6 +74,9 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: temp test
+        run: ./scripts/tmp_test.sh
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
