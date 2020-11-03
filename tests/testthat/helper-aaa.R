@@ -8,9 +8,10 @@ local({
   dbname <- "dettl_test_db"
   user <- "postgres"
   host <- "localhost"
+  password <- "password"
   tryCatch({
     con_pg <- DBI::dbConnect(RPostgres::Postgres(), dbname = dbname,
-                             user = user, host = host)
+                             user = user, host = host, password = password)
     DBI::dbDisconnect(con_pg)
   }, error = function(e) {
     ## Just consume the error, we expect that this may not exist when being run
