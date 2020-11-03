@@ -44,6 +44,7 @@ jobs:
         if: runner.os == 'Linux'
         with:
           postgresql version: '11'
+          postgresql db: 'dettl_test_db'
 
       - name: Query dependencies
         run: |
