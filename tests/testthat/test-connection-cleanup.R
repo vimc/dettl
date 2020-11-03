@@ -25,7 +25,7 @@ test_that("connection is cleaned up if reload called when in a transaction", {
   new_connection <- import$get_connection()
   connections <- get_connections(new_connection)
   expect_equal(nrow(connections), connection_no_start)
-  expect_false(any(connections$state == "idle in transaction"))
+  expect_false(any(connections$state == "idle in transaction", na.rm = TRUE))
 
   ## Old connection has been closed
   expect_false(DBI::dbIsValid(con))
