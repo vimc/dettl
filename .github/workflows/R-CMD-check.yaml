@@ -77,6 +77,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Start vault
+        if: runner.os == 'Linux'
         run:
           vaultr::vault_test_server_install()
         shell: Rscript {0}
