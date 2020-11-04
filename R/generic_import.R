@@ -150,11 +150,7 @@ Import <- R6::R6Class(
     #' @description
     #' Abstract impl should be overridden by subclass
     read_config = function() {
-      ## We need to appease tests that instantiate a "generic" import
-      ## this will never be instantiated by a user of the package
-      private$import_config <- list(dettl = list(
-        language = "r"
-      ))
+      NULL
     },
 
     #' @description

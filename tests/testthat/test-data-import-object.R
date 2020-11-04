@@ -40,18 +40,18 @@ test_that("object cannot be created for unknown import language", {
 
 test_that("format generic import", {
   path <- prepare_test_import()
-  import <- Import$new(file.path(path, "example/"), "test")
+  import <- RImport$new(file.path(path, "example/"), "test")
   private <- environment(import$initialize)$private
-  expect_equal(import$format(FALSE)[[1]], "<dettl: Import>")
+  expect_equal(import$format(FALSE)[[1]], "<dettl: RImport>")
   expect_equal(import$format(TRUE), "Data import object")
 })
 
 test_that("help: generic import", {
   path <- prepare_test_import()
-  import <- Import$new(file.path(path, "example/"), "test")
+  import <- RImport$new(file.path(path, "example/"), "test")
   mock_help <- mockery::mock(NULL)
   mockery::stub(import$help, "utils::help", mock_help)
   import$help()
   args <- mockery::mock_args(mock_help)[[1]]
-  expect_equal(args, list("Import", package = "dettl"))
+  expect_equal(args, list("RImport", package = "dettl"))
 })
