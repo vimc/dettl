@@ -25,17 +25,21 @@ ImportLog <- R6::R6Class(
     #' Build the data to be written to the import log
     #'
     #' @param import_path Path to the import process directory.
-    #' @param comment An optional comment for this import run.
+    #' @param language The language for the import, R or sql.
+    #' @param mode The mode of the import, only relevant for an R import.
     #'
     #' @return The prepared data for the log table. This is the name
     #' of the import, the date, comment and git information including
     #' user name, user email, current branch and hash of HEAD.
-    build_log_data = function(import_path, comment) {
-      if (is.null(comment)) {
-        comment <- NA_character_
+    build_log_data = function(import_path, language, mode) {
+      assert_scalar_character(language)
+      if (is.null(mode)) {
+        mode <- NA_character_
       }
       data_frame(name = basename(import_path),
-                 comment = comment,
+                 language = language,
+                 mode = mode,
+                 comment = NA_character_,
                  git_user = git_user(import_path),
                  git_email = git_email(import_path),
                  git_branch = git_branch(import_path),
@@ -66,10 +70,12 @@ ImportLog <- R6::R6Class(
     #' @param con Connection to db to add log record to
     #' @param log_table Name of the import log table
     #' @param path Path to import being run
-    initialize = function(con, log_table, path) {
+    #' @param language The language for the import, R or sql
+    #' @param mode The mode of the import, only relevant for an R import
+    initialize = function(con, log_table, path, language, mode) {
       private$con <- con
       private$log_table <- log_table
-      self$log_data <- private$build_log_data(path, NULL)
+      self$log_data <- private$build_log_data(path, language, mode)
       private$verify_log_table()
       self$verify_first_run()
     },

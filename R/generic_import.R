@@ -14,6 +14,7 @@ Import <- R6::R6Class(
     log_table = NULL,
 
     ## Import options
+    language = NULL,
     mode = NULL,
     import_config = NULL,
     repo_config = NULL,
@@ -128,6 +129,8 @@ Import <- R6::R6Class(
       if (!is.null(private$import_config$dettl$transaction)) {
         private$modify_in_transaction <- private$import_config$dettl$transaction
       }
+      private$mode <- private$import_config$dettl$mode
+      private$language <- get_language(self$path)
       private$repo_config <- dettl_config(self$path)
 
       private$db_name <- private$db_name %||%
@@ -136,11 +139,11 @@ Import <- R6::R6Class(
       private$con <- db_connect(private$db_name, self$path)
 
       private$log_table <- db_get_log_table(private$db_name, self$path)
-      private$log <- ImportLog$new(private$con, private$log_table, self$path)
+      private$log <- ImportLog$new(private$con, private$log_table, self$path,
+                                   private$language, private$mode)
       private$require_branch <-
         private$repo_config$db[[private$db_name]]$require_branch
 
-      private$mode <- private$import_config$dettl$mode
 
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
     },

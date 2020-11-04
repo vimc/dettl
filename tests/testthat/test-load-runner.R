@@ -13,6 +13,8 @@ testthat::test_that("import fails if log table misconfigured", {
   invisible(DBI::dbExecute(con,
     "CREATE TABLE table_log (
       name   TEXT,
+      language TEXT,
+      mode TEXT,
       comment TEXT,
       git_user TEXT,
       git_email TEXT,
