@@ -32,7 +32,6 @@ ImportLog <- R6::R6Class(
     #' of the import, the date, comment and git information including
     #' user name, user email, current branch and hash of HEAD.
     build_log_data = function(import_path, language, mode) {
-      assert_scalar_character(language)
       if (is.null(mode)) {
         mode <- NA_character_
       }

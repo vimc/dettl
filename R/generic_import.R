@@ -130,7 +130,7 @@ Import <- R6::R6Class(
         private$modify_in_transaction <- private$import_config$dettl$transaction
       }
       private$mode <- private$import_config$dettl$mode
-      private$language <- get_language(self$path)
+      private$language <- private$import_config$dettl$language
       private$repo_config <- dettl_config(self$path)
 
       private$db_name <- private$db_name %||%
@@ -144,14 +144,17 @@ Import <- R6::R6Class(
       private$require_branch <-
         private$repo_config$db[[private$db_name]]$require_branch
 
-
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
     },
 
     #' @description
     #' Abstract impl should be overridden by subclass
     read_config = function() {
-      NULL
+      ## We need to appease tests that instantiate a "generic" import
+      ## this will never be instantiated by a user of the package
+      private$import_config <- list(dettl = list(
+        language = "r"
+      ))
     },
 
     #' @description

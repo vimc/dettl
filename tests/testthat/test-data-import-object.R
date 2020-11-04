@@ -38,24 +38,6 @@ test_that("object cannot be created for unknown import language", {
                "\"test\", language must be one of \"R\" or \"sql\"."))
 })
 
-test_that("language option is not case sensitive", {
-  path <- prepare_test_import()
-  cfg <- read_config_yml(file.path(path, "example"))
-  cfg$dettl$language <- "r"
-  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
-  with_mock("dettl:::read_config_yml" = mock_cfg, {
-    import <- dettl(file.path(path, "example/"), "test")
-  })
-  expect_s3_class(import, "RImport")
-
-  cfg$dettl$language <- "R"
-  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
-  with_mock("dettl:::read_config_yml" = mock_cfg, {
-    import <- dettl(file.path(path, "example/"), "test")
-  })
-  expect_s3_class(import, "RImport")
-})
-
 test_that("format generic import", {
   path <- prepare_test_import()
   import <- Import$new(file.path(path, "example/"), "test")
