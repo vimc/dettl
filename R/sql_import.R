@@ -79,19 +79,6 @@ SqlImport <- R6::R6Class(
     #' Read and parse config from path.
     read_config = function() {
       private$import_config <- read_sql_config(self$path)
-    },
-
-    #' @description
-    #' Custom formatter for pretty printing object summary.
-    #' @param brief If TRUE then print a brief summary.
-    format = function(brief = FALSE) {
-      data_import_format(self, brief, class(self)[[1L]])
-    },
-
-    #' @description
-    #' Print help page for the object
-    help = function() {
-      utils::help(class(self)[[1L]], package = "dettl")
     }
   )
 )
