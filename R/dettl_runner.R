@@ -9,25 +9,30 @@
 #' @export
 #'
 dettl <- function(path, db_name = NULL) {
-  mode <- get_mode(path)
-  if ((mode %in% c("create", "append"))) {
+  language <- get_language(path)
+  if (identical(language, "r")) {
     import <- RImport$new(path, db_name)
-  } else if (mode == "sql") {
+  } else if (identical(language, "sql")) {
     import <- SqlImport$new(path, db_name)
   } else {
-    stop(sprintf(paste0("Can't initialise import for unknown mode got \"%s\",",
-                        " mode must be one of \"create\" or \"append\" ",
-                        "or \"sql\"."),
-                 mode))
+    stop(sprintf(paste0("Can't initialise import for unknown language got ",
+                        "\"%s\", language must be one of \"R\" or \"sql\"."),
+                 language))
   }
   import
 }
 
-get_mode <- function(path) {
+get_language <- function(path) {
   config <- read_config_yml(path)
-  mode <- config$dettl$mode
-  assert_scalar_character(mode, "import mode")
-  mode
+  language <- config$dettl$language
+  if (is.null(language)) {
+    ## Default use R as language
+    language <- "r"
+  }
+  ## we don't want to be case sensitive
+  language <- tolower(language)
+  assert_scalar_character(language, "import language")
+  language
 }
 
 #' Run specified stages of an import

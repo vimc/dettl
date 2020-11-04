@@ -215,7 +215,7 @@ test_that("read config loads sql config from directory", {
 
   expect_length(cfg, 5)
   expect_equal(names(cfg), c("dettl", "sources", "load", "name", "path"))
-  expect_equal(cfg$dettl$mode, "sql")
+  expect_equal(cfg$dettl$language, "sql")
   expect_equal(cfg$dettl$transaction, TRUE)
   expect_equal(cfg$sources, "R/verification_queries.R")
   expect_equal(cfg$load$sql, "import.sql")

@@ -32,3 +32,9 @@ TestDataImport <- R6::R6Class(
     }
   )
 )
+
+expect_no_error <- function(object, class = NULL, ..., info = NULL,
+                            label = NULL) {
+  expect_error(object, regexp = NA, class = class, ..., info = info,
+               label = label)
+}
