@@ -10,12 +10,12 @@
 #'
 #' @examples
 #' path <- dettl:::prepare_test_import(
-#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "sql_example", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl"))
-#' import_path <- file.path(path, "person_information")
+#' import_path <- file.path(path, "sql_example")
 #'
 #' import <- dettl::dettl(import_path, db_name = "test")
-#' import$run()
+#' import$run_import(stage = c("extract", "transform", "load"))
 #'
 # nolint start
 SqlImport <- R6::R6Class(
@@ -79,19 +79,6 @@ SqlImport <- R6::R6Class(
     #' Read and parse config from path.
     read_config = function() {
       private$import_config <- read_sql_config(self$path)
-    },
-
-    #' @description
-    #' Custom formatter for pretty printing object summary.
-    #' @param brief If TRUE then print a brief summary.
-    format = function(brief = FALSE) {
-      data_import_format(self, brief, class(self)[[1L]])
-    },
-
-    #' @description
-    #' Print help page for the object
-    help = function() {
-      utils::help(class(self)[[1L]], package = "dettl")
     }
   )
 )

@@ -180,7 +180,7 @@ test_that("dettl config interprets import mode is invalid", {
                                        mode: invalid")
   expect_error(
     read_r_config(dir),
-    'Invalid mode - mode must be one of append, create, sql got "invalid".')
+    'Invalid mode - mode must be one of append, create got "invalid".')
 })
 
 test_that("dettl config transaction correctly", {
@@ -215,7 +215,7 @@ test_that("read config loads sql config from directory", {
 
   expect_length(cfg, 5)
   expect_equal(names(cfg), c("dettl", "sources", "load", "name", "path"))
-  expect_equal(cfg$dettl$mode, "sql")
+  expect_equal(cfg$dettl$language, "sql")
   expect_equal(cfg$dettl$transaction, TRUE)
   expect_equal(cfg$sources, "R/verification_queries.R")
   expect_equal(cfg$load$sql, "import.sql")
@@ -229,15 +229,15 @@ test_that("read config loads sql config from directory", {
 test_that("parsing sql config fails if both load func and sql specified", {
   ## Setup cfg with both sql: and automatic: TRUE set and test for error
   t <- setup_dettl_config(load = "sql: import.sql\n  automatic: true",
-                          dettl = "dettl:\n  mode: sql")
+                          dettl = "dettl:\n  language: sql")
   expect_error(read_sql_config(t),
-               "Unknown fields in [\\w/\\.]+ load stage: automatic",
+               "Unknown fields in [\\w/\\.:~]+ load stage: automatic",
                perl = TRUE)
 
   ## Setup cfg with both sql: and load: func set and test for error
   t <- setup_dettl_config(load = "sql: import.sql\n  load: load",
-                          dettl = "dettl:\n  mode: sql")
+                          dettl = "dettl:\n  language: sql")
   expect_error(read_sql_config(t),
-               "Unknown fields in [\\w/\\.]+ load stage: load",
+               "Unknown fields in [\\w/\\.:~]+ load stage: load",
                perl = TRUE)
 })

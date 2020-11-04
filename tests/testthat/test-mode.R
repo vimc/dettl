@@ -5,7 +5,7 @@ test_that("can check mode is valid", {
   expect_equal(check_valid_mode("append"), "append")
   expect_equal(check_valid_mode(NULL), "append")
   expect_error(check_valid_mode("invalid"),
-    'Invalid mode - mode must be one of append, create, sql got "invalid".')
+    'Invalid mode - mode must be one of append, create got "invalid".')
 })
 
 test_that("can check whether tables can be created for modes", {

@@ -43,8 +43,6 @@ import$load()
 \item \href{#method-transform}{\code{RImport$transform()}}
 \item \href{#method-pre_modify_checks}{\code{RImport$pre_modify_checks()}}
 \item \href{#method-run_import}{\code{RImport$run_import()}}
-\item \href{#method-format}{\code{RImport$format()}}
-\item \href{#method-help}{\code{RImport$help()}}
 }
 }
 \if{html}{
@@ -52,8 +50,10 @@ import$load()
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction">}\href{../../dettl/html/Import.html#method-begin_transaction}{\code{dettl::Import$begin_transaction()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction">}\href{../../dettl/html/Import.html#method-commit_transaction}{\code{dettl::Import$commit_transaction()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format">}\href{../../dettl/html/Import.html#method-format}{\code{dettl::Import$format()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection">}\href{../../dettl/html/Import.html#method-get_connection}{\code{dettl::Import$get_connection()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table">}\href{../../dettl/html/Import.html#method-get_log_table}{\code{dettl::Import$get_log_table()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help">}\href{../../dettl/html/Import.html#method-help}{\code{dettl::Import$help()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize">}\href{../../dettl/html/Import.html#method-initialize}{\code{dettl::Import$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load">}\href{../../dettl/html/Import.html#method-load}{\code{dettl::Import$load()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction">}\href{../../dettl/html/Import.html#method-rollback_transaction}{\code{dettl::Import$rollback_transaction()}}\out{</span>}
@@ -182,32 +182,5 @@ will save to a tempfile.}
 }
 \if{html}{\out{</div>}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
-\subsection{Method \code{format()}}{
-Custom formatter for pretty printing object summary.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RImport$format(brief = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{brief}}{If TRUE then print a brief summary.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-help"></a>}}
-\if{latex}{\out{\hypertarget{method-help}{}}}
-\subsection{Method \code{help()}}{
-Print help page for the object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RImport$help()}\if{html}{\out{</div>}}
-}
-
 }
 }

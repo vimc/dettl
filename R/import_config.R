@@ -55,7 +55,7 @@ read_r_config <- function(path) {
   info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
   info$dettl$transaction <-
-    is.logical(info$dettl$transaction) %?% info$dettl$transaction %:% TRUE
+    if (is.logical(info$dettl$transaction)) info$dettl$transaction else TRUE
   class(info) <- "dettl_import_config"
   info
 }
@@ -103,7 +103,7 @@ read_sql_config <- function(path) {
   info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
   info$dettl$transaction <-
-    is.logical(info$dettl$transaction) %?% info$dettl$transaction %:% TRUE
+    if (is.logical(info$dettl$transaction)) info$dettl$transaction else TRUE
   class(info) <- "dettl_import_config"
   info
 }

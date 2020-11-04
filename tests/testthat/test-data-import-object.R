@@ -31,11 +31,29 @@ test_that("help: RImport", {
   expect_equal(args, list("RImport", package = "dettl"))
 })
 
-test_that("object cannot be created for unknown import mode", {
-  mockery::stub(dettl, "get_mode", "test")
+test_that("object cannot be created for unknown import language", {
+  mockery::stub(dettl, "get_language", "test")
   expect_error(dettl("path", "db"),
-               paste0("Can't initialise import for unknown mode got \"test\", ",
-               "mode must be one of \"create\" or \"append\"."))
+               paste0("Can't initialise import for unknown language got ",
+               "\"test\", language must be one of \"R\" or \"sql\"."))
+})
+
+test_that("language option is not case sensitive", {
+  path <- prepare_test_import()
+  cfg <- read_config_yml(file.path(path, "example"))
+  cfg$dettl$language <- "r"
+  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
+  with_mock("dettl:::read_config_yml" = mock_cfg, {
+    import <- dettl(file.path(path, "example/"), "test")
+  })
+  expect_s3_class(import, "RImport")
+
+  cfg$dettl$language <- "R"
+  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
+  with_mock("dettl:::read_config_yml" = mock_cfg, {
+    import <- dettl(file.path(path, "example/"), "test")
+  })
+  expect_s3_class(import, "RImport")
 })
 
 test_that("format generic import", {
