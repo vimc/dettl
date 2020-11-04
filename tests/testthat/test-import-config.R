@@ -231,13 +231,13 @@ test_that("parsing sql config fails if both load func and sql specified", {
   t <- setup_dettl_config(load = "sql: import.sql\n  automatic: true",
                           dettl = "dettl:\n  language: sql")
   expect_error(read_sql_config(t),
-               "Unknown fields in [\\w/\\.]+ load stage: automatic",
+               "Unknown fields in [\\w/\\.:~]+ load stage: automatic",
                perl = TRUE)
 
   ## Setup cfg with both sql: and load: func set and test for error
   t <- setup_dettl_config(load = "sql: import.sql\n  load: load",
                           dettl = "dettl:\n  language: sql")
   expect_error(read_sql_config(t),
-               "Unknown fields in [\\w/\\.]+ load stage: load",
+               "Unknown fields in [\\w/\\.:~]+ load stage: load",
                perl = TRUE)
 })
