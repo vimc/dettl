@@ -1,0 +1,10 @@
+dettl:
+  language: sql
+
+sources:
+  - R/verification_queries.R
+
+load:
+  sql: import.sql
+  verification_queries: test_queries
+  test: R/test_load.R

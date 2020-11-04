@@ -10,12 +10,12 @@
 #'
 #' @examples
 #' path <- dettl:::prepare_test_import(
-#'   system.file("examples", "person_information", package = "dettl"),
+#'   system.file("examples", "sql_example", package = "dettl"),
 #'   system.file("examples", "dettl_config.yml", package = "dettl"))
-#' import_path <- file.path(path, "person_information")
+#' import_path <- file.path(path, "sql_example")
 #'
 #' import <- dettl::dettl(import_path, db_name = "test")
-#' import$run()
+#' import$run_import(stage = c("extract", "transform", "load"))
 #'
 # nolint start
 SqlImport <- R6::R6Class(
