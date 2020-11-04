@@ -55,7 +55,55 @@ read_r_config <- function(path) {
   info$name <- basename(normalizePath(path, winslash = "/"))
   info$path <- path
   info$dettl$transaction <-
-    is.logical(info$dettl$transaction) %?% info$dettl$transaction %:% TRUE
+    if (is.logical(info$dettl$transaction)) info$dettl$transaction else TRUE
+  class(info) <- "dettl_import_config"
+  info
+}
+
+#' Get dettl config from path for a SQL only import.
+#'
+#' Prepares load function from a file containing SQL and sources any references
+#' to functions ready for use. Use a default configuration in the result for
+#' any fields are missing.
+#'
+#' @param path Path to directory containing config.
+#'
+#' @return The config as a dettl_config object.
+#'
+#' @keywords internal
+read_sql_config <- function(path) {
+  info <- read_config_yml(path)
+  function_fields <- list(load = list(
+    list(
+      func = "verification_queries",
+      must_exist = TRUE
+    ),
+    list(
+      func = "pre",
+      must_exist = FALSE
+    ),
+    list(
+      func = "post",
+      must_exist = FALSE
+    )
+  ))
+  info <- add_missing_function_fields(info, names(function_fields))
+  required <- c(names(function_fields), "sources")
+  filename <- file.path(path, "dettl.yml")
+  check_fields(info, filename, required, "dettl")
+  check_fields(info$load, paste(filename, "load stage"),
+               required = c("sql", "verification_queries", "test"),
+               optional = c("pre", "post"))
+  sql_file <- file.path(path, info$load$sql)
+  assert_scalar_character(sql_file)
+  assert_file_exists(sql_file)
+  info$load$func <- get_sql_load(sql_file)
+  env <- load_sources(info$sources, path)
+  info <- read_function_fields(function_fields, info, env)
+  info$name <- basename(normalizePath(path, winslash = "/"))
+  info$path <- path
+  info$dettl$transaction <-
+    if (is.logical(info$dettl$transaction)) info$dettl$transaction else TRUE
   class(info) <- "dettl_import_config"
   info
 }

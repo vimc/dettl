@@ -198,19 +198,6 @@ RImport <- R6::R6Class(
         dettl_save(self, save, stage)
       }
       invisible(self)
-    },
-
-    #' @description
-    #' Custom formatter for pretty printing object summary.
-    #' @param brief If TRUE then print a brief summary.
-    format = function(brief = FALSE) {
-      data_import_format(self, brief, class(self)[[1L]])
-    },
-
-    #' @description
-    #' Print help page for the object
-    help = function() {
-      utils::help(class(self)[[1L]], package = "dettl")
     }
   )
 )

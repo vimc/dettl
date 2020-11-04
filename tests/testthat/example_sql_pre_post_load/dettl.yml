@@ -1,0 +1,14 @@
+dettl:
+  language: sql
+
+sources:
+  - R/verification_queries.R
+  - R/pre_load.R
+  - R/post_load.R
+
+load:
+  pre: post_load
+  post: pre_load
+  sql: import.sql
+  verification_queries: test_queries
+  test: R/test_load.R

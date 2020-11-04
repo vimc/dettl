@@ -1,4 +1,4 @@
-## Create a simple "people" table in the psotgres DB for testing.
+## Create a simple "people" table in the postgres DB for testing.
 prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
                                         add_job_table = FALSE,
                                         add_multi_ref_fks = FALSE,
@@ -10,7 +10,7 @@ prepare_example_postgres_db <- function(create_log = TRUE, add_fk_data = FALSE,
   con <- get_postgres_connection(dbname, user, host)
 
   ## Make sure we have a fresh "people" table if one existed already
-  ## Suppres NOTICE type messages from postgres - this switch persists
+  ## Suppress NOTICE type messages from postgres - this switch persists
   ## for as long as a session
   DBI::dbExecute(con, "set client_min_messages to WARNING")
   DBI::dbExecute(con, "DROP TABLE IF EXISTS people CASCADE")
