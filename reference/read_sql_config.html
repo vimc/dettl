@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • dettl</title>
+<title>Get dettl config from path for a SQL only import. — read_sql_config • dettl</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Get dettl config from path for a SQL only import. — read_sql_config" />
+<meta property="og:description" content="Prepares load function from a file containing SQL and sources any references
+to functions ready for use. Use a default configuration in the result for
+any fields are missing." />
 
 
 
@@ -58,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -106,90 +109,35 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Get dettl config from path for a SQL only import.</h1>
+    
+    <div class="hidden name"><code>read_sql_config.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Prepares load function from a file containing SQL and sources any references
+to functions ready for use. Use a default configuration in the result for
+any fields are missing.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>read_sql_config</span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="RImport.html">RImport</a></code> </p>
-        </td>
-        <td><p>Manage R based data import.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="SqlImport.html">SqlImport</a></code> </p>
-        </td>
-        <td><p>Manage SQL based data import.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl.html">dettl()</a></code> </p>
-        </td>
-        <td><p>Create an import object using functions defined at specified path</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl_auto_load.html">dettl_auto_load()</a></code> </p>
-        </td>
-        <td><p>Automatic load function for append mode imports.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl_create_log_table.html">dettl_create_log_table()</a></code> </p>
-        </td>
-        <td><p>Initialise the database by creating log table if it doesn't already exist</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl_new.html">dettl_new()</a></code> </p>
-        </td>
-        <td><p>Create new directory and templated code for new dettl process.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl_run.html">dettl_run()</a></code> </p>
-        </td>
-        <td><p>Run specified stages of an import</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dettl_save.html">dettl_save()</a></code> </p>
-        </td>
-        <td><p>Save data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prepare_test_import.html">prepare_test_import()</a></code> </p>
-        </td>
-        <td><p>Prepare example import inside a git repo</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>path</th>
+      <td><p>Path to directory containing config.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The config as a dettl_config object.</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

@@ -73,7 +73,7 @@ Manage R based data import." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dettl</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.17</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18</span>
       </span>
     </div>
 
@@ -147,15 +147,15 @@ stage by stage and inspect the data after each stage.</p>
 <li><p><a href='#method-transform'><code>RImport$transform()</code></a></p></li>
 <li><p><a href='#method-pre_modify_checks'><code>RImport$pre_modify_checks()</code></a></p></li>
 <li><p><a href='#method-run_import'><code>RImport$run_import()</code></a></p></li>
-<li><p><a href='#method-format'><code>RImport$format()</code></a></p></li>
-<li><p><a href='#method-help'><code>RImport$help()</code></a></p></li>
 </ul>
 <p><details ><summary>Inherited methods</summary>
 <ul>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction"><a href='../../dettl/html/Import.html#method-begin_transaction'><code>dettl::Import$begin_transaction()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction"><a href='../../dettl/html/Import.html#method-commit_transaction'><code>dettl::Import$commit_transaction()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format"><a href='../../dettl/html/Import.html#method-format'><code>dettl::Import$format()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection"><a href='../../dettl/html/Import.html#method-get_connection'><code>dettl::Import$get_connection()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table"><a href='../../dettl/html/Import.html#method-get_log_table'><code>dettl::Import$get_log_table()</code></a></span></p></li>
+<li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help"><a href='../../dettl/html/Import.html#method-help'><code>dettl::Import$help()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize"><a href='../../dettl/html/Import.html#method-initialize'><code>dettl::Import$initialize()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load"><a href='../../dettl/html/Import.html#method-load'><code>dettl::Import$load()</code></a></span></p></li>
 <li><p><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction"><a href='../../dettl/html/Import.html#method-rollback_transaction'><code>dettl::Import$rollback_transaction()</code></a></span></p></li>
@@ -239,21 +239,6 @@ to date</p></dd>
 will save to a tempfile.</p></dd>
 
 </dl><p></div></p>
-<p><hr>
-<a id="method-format"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/format.html'>format()</a></code></h3>
-<p>Custom formatter for pretty printing object summary.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>RImport</span><span class='op'>$</span><span class='fu'>format</span><span class='op'>(</span>brief <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>brief</code></dt><dd><p>If TRUE then print a brief summary.</p></dd>
-
-</dl><p></div></p>
-<p><hr>
-<a id="method-help"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>help()</code></h3>
-<p>Print help page for the object</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>RImport</span><span class='op'>$</span><span class='fu'>help</span><span class='op'>(</span><span class='op'>)</span></pre><p></div></p>
-
 
 
 
@@ -265,19 +250,19 @@ will save to a tempfile.</p></dd>
 
 <span class='va'>import</span> <span class='op'>&lt;-</span> <span class='fu'>dettl</span><span class='fu'>::</span><span class='fu'><a href='dettl.html'>dettl</a></span><span class='op'>(</span><span class='va'>import_path</span>, db_name <span class='op'>=</span> <span class='st'>"test"</span><span class='op'>)</span>
 <span class='va'>import</span><span class='op'>$</span><span class='fu'>extract</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file6172f0ad020/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmplFl2Fa/file62117b477fe/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running extract tests R/test_extract.R</span></div><div class='output co'>#&gt; ✔ |  OK <span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | extract                                                         ⠏ |   0       | extract                                                         </span><span style='color: #00BB00;'>✔</span><span> |   1       | extract
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
 #&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]
 #&gt; 
 #&gt; </span><span style='color: #00BB00;'>Way to go!</span><span></div><div class='output co'>#&gt; <span class='message'>All extract tests passed.</span></div><div class='input'><span class='va'>import</span><span class='op'>$</span><span class='fu'>transform</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file6172f0ad020/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmplFl2Fa/file62117b477fe/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running transform tests R/test_transform.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | transform                                                       ⠏ |   0       | transform                                                       </span><span style='color: #00BB00;'>✔</span><span> |   1       | transform
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
 #&gt; [ </span><span style='color: #BBBB00;'>FAIL</span><span> 0 | </span><span style='color: #BB00BB;'>WARN</span><span> 0 | </span><span style='color: #0000BB;'>SKIP</span><span> 0 | </span><span style='color: #00BB00;'>PASS</span><span> 1 ]</div><div class='output co'>#&gt; <span class='message'>All transform tests passed.</span></div><div class='input'><span class='va'>import</span><span class='op'>$</span><span class='fu'>load</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpGv76bm/file6172f0ad020/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running load in a transaction:</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries before making any changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load step</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries after making changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load tests R/test_load.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
+</div><div class='output co'>#&gt; <span class='message'>Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmplFl2Fa/file62117b477fe/person_information</span></div><div class='output co'>#&gt; <span class='message'>Running load in a transaction:</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries before making any changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load step</span></div><div class='output co'>#&gt; <span class='message'>	- Running test queries after making changes</span></div><div class='output co'>#&gt; <span class='message'>	- Running load tests R/test_load.R</span></div><div class='output co'>#&gt; ✔ |  OK </span><span style='color: #BBBB00;'>F</span><span> </span><span style='color: #BB00BB;'>W</span><span> </span><span style='color: #0000BB;'>S</span><span> | Context
 #&gt; ⠏ |   0       | load                                                            ⠏ |   0       | load                                                            </span><span style='color: #00BB00;'>✔</span><span> |   1       | load
 #&gt; 
 #&gt; ══ </span><span style='font-weight: bold;'>Results</span><span> ═════════════════════════════════════════════════════════════════════
