@@ -241,3 +241,26 @@ test_that("parsing sql config fails if both load func and sql specified", {
                "Unknown fields in [\\w/\\.:~]+ load stage: load",
                perl = TRUE)
 })
+
+test_that("read_config_yml reads language from cfg", {
+  path <- prepare_test_import()
+  yml <- read_config_yml(file.path(path, "example"))
+  ## Using default
+  expect_equal(yml$dettl$language, "r")
+
+  cfg <- yaml_read(file.path(path, "example", "dettl.yml"))
+  cfg$dettl$language <- "sql"
+  t <- tempfile()
+  dir.create(t)
+  yaml::write_yaml(cfg, file.path(t, "dettl.yml"))
+  yml <- read_config_yml(t)
+  expect_equal(yml$dettl$language, "sql")
+
+  ## converts to lower case
+  cfg$dettl$language <- "R"
+  t <- tempfile()
+  dir.create(t)
+  yaml::write_yaml(cfg, file.path(t, "dettl.yml"))
+  yml <- read_config_yml(t)
+  expect_equal(yml$dettl$language, "r")
+})

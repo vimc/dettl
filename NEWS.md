@@ -1,3 +1,7 @@
+# dettl 0.0.19
+
+* Add import mode to import log
+
 # dettl 0.0.18
 
 * Add sql only import

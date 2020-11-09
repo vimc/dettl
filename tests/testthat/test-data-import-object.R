@@ -38,38 +38,20 @@ test_that("object cannot be created for unknown import language", {
                "\"test\", language must be one of \"R\" or \"sql\"."))
 })
 
-test_that("language option is not case sensitive", {
-  path <- prepare_test_import()
-  cfg <- read_config_yml(file.path(path, "example"))
-  cfg$dettl$language <- "r"
-  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
-  with_mock("dettl:::read_config_yml" = mock_cfg, {
-    import <- dettl(file.path(path, "example/"), "test")
-  })
-  expect_s3_class(import, "RImport")
-
-  cfg$dettl$language <- "R"
-  mock_cfg <- mockery::mock(cfg, cycle = TRUE)
-  with_mock("dettl:::read_config_yml" = mock_cfg, {
-    import <- dettl(file.path(path, "example/"), "test")
-  })
-  expect_s3_class(import, "RImport")
-})
-
 test_that("format generic import", {
   path <- prepare_test_import()
-  import <- Import$new(file.path(path, "example/"), "test")
+  import <- RImport$new(file.path(path, "example/"), "test")
   private <- environment(import$initialize)$private
-  expect_equal(import$format(FALSE)[[1]], "<dettl: Import>")
+  expect_equal(import$format(FALSE)[[1]], "<dettl: RImport>")
   expect_equal(import$format(TRUE), "Data import object")
 })
 
 test_that("help: generic import", {
   path <- prepare_test_import()
-  import <- Import$new(file.path(path, "example/"), "test")
+  import <- RImport$new(file.path(path, "example/"), "test")
   mock_help <- mockery::mock(NULL)
   mockery::stub(import$help, "utils::help", mock_help)
   import$help()
   args <- mockery::mock_args(mock_help)[[1]]
-  expect_equal(args, list("Import", package = "dettl"))
+  expect_equal(args, list("RImport", package = "dettl"))
 })

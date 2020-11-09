@@ -24,15 +24,7 @@ dettl <- function(path, db_name = NULL) {
 
 get_language <- function(path) {
   config <- read_config_yml(path)
-  language <- config$dettl$language
-  if (is.null(language)) {
-    ## Default use R as language
-    language <- "r"
-  }
-  ## we don't want to be case sensitive
-  language <- tolower(language)
-  assert_scalar_character(language, "import language")
-  language
+  config$dettl$language
 }
 
 #' Run specified stages of an import

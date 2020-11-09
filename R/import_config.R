@@ -12,6 +12,7 @@
 #' @keywords internal
 read_r_config <- function(path) {
   info <- read_config_yml(path)
+  info$dettl$mode <- check_valid_mode(info$dettl$mode)
   ## If certain fields don't exist in the config then add defaults
   info <- validate_load(info)
   function_fields <- list(
@@ -115,7 +116,13 @@ read_config_yml <- function(path) {
   assert_file_exists(filename, check_case = FALSE,
                      name = "Dettl configuration")
   info <- yaml_read(filename)
-  info$dettl$mode <- check_valid_mode(info$dettl$mode)
+  if (is.null(info$dettl$language)) {
+    ## Default use R as language
+    info$dettl$language <- "r"
+  }
+  assert_scalar_character(info$dettl$language, "import language")
+  ## we don't want to be case sensitive
+  info$dettl$language <- tolower(info$dettl$language)
   info
 }
 

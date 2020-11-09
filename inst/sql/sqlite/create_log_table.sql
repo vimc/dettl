@@ -1,5 +1,7 @@
 CREATE TABLE dettl_import_log (
   name       TEXT PRIMARY KEY,
+  language   TEXT,
+  mode       TEXT,
   start_time REAL,
   end_time   REAL,
   duration   REAL,

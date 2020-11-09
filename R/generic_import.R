@@ -14,6 +14,7 @@ Import <- R6::R6Class(
     log_table = NULL,
 
     ## Import options
+    language = NULL,
     mode = NULL,
     import_config = NULL,
     repo_config = NULL,
@@ -25,29 +26,15 @@ Import <- R6::R6Class(
     has_pre_load = FALSE,
     has_post_load = FALSE,
 
-    # nocov start
-    ## Safe to ignore this in coverage as it doesn't and won't ever be run.
-    ## Viewing this as abstract impl of functions which a subclass must define
-    pre_load = function() {
-      NULL
-    },
+    pre_load = function() {},
 
-    post_load = function() {
-      NULL
-    },
-    # nocov end
+    post_load = function() {},
 
-    test_queries = function() {
-      NULL
-    },
+    test_queries = function() {},
 
-    do_load = function() {
-      NULL
-    },
+    do_load = function() {},
 
-    test_load = function(before, after) {
-      NULL
-    },
+    test_load = function() {},
 
     #' @description
     #' Tidy up open connections, rolling back any active transactions
@@ -128,6 +115,8 @@ Import <- R6::R6Class(
       if (!is.null(private$import_config$dettl$transaction)) {
         private$modify_in_transaction <- private$import_config$dettl$transaction
       }
+      private$mode <- private$import_config$dettl$mode
+      private$language <- private$import_config$dettl$language
       private$repo_config <- dettl_config(self$path)
 
       private$db_name <- private$db_name %||%
@@ -136,20 +125,19 @@ Import <- R6::R6Class(
       private$con <- db_connect(private$db_name, self$path)
 
       private$log_table <- db_get_log_table(private$db_name, self$path)
-      private$log <- ImportLog$new(private$con, private$log_table, self$path)
+      private$log <- ImportLog$new(private$con, private$log_table, self$path,
+                                   private$language, private$mode)
       private$require_branch <-
         private$repo_config$db[[private$db_name]]$require_branch
-
-      private$mode <- private$import_config$dettl$mode
 
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
     },
 
+    ## Safe to ignore this in coverage as it doesn't and won't ever be run.
+    ## Viewing this as abstract impl of functions which a subclass must define
     #' @description
     #' Abstract impl should be overridden by subclass
-    read_config = function() {
-      NULL
-    },
+    read_config = function() {},
 
     #' @description
     #' Run the extract stage of the data import - does nothing for generic
