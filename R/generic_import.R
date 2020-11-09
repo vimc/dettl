@@ -26,29 +26,15 @@ Import <- R6::R6Class(
     has_pre_load = FALSE,
     has_post_load = FALSE,
 
-    # nocov start
-    ## Safe to ignore this in coverage as it doesn't and won't ever be run.
-    ## Viewing this as abstract impl of functions which a subclass must define
-    pre_load = function() {
-      NULL
-    },
+    pre_load = function() {},
 
-    post_load = function() {
-      NULL
-    },
+    post_load = function() {},
 
-    test_queries = function() {
-      NULL
-    },
+    test_queries = function() {},
 
-    do_load = function() {
-      NULL
-    },
+    do_load = function() {},
 
-    test_load = function(before, after) {
-      NULL
-    },
-    # nocov end
+    test_load = function() {},
 
     #' @description
     #' Tidy up open connections, rolling back any active transactions
@@ -147,15 +133,11 @@ Import <- R6::R6Class(
       private$confirm <- private$repo_config$db[[private$db_name]]$confirm
     },
 
-    # nocov start
     ## Safe to ignore this in coverage as it doesn't and won't ever be run.
     ## Viewing this as abstract impl of functions which a subclass must define
     #' @description
     #' Abstract impl should be overridden by subclass
-    read_config = function() {
-      NULL
-    },
-    # nocov end
+    read_config = function() {},
 
     #' @description
     #' Run the extract stage of the data import - does nothing for generic
