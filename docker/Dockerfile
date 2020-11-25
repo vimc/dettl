@@ -1,4 +1,4 @@
-FROM rocker/r-ver:3.6.2
+FROM rocker/r-ver:4.0.3
 
 RUN apt-get update && apt-get -y install \
    libcurl4-openssl-dev \
@@ -7,7 +7,7 @@ RUN apt-get update && apt-get -y install \
    libssl-dev
 
 COPY docker/bin /usr/local/bin/
-RUN sed  -i'' '/mran.microsoft.com/d' /usr/local/lib/R/etc/Rprofile.site
+COPY docker/Rprofile.site /usr/local/lib/R/etc/Rprofile.site
 
 RUN install_packages \
     DBI \
