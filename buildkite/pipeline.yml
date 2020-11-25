@@ -1,0 +1,8 @@
+steps:
+  - label: ":whale: Build"
+    command: build
+
+  - wait
+
+  - label: ":shipit: Push images"
+    command: push
