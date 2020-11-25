@@ -1,8 +1,8 @@
 steps:
   - label: ":whale: Build"
-    command: build
+    command: docker/build
 
   - wait
 
   - label: ":shipit: Push images"
-    command: push
+    command: docker/push
