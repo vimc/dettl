@@ -36,10 +36,10 @@ test_that("sql load can run multiple statements", {
   t <- tempfile()
   writeLines(c(
     "create table test (",
-    "  id INTEGERs",
+    "  id INTEGER",
     ");",
     "create table test2 (",
-    "  id INTEGERs",
+    "  id INTEGER",
     ");",
     " "
   ), t)
@@ -49,4 +49,47 @@ test_that("sql load can run multiple statements", {
   con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   expect_warning(sql_load(con), NA)
   expect_equal(DBI::dbListTables(con), c("test", "test2"))
+})
+
+test_that("sql file can be parsed into statements", {
+  t <- tempfile()
+  writeLines("create table test (id INTEGER)", t)
+  statements <- parse_sql(t)
+  expect_equal(statements, "create table test (id INTEGER)")
+
+  t <- tempfile()
+  writeLines(
+    "create table test (id INTEGER);create table test2 (id INTEGER);", t)
+  statements <- parse_sql(t)
+  expect_equal(statements,
+               c("create table test (id INTEGER)",
+                 "create table test2 (id INTEGER)"))
+
+  t <- tempfile()
+  writeLines(c(
+    "create table test (id INTEGER);",
+    "",
+    "create table test2 (id INTEGER);",
+    " "
+  ), t)
+  statements <- parse_sql(t)
+  expect_equal(statements,
+               c("create table test (id INTEGER)",
+                 "create table test2 (id INTEGER)"))
+
+  ## Keep formatting of input file
+  t <- tempfile()
+  writeLines(c(
+    "create table test (",
+    "  id INTEGER",
+    ");",
+    "create table test2 (",
+    "  id INTEGER",
+    ");",
+    " "
+  ), t)
+  statements <- parse_sql(t)
+  expect_equal(statements,
+               c("create table test (\n  id INTEGER\n)",
+                 "create table test2 (\n  id INTEGER\n)"))
 })
