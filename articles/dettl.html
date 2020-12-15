@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -63,14 +63,13 @@
 
       
 
-      </header><script src="dettl_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="dettl_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="dettl_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="dettl_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using dettl for importing data</h1>
                         <h4 class="author">Robert Ashton</h4>
             
-            <h4 class="date">2020-11-25</h4>
+            <h4 class="date">2020-12-15</h4>
       
       
       <div class="hidden name"><code>dettl.Rmd</code></div>
@@ -154,7 +153,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span> <span class="op">&lt;-</span> <span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl.html">dettl</a></span><span class="op">(</span><span class="va">import_path</span>, db_name <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0215b637d/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84197ac03b/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
@@ -191,7 +190,7 @@
 <p>Like with developing the extract stage you can now run the import up the transform step to check it is working though you should try to add any checks required for accepting the transform stage to the test file.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0215b637d/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84197ac03b/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
@@ -298,7 +297,7 @@
 <p>To use the run functions to run an import up to a specified stage you need to know the path to the import and the name of the database you want to use for the import. You can leave the <code>db_name</code> field blank to use the first database configured in the <code>dettl_config.yml</code> file.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span> <span class="op">&lt;-</span> <span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl_run.html">dettl_run</a></span><span class="op">(</span><span class="va">import_path</span>, db_name <span class="op">=</span> <span class="st">"test"</span>, stage <span class="op">=</span> <span class="st">"extract"</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
@@ -316,14 +315,14 @@
 <p>To execute the transform stage, call the same run function with <code>stage = c("extract", "transform")</code>. This again returns the import object.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span> <span class="op">&lt;-</span> <span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl_run.html">dettl_run</a></span><span class="op">(</span><span class="va">import_path</span>, stage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"extract"</span>, <span class="st">"transform"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
@@ -340,23 +339,21 @@
 <p>You can run the load stage</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl_run.html">dettl_run</a></span><span class="op">(</span><span class="va">import_path</span>, stage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"extract"</span>, <span class="st">"transform"</span>, <span class="st">"load"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
-<span class="co">#&gt; Keep up the good work.</span>
 <span class="co">#&gt; All extract tests passed.</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
-<span class="co">#&gt; HUH - tiptop code.</span>
 <span class="co">#&gt; All transform tests passed.</span>
-<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0374e02ed/person_information</span>
+<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84139cc162a/person_information</span>
 <span class="co">#&gt; Running load in a transaction:</span>
 <span class="co">#&gt;  - Running test queries before making any changes</span>
 <span class="co">#&gt;  - Running load step</span>
@@ -366,25 +363,26 @@
 <span class="co">#&gt; load: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
+<span class="co">#&gt; 💣 Your tests are da bomb 💣</span>
 <span class="co">#&gt; All tests passed, commiting changes to database.</span></code></pre></div>
 <p>You can run multiple stages together or the whole import end-to-end using <code>dettl_run</code>. This will make changes to the database unless run in <code>dry_run</code> mode.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl_run.html">dettl_run</a></span><span class="op">(</span><span class="va">import_path</span>, db_name <span class="op">=</span> <span class="st">"test"</span>, stage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"extract"</span>, <span class="st">"transform"</span>, <span class="st">"load"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0eacfcdf/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file841660812f2/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0eacfcdf/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file841660812f2/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All transform tests passed.</span>
-<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0eacfcdf/person_information</span>
+<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file841660812f2/person_information</span>
 <span class="co">#&gt; Running load in a transaction:</span>
 <span class="co">#&gt;  - Running test queries before making any changes</span>
 <span class="co">#&gt;  - Running load step</span>
@@ -399,22 +397,22 @@
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">temp_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu">dettl</span><span class="fu">::</span><span class="fu"><a href="../reference/dettl_run.html">dettl_run</a></span><span class="op">(</span><span class="va">import_path</span>, db_name <span class="op">=</span> <span class="st">"test"</span>, stage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"extract"</span>, <span class="st">"transform"</span><span class="op">)</span>, save <span class="op">=</span> <span class="va">temp_file</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c01907f9d1/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8411a91eab/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c01907f9d1/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8411a91eab/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All transform tests passed.</span>
-<span class="co">#&gt; Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpQs15fg/file5c0471c6bd7</span>
-<span class="co">#&gt; Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpQs15fg/file5c0471c6bd7</span>
+<span class="co">#&gt; Saved extract data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpV0H1rq/file84134528853</span>
+<span class="co">#&gt; Saved transform data to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpV0H1rq/file84134528853</span>
 <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/excel_sheets.html">excel_sheets</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span>
 <span class="co">#&gt; [1] "extracted_people"   "transformed_people"</span></code></pre></div>
 </div>
@@ -427,7 +425,7 @@
 <p>You can then run the import by running</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0e5bbfdf/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417cbea779/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
@@ -435,16 +433,15 @@
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0e5bbfdf/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417cbea779/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
-<span class="co">#&gt; 😀</span>
 <span class="co">#&gt; All transform tests passed.</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">load</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c0e5bbfdf/person_information</span>
+<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417cbea779/person_information</span>
 <span class="co">#&gt; Running load in a transaction:</span>
 <span class="co">#&gt;  - Running test queries before making any changes</span>
 <span class="co">#&gt;  - Running load step</span>
@@ -459,7 +456,7 @@
 <p>You can run the import up to just a specific point to view the output if desired - which should be useful for debugging any import problems e.g.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c05d4cd0a1/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84172e4fb30/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
@@ -467,7 +464,7 @@
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c05d4cd0a1/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84172e4fb30/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
@@ -481,7 +478,7 @@
 <p>You can then run the load stage once you are satisfied the transformed_data looks coorect.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span><span class="op">$</span><span class="fu">load</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c05d4cd0a1/person_information</span>
+<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file84172e4fb30/person_information</span>
 <span class="co">#&gt; Running load in a transaction:</span>
 <span class="co">#&gt;  - Running test queries before making any changes</span>
 <span class="co">#&gt;  - Running load step</span>
@@ -491,7 +488,6 @@
 <span class="co">#&gt; load: .</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
-<span class="co">#&gt; Way to go!</span>
 <span class="co">#&gt; All tests passed, commiting changes to database.</span></code></pre></div>
 <p>We can then inspect the database to see that the data has indeed been loaded</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
@@ -507,7 +503,7 @@
 <p>The import can be run in <code>dry_run</code> which will be useful for development.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">import</span><span class="op">$</span><span class="fu">extract</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c061dfe47d/person_information</span>
+<span class="co">#&gt; Running extract /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417d135b8f/person_information</span>
 <span class="co">#&gt; Running extract tests R/test_extract.R</span>
 <span class="co">#&gt; extract: </span>
 <span class="co">#&gt; extract: .</span>
@@ -515,7 +511,7 @@
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All extract tests passed.</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">transform</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c061dfe47d/person_information</span>
+<span class="co">#&gt; Running transform /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417d135b8f/person_information</span>
 <span class="co">#&gt; Running transform tests R/test_transform.R</span>
 <span class="co">#&gt; transform: </span>
 <span class="co">#&gt; transform: .</span>
@@ -523,7 +519,7 @@
 <span class="co">#&gt; ══ DONE ════════════════════════════════════════════════════════════════════════</span>
 <span class="co">#&gt; All transform tests passed.</span>
 <span class="va">import</span><span class="op">$</span><span class="fu">load</span><span class="op">(</span>dry_run <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpQs15fg/file5c061dfe47d/person_information</span>
+<span class="co">#&gt; Running load /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpV0H1rq/file8417d135b8f/person_information</span>
 <span class="co">#&gt; Running load in a transaction:</span>
 <span class="co">#&gt;  - Running test queries before making any changes</span>
 <span class="co">#&gt;  - Running load step</span>
