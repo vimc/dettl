@@ -140,7 +140,7 @@ verify_table <- function(con, table_name, table, additional_columns = NULL,
       if (!(col_name %in% db_col_names)) {
         stop(sprintf(
           "%s: Column '%s' is missing from db schema.",
-          context_info, col_name, table_name))
+          context_info, col_name))
       }
     }
   }

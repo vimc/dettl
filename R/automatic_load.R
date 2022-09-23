@@ -59,12 +59,24 @@ dettl_auto_load <- function(transformed_data, con) {
         }
       }
     } else {
-      withCallingHandlers(
-        DBI::dbWriteTable(con, name, transformed_data[[name]], append = TRUE),
-        error = function(e) {
-          stop(data_write_error(e$message, name, transformed_data[[name]]))
+      withCallingHandlers({
+        split_name <- strsplit(name, ".", fixed = TRUE)[[1]]
+        if (length(split_name) == 1) {
+          table_id <- DBI::Id(
+            table = split_name
+          )
+        } else {
+          table_id <- DBI::Id(
+            schema = split_name[1],
+            table = split_name[2]
+          )
         }
-      )
+        DBI::dbWriteTable(con, table_id, transformed_data[[name]],
+                          append = TRUE)
+      },
+      error = function(e) {
+        stop(data_write_error(e$message, name, transformed_data[[name]]))
+      })
     }
   }
   invisible(TRUE)

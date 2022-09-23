@@ -442,3 +442,46 @@ test_that("automatic load sets order for tables being uploaded", {
   tables <- list(street = street)
   expect_error(dettl_auto_load(tables, con), class = "dettl_data_write_error")
 })
+
+test_that("automatic load supports tables in a schema", {
+  ## Note that we test this in Postgres as this kind of configuration is
+  ## not possible within SQLite as it does not have schema or namespacing.
+  path <- prepare_test_import(create_db = FALSE)
+  con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+
+  ## Setup schema
+  DBI::dbExecute(con, "CREATE SCHEMA test_ns")
+  on.exit(DBI::dbExecute(con, "DROP SCHEMA test_ns CASCADE"),
+          add = TRUE, after = FALSE)
+  add_fk_data(con, "test_ns")
+
+  ## Create test data
+  region <- data_frame(id = c(-1, -2), name = c("Manchester", "Liverpool"))
+  street <- data_frame(name = c("Tib Street", "Bold Street"))
+  address <- data_frame(street = c("Tib Street", "Bold Street"),
+                        region = c(-1, -2))
+
+  tables <- list(
+    test_ns.region = region,
+    test_ns.street = street,
+    test_ns.address = address
+  )
+
+  ## Do load and check uploaded data
+  dettl_auto_load(tables, con)
+
+  region_table <- DBI::dbGetQuery(con, "SELECT * FROM test_ns.region")
+  street_table <- DBI::dbGetQuery(con, "SELECT * FROM test_ns.street")
+  address_table <- DBI::dbGetQuery(con, "SELECT * FROM test_ns.address")
+  expect_equal(nrow(region_table), 4)
+  expect_equal(region_table$id, 1:4)
+  expect_setequal(region_table[c(3, 4), "name"], c("Manchester", "Liverpool"))
+  expect_equal(nrow(street_table), 4)
+  expect_setequal(street_table[c(3, 4), "name"], c("Tib Street", "Bold Street"))
+  expect_equal(nrow(address_table), 3)
+  expect_equal(address_table[c(2, 3), ],
+               data.frame(street = c("Tib Street", "Bold Street"),
+                          region = c(3, 4)),
+               check.attributes = FALSE)
+})
