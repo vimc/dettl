@@ -4,7 +4,7 @@
 \alias{add_fk_data}
 \title{Add tables with foreign key constraints for testing}
 \usage{
-add_fk_data(con)
+add_fk_data(con, schema = "public")
 }
 \arguments{
 \item{con}{Connection to DB to add tables with foreign key constraints}

@@ -35,34 +35,34 @@ import$load()
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-reload}{\code{RImport$reload()}}
-\item \href{#method-read_config}{\code{RImport$read_config()}}
-\item \href{#method-get_extracted_data}{\code{RImport$get_extracted_data()}}
-\item \href{#method-get_transformed_data}{\code{RImport$get_transformed_data()}}
-\item \href{#method-extract}{\code{RImport$extract()}}
-\item \href{#method-transform}{\code{RImport$transform()}}
-\item \href{#method-pre_modify_checks}{\code{RImport$pre_modify_checks()}}
-\item \href{#method-run_import}{\code{RImport$run_import()}}
+\item \href{#method-RImport-reload}{\code{RImport$reload()}}
+\item \href{#method-RImport-read_config}{\code{RImport$read_config()}}
+\item \href{#method-RImport-get_extracted_data}{\code{RImport$get_extracted_data()}}
+\item \href{#method-RImport-get_transformed_data}{\code{RImport$get_transformed_data()}}
+\item \href{#method-RImport-extract}{\code{RImport$extract()}}
+\item \href{#method-RImport-transform}{\code{RImport$transform()}}
+\item \href{#method-RImport-pre_modify_checks}{\code{RImport$pre_modify_checks()}}
+\item \href{#method-RImport-run_import}{\code{RImport$run_import()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction">}\href{../../dettl/html/Import.html#method-begin_transaction}{\code{dettl::Import$begin_transaction()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction">}\href{../../dettl/html/Import.html#method-commit_transaction}{\code{dettl::Import$commit_transaction()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format">}\href{../../dettl/html/Import.html#method-format}{\code{dettl::Import$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection">}\href{../../dettl/html/Import.html#method-get_connection}{\code{dettl::Import$get_connection()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table">}\href{../../dettl/html/Import.html#method-get_log_table}{\code{dettl::Import$get_log_table()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help">}\href{../../dettl/html/Import.html#method-help}{\code{dettl::Import$help()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize">}\href{../../dettl/html/Import.html#method-initialize}{\code{dettl::Import$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load">}\href{../../dettl/html/Import.html#method-load}{\code{dettl::Import$load()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction">}\href{../../dettl/html/Import.html#method-rollback_transaction}{\code{dettl::Import$rollback_transaction()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction"><a href='../../dettl/html/Import.html#method-Import-begin_transaction'><code>dettl::Import$begin_transaction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction"><a href='../../dettl/html/Import.html#method-Import-commit_transaction'><code>dettl::Import$commit_transaction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format"><a href='../../dettl/html/Import.html#method-Import-format'><code>dettl::Import$format()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection"><a href='../../dettl/html/Import.html#method-Import-get_connection'><code>dettl::Import$get_connection()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table"><a href='../../dettl/html/Import.html#method-Import-get_log_table'><code>dettl::Import$get_log_table()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help"><a href='../../dettl/html/Import.html#method-Import-help'><code>dettl::Import$help()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize"><a href='../../dettl/html/Import.html#method-Import-initialize'><code>dettl::Import$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load"><a href='../../dettl/html/Import.html#method-Import-load'><code>dettl::Import$load()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction"><a href='../../dettl/html/Import.html#method-Import-rollback_transaction'><code>dettl::Import$rollback_transaction()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-reload"></a>}}
-\if{latex}{\out{\hypertarget{method-reload}{}}}
+\if{html}{\out{<a id="method-RImport-reload"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-reload}{}}}
 \subsection{Method \code{reload()}}{
 Reload the objects sources to refresh source code or repair a broken
 Postgres connection.
@@ -72,8 +72,8 @@ Postgres connection.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_config"></a>}}
-\if{latex}{\out{\hypertarget{method-read_config}{}}}
+\if{html}{\out{<a id="method-RImport-read_config"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-read_config}{}}}
 \subsection{Method \code{read_config()}}{
 Read and parse config from path.
 \subsection{Usage}{
@@ -82,8 +82,8 @@ Read and parse config from path.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_extracted_data"></a>}}
-\if{latex}{\out{\hypertarget{method-get_extracted_data}{}}}
+\if{html}{\out{<a id="method-RImport-get_extracted_data"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-get_extracted_data}{}}}
 \subsection{Method \code{get_extracted_data()}}{
 Get the extracted data created by the extract step
 \subsection{Usage}{
@@ -95,8 +95,8 @@ The extracted data
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_transformed_data"></a>}}
-\if{latex}{\out{\hypertarget{method-get_transformed_data}{}}}
+\if{html}{\out{<a id="method-RImport-get_transformed_data"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-get_transformed_data}{}}}
 \subsection{Method \code{get_transformed_data()}}{
 Get the transformed data created by the transform step
 \subsection{Usage}{
@@ -108,8 +108,8 @@ The transformed data
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-extract"></a>}}
-\if{latex}{\out{\hypertarget{method-extract}{}}}
+\if{html}{\out{<a id="method-RImport-extract"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-extract}{}}}
 \subsection{Method \code{extract()}}{
 Run the extract stage of the data import
 \subsection{Usage}{
@@ -118,8 +118,8 @@ Run the extract stage of the data import
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-transform"></a>}}
-\if{latex}{\out{\hypertarget{method-transform}{}}}
+\if{html}{\out{<a id="method-RImport-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-transform}{}}}
 \subsection{Method \code{transform()}}{
 Run the transform stage of the data import
 \subsection{Usage}{
@@ -128,8 +128,8 @@ Run the transform stage of the data import
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pre_modify_checks"></a>}}
-\if{latex}{\out{\hypertarget{method-pre_modify_checks}{}}}
+\if{html}{\out{<a id="method-RImport-pre_modify_checks"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-pre_modify_checks}{}}}
 \subsection{Method \code{pre_modify_checks()}}{
 Run suite of checks to verify that db can be modified
 \subsection{Usage}{
@@ -149,8 +149,8 @@ date with remote git repo. FALSE by default.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_import"></a>}}
-\if{latex}{\out{\hypertarget{method-run_import}{}}}
+\if{html}{\out{<a id="method-RImport-run_import"></a>}}
+\if{latex}{\out{\hypertarget{method-RImport-run_import}{}}}
 \subsection{Method \code{run_import()}}{
 Run multiple stages of the data import
 \subsection{Usage}{
