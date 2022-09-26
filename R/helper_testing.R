@@ -103,6 +103,7 @@ add_fk_data <- function(con, schema = "public") {
   }
   if (dialect == "postgresql") {
     DBI::dbExecute(con, sprintf("set schema '%s'", schema))
+    on.exit(DBI::dbExecute(con, sprintf("set schema 'public'")), add = TRUE)
   }
   get_fks <- switch(
     dialect,
@@ -152,9 +153,6 @@ add_fk_data <- function(con, schema = "public") {
     street = "The Street",
     region = 2)
   DBI::dbWriteTable(con, "address", address, append = TRUE)
-  if (dialect == "postgresql") {
-    DBI::dbExecute(con, sprintf("set schema 'public'"))
-  }
 }
 
 add_cyclic_fk_tables <- function(con) {
