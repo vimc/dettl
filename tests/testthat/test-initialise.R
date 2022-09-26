@@ -45,3 +45,10 @@ test_that("initialising non SQLite or Postgrs throws an error", {
       "Can't initialise DB test as not a SQLite or Postgres type. Got FakeCon.")
   })
 })
+
+test_that("error throwing when trying to create SQLite tables in sub schema", {
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  expect_error(add_fk_data(con, "test"),
+               "SQLite does not support creating tables in custom schema")
+})
