@@ -60,6 +60,9 @@ dettl_auto_load <- function(transformed_data, con) {
       }
     } else {
       withCallingHandlers({
+        ## DBI::dbWriteTable does not work with table name like
+        ## schema_name.table_name. We need to create a DBI Id object
+        ## to write to a table in a specific schema.
         split_name <- strsplit(name, ".", fixed = TRUE)[[1]]
         if (length(split_name) == 1) {
           table_id <- DBI::Id(
