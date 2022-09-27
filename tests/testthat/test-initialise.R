@@ -46,7 +46,7 @@ test_that("initialising non SQLite or Postgrs throws an error", {
   })
 })
 
-test_that("error throwing when trying to create SQLite tables in sub schema", {
+test_that("error thrown when trying to create SQLite tables in sub schema", {
   con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   on.exit(DBI::dbDisconnect(con), add = TRUE)
   expect_error(add_fk_data(con, "test"),
