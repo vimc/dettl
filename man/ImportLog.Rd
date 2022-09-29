@@ -23,17 +23,17 @@ time for log to run and importing row to the log table.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ImportLog$new()}}
-\item \href{#method-set_comment}{\code{ImportLog$set_comment()}}
-\item \href{#method-start_timer}{\code{ImportLog$start_timer()}}
-\item \href{#method-stop_timer}{\code{ImportLog$stop_timer()}}
-\item \href{#method-write_log}{\code{ImportLog$write_log()}}
-\item \href{#method-verify_first_run}{\code{ImportLog$verify_first_run()}}
+\item \href{#method-ImportLog-new}{\code{ImportLog$new()}}
+\item \href{#method-ImportLog-set_comment}{\code{ImportLog$set_comment()}}
+\item \href{#method-ImportLog-start_timer}{\code{ImportLog$start_timer()}}
+\item \href{#method-ImportLog-stop_timer}{\code{ImportLog$stop_timer()}}
+\item \href{#method-ImportLog-write_log}{\code{ImportLog$write_log()}}
+\item \href{#method-ImportLog-verify_first_run}{\code{ImportLog$verify_first_run()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ImportLog-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-new}{}}}
 \subsection{Method \code{new()}}{
 Build the data to be written to the import log
 
@@ -44,7 +44,7 @@ importing to db.
 Initialises log data and verifies that import can be logged. Set
 a comment for the log using \code{set_comment}
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ImportLog$new(con, log_table, path)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ImportLog$new(con, log_table, path, language, mode)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -56,9 +56,15 @@ a comment for the log using \code{set_comment}
 
 \item{\code{path}}{Path to import being run}
 
-\item{\code{import_path}}{Path to the import process directory.}
+\item{\code{language}}{The language for the import, R or sql.}
 
-\item{\code{comment}}{An optional comment for this import run.}
+\item{\code{language}}{The language for the import, R or sql}
+
+\item{\code{mode}}{The mode of the import, only relevant for an R import.}
+
+\item{\code{mode}}{The mode of the import, only relevant for an R import}
+
+\item{\code{import_path}}{Path to the import process directory.}
 }
 \if{html}{\out{</div>}}
 }
@@ -69,8 +75,8 @@ user name, user email, current branch and hash of HEAD.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_comment"></a>}}
-\if{latex}{\out{\hypertarget{method-set_comment}{}}}
+\if{html}{\out{<a id="method-ImportLog-set_comment"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-set_comment}{}}}
 \subsection{Method \code{set_comment()}}{
 Set the comment on the log data
 \subsection{Usage}{
@@ -86,8 +92,8 @@ Set the comment on the log data
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-start_timer"></a>}}
-\if{latex}{\out{\hypertarget{method-start_timer}{}}}
+\if{html}{\out{<a id="method-ImportLog-start_timer"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-start_timer}{}}}
 \subsection{Method \code{start_timer()}}{
 Start the import log timer
 \subsection{Usage}{
@@ -96,8 +102,8 @@ Start the import log timer
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop_timer"></a>}}
-\if{latex}{\out{\hypertarget{method-stop_timer}{}}}
+\if{html}{\out{<a id="method-ImportLog-stop_timer"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-stop_timer}{}}}
 \subsection{Method \code{stop_timer()}}{
 Stop the import log timer, adding duration to the total recorded
 duration.
@@ -107,8 +113,8 @@ duration.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write_log"></a>}}
-\if{latex}{\out{\hypertarget{method-write_log}{}}}
+\if{html}{\out{<a id="method-ImportLog-write_log"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-write_log}{}}}
 \subsection{Method \code{write_log()}}{
 Write the log data to the database.
 \subsection{Usage}{
@@ -117,8 +123,8 @@ Write the log data to the database.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-verify_first_run"></a>}}
-\if{latex}{\out{\hypertarget{method-verify_first_run}{}}}
+\if{html}{\out{<a id="method-ImportLog-verify_first_run"></a>}}
+\if{latex}{\out{\hypertarget{method-ImportLog-verify_first_run}{}}}
 \subsection{Method \code{verify_first_run()}}{
 Verify that this is the first time the import has been run.
 

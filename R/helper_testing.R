@@ -96,8 +96,15 @@ add_job_table <- function(con) {
 #' @param con Connection to DB to add tables with foreign key constraints
 #'
 #' @keywords internal
-add_fk_data <- function(con) {
+add_fk_data <- function(con, schema = "public") {
   dialect <- sql_dialect(con)
+  if (dialect == "sqlite" && schema != "public") {
+    stop("SQLite does not support creating tables in custom schema")
+  }
+  if (dialect == "postgresql") {
+    DBI::dbExecute(con, sprintf("set schema '%s'", schema))
+    on.exit(DBI::dbExecute(con, sprintf("set schema 'public'")), add = TRUE)
+  }
   get_fks <- switch(
     dialect,
     "sqlite" = DBI::dbExecute(con,
@@ -109,7 +116,7 @@ add_fk_data <- function(con) {
     )"),
     "postgresql" = DBI::dbExecute(con,
         "CREATE TABLE region (
-         id SERIAL UNIQUE,
+         id SERIAL PRIMARY KEY,
          name TEXT,
          parent INTEGER,
          FOREIGN KEY (parent) REFERENCES region(id)

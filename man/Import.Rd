@@ -23,26 +23,26 @@ and the db connection and should be extended to implement actual imports.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-get_connection}{\code{Import$get_connection()}}
-\item \href{#method-begin_transaction}{\code{Import$begin_transaction()}}
-\item \href{#method-rollback_transaction}{\code{Import$rollback_transaction()}}
-\item \href{#method-commit_transaction}{\code{Import$commit_transaction()}}
-\item \href{#method-get_log_table}{\code{Import$get_log_table()}}
-\item \href{#method-new}{\code{Import$new()}}
-\item \href{#method-reload}{\code{Import$reload()}}
-\item \href{#method-read_config}{\code{Import$read_config()}}
-\item \href{#method-extract}{\code{Import$extract()}}
-\item \href{#method-transform}{\code{Import$transform()}}
-\item \href{#method-pre_modify_checks}{\code{Import$pre_modify_checks()}}
-\item \href{#method-load}{\code{Import$load()}}
-\item \href{#method-run_import}{\code{Import$run_import()}}
-\item \href{#method-format}{\code{Import$format()}}
-\item \href{#method-help}{\code{Import$help()}}
+\item \href{#method-Import-get_connection}{\code{Import$get_connection()}}
+\item \href{#method-Import-begin_transaction}{\code{Import$begin_transaction()}}
+\item \href{#method-Import-rollback_transaction}{\code{Import$rollback_transaction()}}
+\item \href{#method-Import-commit_transaction}{\code{Import$commit_transaction()}}
+\item \href{#method-Import-get_log_table}{\code{Import$get_log_table()}}
+\item \href{#method-Import-new}{\code{Import$new()}}
+\item \href{#method-Import-reload}{\code{Import$reload()}}
+\item \href{#method-Import-read_config}{\code{Import$read_config()}}
+\item \href{#method-Import-extract}{\code{Import$extract()}}
+\item \href{#method-Import-transform}{\code{Import$transform()}}
+\item \href{#method-Import-pre_modify_checks}{\code{Import$pre_modify_checks()}}
+\item \href{#method-Import-load}{\code{Import$load()}}
+\item \href{#method-Import-run_import}{\code{Import$run_import()}}
+\item \href{#method-Import-format}{\code{Import$format()}}
+\item \href{#method-Import-help}{\code{Import$help()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_connection"></a>}}
-\if{latex}{\out{\hypertarget{method-get_connection}{}}}
+\if{html}{\out{<a id="method-Import-get_connection"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-get_connection}{}}}
 \subsection{Method \code{get_connection()}}{
 Tidy up open connections, rolling back any active transactions
 
@@ -57,8 +57,8 @@ The DBI connection
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-begin_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-begin_transaction}{}}}
+\if{html}{\out{<a id="method-Import-begin_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-begin_transaction}{}}}
 \subsection{Method \code{begin_transaction()}}{
 Start a transaction
 \subsection{Usage}{
@@ -67,8 +67,8 @@ Start a transaction
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-rollback_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-rollback_transaction}{}}}
+\if{html}{\out{<a id="method-Import-rollback_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-rollback_transaction}{}}}
 \subsection{Method \code{rollback_transaction()}}{
 Rollback a transaction
 \subsection{Usage}{
@@ -77,8 +77,8 @@ Rollback a transaction
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-commit_transaction"></a>}}
-\if{latex}{\out{\hypertarget{method-commit_transaction}{}}}
+\if{html}{\out{<a id="method-Import-commit_transaction"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-commit_transaction}{}}}
 \subsection{Method \code{commit_transaction()}}{
 Commit a transaction
 \subsection{Usage}{
@@ -87,8 +87,8 @@ Commit a transaction
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_log_table"></a>}}
-\if{latex}{\out{\hypertarget{method-get_log_table}{}}}
+\if{html}{\out{<a id="method-Import-get_log_table"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-get_log_table}{}}}
 \subsection{Method \code{get_log_table()}}{
 Get the name of the log table for a particular import. This is the name
 of the log table configured in the dettl config
@@ -101,8 +101,8 @@ Log table name
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Import-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-new}{}}}
 \subsection{Method \code{new()}}{
 Create Import object - shouldn't be called directly. Use
 \code{\link{dettl}} to create the object
@@ -124,8 +124,8 @@ A new `Import` object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-reload"></a>}}
-\if{latex}{\out{\hypertarget{method-reload}{}}}
+\if{html}{\out{<a id="method-Import-reload"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-reload}{}}}
 \subsection{Method \code{reload()}}{
 Reload the objects sources to refresh source code or repair a broken
 Postgres connection.
@@ -135,8 +135,8 @@ Postgres connection.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_config"></a>}}
-\if{latex}{\out{\hypertarget{method-read_config}{}}}
+\if{html}{\out{<a id="method-Import-read_config"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-read_config}{}}}
 \subsection{Method \code{read_config()}}{
 Abstract impl should be overridden by subclass
 \subsection{Usage}{
@@ -145,8 +145,8 @@ Abstract impl should be overridden by subclass
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-extract"></a>}}
-\if{latex}{\out{\hypertarget{method-extract}{}}}
+\if{html}{\out{<a id="method-Import-extract"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-extract}{}}}
 \subsection{Method \code{extract()}}{
 Run the extract stage of the data import - does nothing for generic
 override in subclass if required.
@@ -156,8 +156,8 @@ override in subclass if required.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-transform"></a>}}
-\if{latex}{\out{\hypertarget{method-transform}{}}}
+\if{html}{\out{<a id="method-Import-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-transform}{}}}
 \subsection{Method \code{transform()}}{
 Run the extract stage of the data import - does nothing for generic
 override in subclass if required.
@@ -167,8 +167,8 @@ override in subclass if required.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pre_modify_checks"></a>}}
-\if{latex}{\out{\hypertarget{method-pre_modify_checks}{}}}
+\if{html}{\out{<a id="method-Import-pre_modify_checks"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-pre_modify_checks}{}}}
 \subsection{Method \code{pre_modify_checks()}}{
 Run checks that db can be modified, this checks that:
 * If require_branch set in cfg that import is for that branch
@@ -191,8 +191,8 @@ date with remote git repo. FALSE by default.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-load"></a>}}
-\if{latex}{\out{\hypertarget{method-load}{}}}
+\if{html}{\out{<a id="method-Import-load"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-load}{}}}
 \subsection{Method \code{load()}}{
 Run the import step ensuring tests pass before db changes are committed.
 
@@ -218,8 +218,8 @@ date with remote git repo. FALSE by default.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_import"></a>}}
-\if{latex}{\out{\hypertarget{method-run_import}{}}}
+\if{html}{\out{<a id="method-Import-run_import"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-run_import}{}}}
 \subsection{Method \code{run_import()}}{
 For generic import this is just running the load step,
 expect this gets overridden in subclasses.
@@ -251,8 +251,8 @@ date with remote git repo. FALSE by default.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-Import-format"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-format}{}}}
 \subsection{Method \code{format()}}{
 Custom formatter for pretty printing object summary.
 \subsection{Usage}{
@@ -268,8 +268,8 @@ Custom formatter for pretty printing object summary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-help"></a>}}
-\if{latex}{\out{\hypertarget{method-help}{}}}
+\if{html}{\out{<a id="method-Import-help"></a>}}
+\if{latex}{\out{\hypertarget{method-Import-help}{}}}
 \subsection{Method \code{help()}}{
 Print help page for the object
 \subsection{Usage}{

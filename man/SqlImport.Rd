@@ -33,32 +33,32 @@ import$run_import(stage = c("extract", "transform", "load"))
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-reload}{\code{SqlImport$reload()}}
-\item \href{#method-read_config}{\code{SqlImport$read_config()}}
+\item \href{#method-SqlImport-reload}{\code{SqlImport$reload()}}
+\item \href{#method-SqlImport-read_config}{\code{SqlImport$read_config()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction">}\href{../../dettl/html/Import.html#method-begin_transaction}{\code{dettl::Import$begin_transaction()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction">}\href{../../dettl/html/Import.html#method-commit_transaction}{\code{dettl::Import$commit_transaction()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="extract">}\href{../../dettl/html/Import.html#method-extract}{\code{dettl::Import$extract()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format">}\href{../../dettl/html/Import.html#method-format}{\code{dettl::Import$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection">}\href{../../dettl/html/Import.html#method-get_connection}{\code{dettl::Import$get_connection()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table">}\href{../../dettl/html/Import.html#method-get_log_table}{\code{dettl::Import$get_log_table()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help">}\href{../../dettl/html/Import.html#method-help}{\code{dettl::Import$help()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize">}\href{../../dettl/html/Import.html#method-initialize}{\code{dettl::Import$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load">}\href{../../dettl/html/Import.html#method-load}{\code{dettl::Import$load()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="pre_modify_checks">}\href{../../dettl/html/Import.html#method-pre_modify_checks}{\code{dettl::Import$pre_modify_checks()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction">}\href{../../dettl/html/Import.html#method-rollback_transaction}{\code{dettl::Import$rollback_transaction()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="run_import">}\href{../../dettl/html/Import.html#method-run_import}{\code{dettl::Import$run_import()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="transform">}\href{../../dettl/html/Import.html#method-transform}{\code{dettl::Import$transform()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="begin_transaction"><a href='../../dettl/html/Import.html#method-Import-begin_transaction'><code>dettl::Import$begin_transaction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="commit_transaction"><a href='../../dettl/html/Import.html#method-Import-commit_transaction'><code>dettl::Import$commit_transaction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="extract"><a href='../../dettl/html/Import.html#method-Import-extract'><code>dettl::Import$extract()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="format"><a href='../../dettl/html/Import.html#method-Import-format'><code>dettl::Import$format()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_connection"><a href='../../dettl/html/Import.html#method-Import-get_connection'><code>dettl::Import$get_connection()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="get_log_table"><a href='../../dettl/html/Import.html#method-Import-get_log_table'><code>dettl::Import$get_log_table()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="help"><a href='../../dettl/html/Import.html#method-Import-help'><code>dettl::Import$help()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="initialize"><a href='../../dettl/html/Import.html#method-Import-initialize'><code>dettl::Import$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="load"><a href='../../dettl/html/Import.html#method-Import-load'><code>dettl::Import$load()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="pre_modify_checks"><a href='../../dettl/html/Import.html#method-Import-pre_modify_checks'><code>dettl::Import$pre_modify_checks()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="rollback_transaction"><a href='../../dettl/html/Import.html#method-Import-rollback_transaction'><code>dettl::Import$rollback_transaction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="run_import"><a href='../../dettl/html/Import.html#method-Import-run_import'><code>dettl::Import$run_import()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="dettl" data-topic="Import" data-id="transform"><a href='../../dettl/html/Import.html#method-Import-transform'><code>dettl::Import$transform()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-reload"></a>}}
-\if{latex}{\out{\hypertarget{method-reload}{}}}
+\if{html}{\out{<a id="method-SqlImport-reload"></a>}}
+\if{latex}{\out{\hypertarget{method-SqlImport-reload}{}}}
 \subsection{Method \code{reload()}}{
 Reload the objects sources to refresh source code or repair a broken
 Postgres connection.
@@ -68,8 +68,8 @@ Postgres connection.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_config"></a>}}
-\if{latex}{\out{\hypertarget{method-read_config}{}}}
+\if{html}{\out{<a id="method-SqlImport-read_config"></a>}}
+\if{latex}{\out{\hypertarget{method-SqlImport-read_config}{}}}
 \subsection{Method \code{read_config()}}{
 Read and parse config from path.
 \subsection{Usage}{

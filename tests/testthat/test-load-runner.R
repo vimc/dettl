@@ -25,7 +25,6 @@ testthat::test_that("import fails if log table misconfigured", {
   expect_error(
     dettl(file.path(path, "example/"), "example"),
     "Cannot import data: Column 'start_time' is missing from db schema.")
-
 })
 
 test_that("transaction is cleaned up if import fails", {

@@ -1,3 +1,7 @@
+# dettl 0.1.0
+
+* Add support for `dettl_auto_load` to manage handle tables in schema other than `public`
+
 # dettl 0.0.19
 
 * Add import mode to import log

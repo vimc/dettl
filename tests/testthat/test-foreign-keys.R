@@ -206,3 +206,58 @@ test_that("empty list returned when no constraints", {
 
   expect_equal(constraints, list())
 })
+
+test_that("postgres constraints in non standard schema can be retireved", {
+  con <- prepare_example_postgres_db()
+  on.exit(DBI::dbDisconnect(con))
+
+  ## Setup schema
+  DBI::dbExecute(con, "CREATE SCHEMA test_ns")
+  on.exit(DBI::dbExecute(con, "DROP SCHEMA test_ns CASCADE"),
+          add = TRUE, after = FALSE)
+  add_fk_data(con, "test_ns")
+
+  ## Setup table in test_ns schema which references table in public schema
+  DBI::dbExecute(con, "CREATE TABLE test_ns.tbl (
+                 id text,
+                 person INTEGER,
+                 FOREIGN KEY (person) REFERENCES people(id))")
+
+  ## And a table in public schema which references test_ns schema
+  DBI::dbExecute(con, "CREATE TABLE table_public (
+                 id text,
+                 region INTEGER,
+                 FOREIGN KEY (region) REFERENCES test_ns.region(id))")
+  on.exit(DBI::dbExecute(con, "DROP TABLE table_public"),
+          add = TRUE, after = FALSE)
+
+  constraints <- parse_constraints(get_fk_constraints(con))
+
+  expect_setequal(names(constraints),
+                  c("test_ns.region", "test_ns.street", "people"))
+
+  expect_true(all(names(constraints$test_ns.region) %in%
+                    c("foreign", "serial")))
+  expect_equal(names(constraints$test_ns.region$foreign), "id")
+  expect_true(all(names(constraints$test_ns.region$foreign$id) %in%
+                    c("test_ns.region", "test_ns.address", "table_public")))
+  expect_equal(constraints$test_ns.region$foreign$id$test_ns.address, "region")
+  expect_equal(constraints$test_ns.region$foreign$id$test_ns.region, "parent")
+  expect_equal(constraints$test_ns.region$foreign$id$table_public, "region")
+  expect_equal(constraints$test_ns.region$serial, "id")
+
+  expect_true(all(names(constraints$test_ns.street) %in%
+                    c("foreign", "serial")))
+  expect_equal(names(constraints$test_ns.street$foreign), "name")
+  expect_equal(names(constraints$test_ns.street$foreign$name),
+               "test_ns.address")
+  expect_equal(constraints$test_ns.street$foreign$name$test_ns.address,
+               "street")
+  expect_equal(constraints$test_ns.street$serial, NULL)
+
+  expect_true(all(names(constraints$people) %in% c("foreign", "serial")))
+  expect_equal(names(constraints$people$foreign), "id")
+  expect_equal(names(constraints$people$foreign$id), "test_ns.tbl")
+  expect_equal(constraints$people$foreign$id$test_ns.tbl, "person")
+  expect_equal(constraints$people$serial, "id")
+})

@@ -140,7 +140,7 @@ verify_table <- function(con, table_name, table, additional_columns = NULL,
       if (!(col_name %in% db_col_names)) {
         stop(sprintf(
           "%s: Column '%s' is missing from db schema.",
-          context_info, col_name, table_name))
+          context_info, col_name))
       }
     }
   }
@@ -175,7 +175,8 @@ verify_table <- function(con, table_name, table, additional_columns = NULL,
 #' @keywords internal
 parse_sql_date <- function(con, date) {
   if (sql_dialect(con) == "sqlite") {
-    date <- as.POSIXct(date, origin = "1970-01-01", tz = "UTC")
+    date <- format(as.POSIXct(date, origin = "1970-01-01", tz = "UTC"),
+                   digits = 0)
   }
   date
 }
